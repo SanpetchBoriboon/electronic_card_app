@@ -148,7 +148,7 @@ class _ThankYouPageState extends State<ThankYouPage>
 
   Widget _buildHeader() {
     final screenWidth = MediaQuery.of(context).size.width;
-    final bool isLargeScreen = screenWidth > 450;
+    final bool isLargeScreen = screenWidth > 1000;
 
     return Container(
       height: isLargeScreen
@@ -159,7 +159,7 @@ class _ThankYouPageState extends State<ThankYouPage>
               horizontal: 20.0,
               vertical: 12.0, // Increased vertical padding
             )
-          : const EdgeInsets.all(40.0), // Original padding
+          : const EdgeInsets.all(5.0), // Original padding
       decoration: isLargeScreen
           ? BoxDecoration(
               color: Colors.white.withOpacity(0.95),
@@ -189,13 +189,14 @@ class _ThankYouPageState extends State<ThankYouPage>
           : // Original center layout for small screens
             Column(
               children: [
-                const SizedBox(height: 30),
+                const SizedBox(height: 10),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
                     Image.asset(
                       'assets/images/tag-thank-you.png',
+                      height: 80,
                       width: MediaQuery.of(context).size.width / 2,
                       fit: BoxFit.contain,
                     ),
@@ -256,7 +257,7 @@ class _ThankYouPageState extends State<ThankYouPage>
     }
 
     final screenWidth = MediaQuery.of(context).size.width;
-    final bool isLargeScreen = screenWidth > 450; // Larger than iPhone
+    final bool isLargeScreen = screenWidth > 1000; // Larger than iPhone
 
     return Container(
       padding: EdgeInsets.fromLTRB(
@@ -291,7 +292,7 @@ class _ThankYouPageState extends State<ThankYouPage>
 
   Widget _buildWishCard(Map<String, dynamic> wish, int index) {
     final screenWidth = MediaQuery.of(context).size.width;
-    final bool isLargeScreen = screenWidth > 450;
+    final bool isLargeScreen = screenWidth > 1000;
 
     return AnimatedContainer(
       duration: Duration(milliseconds: 300 + (index * 100)),
@@ -453,7 +454,7 @@ class _ThankYouPageState extends State<ThankYouPage>
 
   void _showWishDetail(Map<String, dynamic> wish) {
     final screenWidth = MediaQuery.of(context).size.width;
-    final bool isLargeScreen = screenWidth > 450;
+    final bool isLargeScreen = screenWidth > 1000;
 
     showDialog(
       context: context,
@@ -716,8 +717,6 @@ class _ThankYouPageState extends State<ThankYouPage>
 
     Widget imageWidget = Image.network(
       proxyUrl,
-      width: double.infinity,
-      height: 200,
       fit: BoxFit.cover,
       loadingBuilder: (context, child, loadingProgress) {
         if (loadingProgress == null) return child;
