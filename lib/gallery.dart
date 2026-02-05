@@ -84,12 +84,12 @@ class _GalleryPageState extends State<GalleryPage> {
                   fontStyle: FontStyle.italic,
                   shadows: [
                     Shadow(
-                      color: Colors.black.withOpacity(0.3),
+                      color: Colors.black.withValues(alpha: 0.3),
                       offset: const Offset(2, 2),
                       blurRadius: 4,
                     ),
                     Shadow(
-                      color: Colors.black.withOpacity(0.1),
+                      color: Colors.black.withValues(alpha: 0.1),
                       offset: const Offset(4, 4),
                       blurRadius: 8,
                     ),
@@ -110,7 +110,7 @@ class _GalleryPageState extends State<GalleryPage> {
                     borderRadius: BorderRadius.circular(20),
                     boxShadow: [
                       BoxShadow(
-                        color: Colors.black.withOpacity(0.1),
+                        color: Colors.black.withValues(alpha: 0.1),
                         spreadRadius: 2,
                         blurRadius: 10,
                         offset: const Offset(0, 4),
@@ -144,10 +144,10 @@ class _GalleryPageState extends State<GalleryPage> {
                                         colors: [
                                           const Color(
                                             0xFFBFC6B4,
-                                          ).withOpacity(0.3),
+                                          ).withValues(alpha: 0.3),
                                           const Color(
                                             0xFF7E8B78,
-                                          ).withOpacity(0.1),
+                                          ).withValues(alpha: 0.1),
                                         ],
                                       ),
                                     ),
@@ -282,7 +282,7 @@ class FullGalleryModal extends StatelessWidget {
                       shape: BoxShape.circle,
                       boxShadow: [
                         BoxShadow(
-                          color: Colors.black.withOpacity(0.2),
+                          color: Colors.black.withValues(alpha: 0.2),
                           spreadRadius: 1,
                           blurRadius: 8,
                           offset: const Offset(0, 2),
@@ -318,7 +318,7 @@ class FullGalleryModal extends StatelessWidget {
                             border: Border.all(color: Colors.white, width: 3),
                             boxShadow: [
                               BoxShadow(
-                                color: Colors.black.withOpacity(0.1),
+                                color: Colors.black.withValues(alpha: 0.1),
                                 spreadRadius: 1,
                                 blurRadius: 4,
                                 offset: const Offset(0, 2),
@@ -337,15 +337,15 @@ class FullGalleryModal extends StatelessWidget {
                                       begin: Alignment.topLeft,
                                       end: Alignment.bottomRight,
                                       colors: [
-                                        kPrimaryColor.withOpacity(0.3),
-                                        kPrimaryColor.withOpacity(0.1),
+                                        kPrimaryColor.withValues(alpha: 0.3),
+                                        kPrimaryColor.withValues(alpha: 0.1),
                                       ],
                                     ),
                                   ),
                                   child: Center(
                                     child: Icon(
                                       Icons.photo,
-                                      color: kPrimaryColor.withOpacity(0.6),
+                                      color: kPrimaryColor.withValues(alpha: 0.6),
                                       size: 32,
                                     ),
                                   ),
@@ -370,7 +370,7 @@ class FullGalleryModal extends StatelessWidget {
     Navigator.of(context).push(
       PageRouteBuilder(
         opaque: false,
-        barrierColor: Colors.black.withOpacity(0.9),
+        barrierColor: Colors.black.withValues(alpha: 0.9),
         pageBuilder: (context, animation, secondaryAnimation) {
           return FadeTransition(
             opacity: animation,
@@ -416,7 +416,7 @@ class _ImageViewerModalState extends State<ImageViewerModal> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.black.withOpacity(0.95),
+      backgroundColor: Colors.black.withValues(alpha: 0.95),
       body: Stack(
         children: [
           // Image PageView
@@ -441,7 +441,7 @@ class _ImageViewerModalState extends State<ImageViewerModal> {
                           width: 200,
                           height: 200,
                           decoration: BoxDecoration(
-                            color: kPrimaryColor.withOpacity(0.2),
+                            color: kPrimaryColor.withValues(alpha: 0.2),
                             borderRadius: BorderRadius.circular(12),
                           ),
                           child: Center(
@@ -470,7 +470,7 @@ class _ImageViewerModalState extends State<ImageViewerModal> {
                 width: 40,
                 height: 40,
                 decoration: BoxDecoration(
-                  color: Colors.white.withOpacity(0.2),
+                  color: Colors.white.withValues(alpha: 0.2),
                   shape: BoxShape.circle,
                 ),
                 child: const Icon(Icons.close, color: Colors.white, size: 24),
@@ -496,7 +496,7 @@ class _ImageViewerModalState extends State<ImageViewerModal> {
                     width: 50,
                     height: 50,
                     decoration: BoxDecoration(
-                      color: Colors.white.withOpacity(0.2),
+                      color: Colors.white.withValues(alpha: 0.2),
                       shape: BoxShape.circle,
                     ),
                     child: const Icon(
@@ -527,7 +527,7 @@ class _ImageViewerModalState extends State<ImageViewerModal> {
                     width: 50,
                     height: 50,
                     decoration: BoxDecoration(
-                      color: Colors.white.withOpacity(0.2),
+                      color: Colors.white.withValues(alpha: 0.2),
                       shape: BoxShape.circle,
                     ),
                     child: const Icon(
@@ -552,7 +552,7 @@ class _ImageViewerModalState extends State<ImageViewerModal> {
                   vertical: 8,
                 ),
                 decoration: BoxDecoration(
-                  color: Colors.white.withOpacity(0.2),
+                  color: Colors.white.withValues(alpha: 0.2),
                   borderRadius: BorderRadius.circular(20),
                 ),
                 child: Text(

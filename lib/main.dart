@@ -653,7 +653,7 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
             Container(
               padding: const EdgeInsets.all(20),
               decoration: BoxDecoration(
-                border: Border.all(color: kPrimaryColor.withOpacity(0.3)),
+                border: Border.all(color: kPrimaryColor.withValues(alpha: 0.3)),
                 borderRadius: BorderRadius.circular(12),
               ),
               child: Row(
@@ -674,7 +674,7 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
                   Container(
                     width: 1,
                     height: 80,
-                    color: kPrimaryColor.withOpacity(0.3),
+                    color: kPrimaryColor.withValues(alpha: 0.3),
                   ),
                   Expanded(
                     child: Column(
@@ -792,11 +792,11 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 16),
       decoration: BoxDecoration(
-        color: Colors.white.withOpacity(0.8),
+        color: Colors.white.withValues(alpha: 0.8),
         borderRadius: BorderRadius.circular(8),
         boxShadow: [
           BoxShadow(
-            color: Colors.grey.withOpacity(0.2),
+            color: Colors.grey.withValues(alpha: 0.2),
             spreadRadius: 1,
             blurRadius: 4,
             offset: const Offset(0, 2),

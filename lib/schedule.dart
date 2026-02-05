@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
-import 'dart:html' as html;
+import 'package:url_launcher/url_launcher.dart';
 
 // Global color constant
 const Color kPrimaryColor = Color(0xFF7E8B78);
@@ -66,7 +65,7 @@ class SchedulePage extends StatelessWidget {
                 '#เบญจเมแต่งแล้วครับ',
                 style: TextStyle(
                   fontSize: 16,
-                  color: Colors.white.withOpacity(0.8),
+                  color: Colors.white.withValues(alpha: 0.8),
                   fontStyle: FontStyle.italic,
                 ),
                 textAlign: TextAlign.center,
@@ -75,12 +74,14 @@ class SchedulePage extends StatelessWidget {
 
               // Map Section
               GestureDetector(
-                onTap: () {
+                onTap: () async {
                   // Open Google Maps for "บ้านไม้ สาย 3 กรุงเทพ"
-                  html.window.open(
+                  final url = Uri.parse(
                     'https://www.google.com/maps/search/%E0%B8%9A%E0%B9%89%E0%B8%B2%E0%B8%99%E0%B9%84%E0%B8%A1%E0%B9%89+%E0%B8%AA%E0%B8%B2%E0%B8%A2+3+%E0%B8%81%E0%B8%A3%E0%B8%B8%E0%B8%87%E0%B9%80%E0%B8%97%E0%B8%9E',
-                    '_blank',
                   );
+                  if (await canLaunchUrl(url)) {
+                    await launchUrl(url, mode: LaunchMode.externalApplication);
+                  }
                 },
                 child: Container(
                   width: double.infinity,
@@ -98,8 +99,8 @@ class SchedulePage extends StatelessWidget {
                           begin: Alignment.topLeft,
                           end: Alignment.bottomRight,
                           colors: [
-                            const Color(0xFFBFC6B4).withOpacity(0.3),
-                            const Color(0xFF7E8B78).withOpacity(0.1),
+                            const Color(0xFFBFC6B4).withValues(alpha: 0.3),
+                            const Color(0xFF7E8B78).withValues(alpha: 0.1),
                           ],
                         ),
                       ),
@@ -136,7 +137,7 @@ class SchedulePage extends StatelessWidget {
                                 vertical: 6,
                               ),
                               decoration: BoxDecoration(
-                                color: kPrimaryColor.withOpacity(0.1),
+                                color: kPrimaryColor.withValues(alpha: 0.1),
                                 borderRadius: BorderRadius.circular(20),
                               ),
                               child: Text(
@@ -172,7 +173,7 @@ class SchedulePage extends StatelessWidget {
         shape: BoxShape.circle,
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.2),
+            color: Colors.black.withValues(alpha: 0.2),
             spreadRadius: 1,
             blurRadius: 3,
             offset: const Offset(0, 2),

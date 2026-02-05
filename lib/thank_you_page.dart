@@ -95,14 +95,14 @@ class _ThankYouPageState extends State<ThankYouPage>
           _isLoading = false;
         });
       } else {
-        print('Failed to load cards: ${response.statusCode}');
+// print('Failed to load cards: ${response.statusCode}');
         setState(() {
           _wishes = [];
           _isLoading = false;
         });
       }
     } catch (e) {
-      print('Error loading wishes: $e');
+// print('Error loading wishes: $e');
       setState(() {
         _wishes = [];
         _isLoading = false;
@@ -162,10 +162,10 @@ class _ThankYouPageState extends State<ThankYouPage>
           : const EdgeInsets.all(5.0), // Original padding
       decoration: isLargeScreen
           ? BoxDecoration(
-              color: Colors.white.withOpacity(0.95),
+              color: Colors.white.withValues(alpha: 0.95),
               boxShadow: [
                 BoxShadow(
-                  color: Colors.black.withOpacity(0.08),
+                  color: Colors.black.withValues(alpha: 0.08),
                   blurRadius: 2,
                   offset: const Offset(0, 1),
                 ),
@@ -306,15 +306,15 @@ class _ThankYouPageState extends State<ThankYouPage>
         child: Container(
           padding: EdgeInsets.all(isLargeScreen ? 12 : 20),
           decoration: BoxDecoration(
-            color: _parseColor(wish['template']).withOpacity(0.15),
+            color: _parseColor(wish['template']).withValues(alpha: 0.15),
             borderRadius: BorderRadius.circular(20),
             border: Border.all(
-              color: _parseColor(wish['template']).withOpacity(0.4),
+              color: _parseColor(wish['template']).withValues(alpha: 0.4),
               width: 1,
             ),
             boxShadow: [
               BoxShadow(
-                color: _parseColor(wish['template']).withOpacity(0.15),
+                color: _parseColor(wish['template']).withValues(alpha: 0.15),
                 spreadRadius: 2,
                 blurRadius: 12,
                 offset: const Offset(0, 4),
@@ -569,12 +569,12 @@ class _ThankYouPageState extends State<ThankYouPage>
                                       decoration: BoxDecoration(
                                         color: _parseColor(
                                           wish['template'],
-                                        ).withOpacity(0.2),
+                                        ).withValues(alpha: 0.2),
                                         borderRadius: BorderRadius.circular(12),
                                         border: Border.all(
                                           color: _parseColor(
                                             wish['template'],
-                                          ).withOpacity(0.5),
+                                          ).withValues(alpha: 0.5),
                                         ),
                                       ),
                                       child: SingleChildScrollView(
@@ -652,12 +652,12 @@ class _ThankYouPageState extends State<ThankYouPage>
                                 decoration: BoxDecoration(
                                   color: _parseColor(
                                     wish['template'],
-                                  ).withOpacity(0.2),
+                                  ).withValues(alpha: 0.2),
                                   borderRadius: BorderRadius.circular(12),
                                   border: Border.all(
                                     color: _parseColor(
                                       wish['template'],
-                                    ).withOpacity(0.5),
+                                    ).withValues(alpha: 0.5),
                                   ),
                                 ),
                                 child: Text(
@@ -731,9 +731,9 @@ class _ThankYouPageState extends State<ThankYouPage>
         );
       },
       errorBuilder: (context, error, stackTrace) {
-        print('Image proxy error: $error');
-        print('Original URL: $imageUrl');
-        print('Proxy URL: $proxyUrl');
+// print('Image proxy error: $error');
+// print('Original URL: $imageUrl');
+// print('Proxy URL: $proxyUrl');
 
         return Center(
           child: Column(
@@ -768,7 +768,7 @@ class _ThankYouPageState extends State<ThankYouPage>
               child: Container(
                 padding: const EdgeInsets.all(6),
                 decoration: BoxDecoration(
-                  color: Colors.black.withOpacity(0.5),
+                  color: Colors.black.withValues(alpha: 0.5),
                   borderRadius: BorderRadius.circular(15),
                 ),
                 child: Icon(Icons.zoom_in, color: Colors.white, size: 16),
@@ -795,7 +795,7 @@ class _ThankYouPageState extends State<ThankYouPage>
               Container(
                 width: double.infinity,
                 height: double.infinity,
-                color: Colors.black.withOpacity(0.9),
+                color: Colors.black.withValues(alpha: 0.9),
               ),
 
               // Close button
@@ -807,7 +807,7 @@ class _ThankYouPageState extends State<ThankYouPage>
                   child: Container(
                     padding: const EdgeInsets.all(12),
                     decoration: BoxDecoration(
-                      color: Colors.white.withOpacity(0.2),
+                      color: Colors.white.withValues(alpha: 0.2),
                       borderRadius: BorderRadius.circular(25),
                     ),
                     child: Icon(Icons.close, color: Colors.white, size: 24),
@@ -887,7 +887,7 @@ class _ThankYouPageState extends State<ThankYouPage>
 
       return Color(int.parse(colorCode, radix: 16));
     } catch (e) {
-      print('Error parsing color: $colorString');
+// print('Error parsing color: $colorString');
       return kPrimaryColor; // fallback color
     }
   }
