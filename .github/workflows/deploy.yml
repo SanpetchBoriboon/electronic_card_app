@@ -28,7 +28,7 @@ jobs:
               run: flutter analyze
 
             - name: Run tests
-              run: flutter test || true
+              run: flutter test || echo "⚠️  No tests found or tests failed, continuing deployment..."
 
             - name: Build web app
               run: flutter build web --release --dart-define=API_BASE_URL="${{ secrets.API_BASE_URL }}"
