@@ -345,7 +345,9 @@ class FullGalleryModal extends StatelessWidget {
                                   child: Center(
                                     child: Icon(
                                       Icons.photo,
-                                      color: kPrimaryColor.withValues(alpha: 0.6),
+                                      color: kPrimaryColor.withValues(
+                                        alpha: 0.6,
+                                      ),
                                       size: 32,
                                     ),
                                   ),

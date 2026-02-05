@@ -991,7 +991,6 @@ class _WishesPageState extends State<WishesPage> {
     }
   }
 
-
   Future<void> _clearStoredToken() async {
     try {
       final prefs = await SharedPreferences.getInstance();
