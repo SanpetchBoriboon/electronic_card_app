@@ -32,7 +32,7 @@ flutter pub get
 
 # Build Flutter web
 echo "🔨 Building Flutter web app..."
-flutter build web --release --web-renderer html
+flutter build web --release
 
 # Deploy to fly.io
 echo "🚀 Deploying to fly.io..."
