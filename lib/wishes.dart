@@ -867,7 +867,7 @@ class _WishesPageState extends State<WishesPage> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      '📅 วันที่เปิดใช้งาน: ${errorData['allowedDate'] ?? '26 กุมภาพันธ์ 2026'}',
+                      '📅 วันที่เปิดใช้งาน: ${_formatDateToThai(errorData['allowedDate'])}',
                       style: TextStyle(
                         fontSize: 14,
                         color: kPrimaryColor,
@@ -876,7 +876,7 @@ class _WishesPageState extends State<WishesPage> {
                     ),
                     const SizedBox(height: 4),
                     Text(
-                      '📅 วันที่ปัจจุบัน: ${errorData['currentDate'] ?? '5 กุมภาพันธ์ 2026'}',
+                      '📅 วันที่ปัจจุบัน: ${_formatDateToThai(errorData['currentDate'])}',
                       style: TextStyle(fontSize: 14, color: Colors.grey[600]),
                     ),
                   ],
@@ -933,6 +933,46 @@ class _WishesPageState extends State<WishesPage> {
       _selectedImagesData.clear();
       _selectedImageNames.clear();
     });
+  }
+
+  // Helper method to format date to Thai format
+  String _formatDateToThai(String? dateString) {
+    if (dateString == null) return '26 กุมภาพันธ์ 2026';
+
+    try {
+      // Parse the date string (assuming format: 2026-02-26)
+      final dateParts = dateString.split('-');
+      if (dateParts.length == 3) {
+        final year = dateParts[0];
+        final month = dateParts[1];
+        final day = int.parse(dateParts[2]).toString(); // Remove leading zero
+
+        final monthNames = [
+          '',
+          'มกราคม',
+          'กุมภาพันธ์',
+          'มีนาคม',
+          'เมษายน',
+          'พฤษภาคม',
+          'มิถุนายน',
+          'กรกฎาคม',
+          'สิงหาคม',
+          'กันยายน',
+          'ตุลาคม',
+          'พฤศจิกายน',
+          'ธันวาคม',
+        ];
+
+        final monthIndex = int.parse(month);
+        if (monthIndex >= 1 && monthIndex <= 12) {
+          return '$day ${monthNames[monthIndex]} $year';
+        }
+      }
+    } catch (e) {
+      print('Error formatting date: $e');
+    }
+
+    return '26 กุมภาพันธ์ 2026'; // Default fallback
   }
 
   // Token management methods

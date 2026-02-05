@@ -76,7 +76,7 @@ class _GalleryPageState extends State<GalleryPage> {
 
               // Gallery Title
               Text(
-                'Gallery',
+                'Journey of Us',
                 style: AppFonts.ttHovesPro(
                   fontSize: 60,
                   color: Colors.white,
