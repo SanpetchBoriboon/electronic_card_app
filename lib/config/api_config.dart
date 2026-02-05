@@ -1,12 +1,15 @@
+import 'package:flutter_dotenv/flutter_dotenv.dart';
+
 // Global API Configuration
 class ApiConfig {
-  // Base API URL - เปลี่ยน URL ตามจริงของ server
-  static const String baseUrl = 'http://localhost:3000/api';
+  // Base API URL - loaded from .env file
+  static String get baseUrl =>
+      dotenv.env['API_BASE_URL'] ?? 'http://localhost:3000/api';
 
   // API Endpoints
-  static const String uploadCardImage = '$baseUrl/upload/card-image';
-  static const String guestTokens = '$baseUrl/auth/tokens/guest';
-  static const String cards = '$baseUrl/cards';
+  static String get uploadCardImage => '$baseUrl/upload/card-image';
+  static String get guestTokens => '$baseUrl/auth/tokens/guest';
+  static String get cards => '$baseUrl/cards';
 
   // Helper method for image proxy
   static String imageProxy(String imageUrl) {

@@ -102,9 +102,18 @@ The app features a modern, elegant design with:
 3. **Add required assets | เพิ่ม assets ที่จำเป็น**
     - Place `mini-logo.png` in `assets/images/` | วาง `mini-logo.png` ไว้ใน `assets/images/`
     - Add gallery images in `assets/images/gallery/` | เพิ่มรูปแกลลอรี่ใน `assets/images/gallery/`
+    - Copy `.env.example` to `.env` and update API_BASE_URL | คัดลอก `.env.example` เป็น `.env` และอัปเดต API_BASE_URL
     - Update `pubspec.yaml` if adding new assets | อัปเดต `pubspec.yaml` หากเพิ่ม assets ใหม่
 
-4. **Run the application | รันแอปพลิเคชัน**
+4. **Configure environment variables | ตั้งค่า environment variables**
+
+    ```bash
+    cp .env.example .env
+    # Edit .env file and update API_BASE_URL to your server URL
+    # แก้ไขไฟล์ .env และอัปเดต API_BASE_URL เป็น URL ของเซิร์ฟเวอร์
+    ```
+
+5. **Run the application | รันแอปพลิเคชัน**
 
     ```bash
     # For debug mode | สำหรับโหมดแก้ไขข้อผิดพลาด
@@ -130,6 +139,8 @@ lib/
 └── config/
     └── api_config.dart      # Global API configuration | การตั้งค่า API แบบ Global
 
+.env                          # Environment variables (not committed) | ตัวแปร environment (ไม่ commit)
+.env.example                  # Environment template | เทมเพลต environment
 assets/
 ├── images/
 │   ├── mini-logo.png        # App logo for splash screen | โลโก้แอปสำหรับหน้าจอเปิดแอป
@@ -141,14 +152,21 @@ assets/
 
 ### API Integration | การเชื่อมต่อ API
 
-The app integrates with a REST API for wishes submission. Configure the API endpoints in the API config:
-แอปเชื่อมต่อกับ REST API สำหรับการส่งคำอวยพร ตั้งค่า API endpoints ในไฟล์ config:
+The app uses environment variables for API configuration. Update the `.env` file with your server details:
+แอปใช้ environment variables สำหรับการตั้งค่า API อัปเดตไฟล์ `.env` ด้วยรายละเอียดของเซิร์ฟเวอร์:
+
+```env
+# .env file
+API_BASE_URL=https://your-api-server.com/api
+```
+
+The API configuration is managed in `lib/config/api_config.dart` which automatically loads the base URL from environment variables:
+การตั้งค่า API ถูกจัดการใน `lib/config/api_config.dart` ซึ่งจะโหลด base URL จาก environment variables อัตโนมัติ:
 
 ```dart
-// Update API URLs in lib/config/api_config.dart
-// อัปเดต API URLs ใน lib/config/api_config.dart
+// lib/config/api_config.dart
 class ApiConfig {
-  static const String baseUrl = 'your-api-endpoint';
+  static String get baseUrl => dotenv.env['API_BASE_URL'] ?? 'http://localhost:3000/api';
 }
 ```
 
