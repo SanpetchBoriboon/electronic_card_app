@@ -33,7 +33,7 @@ jobs:
               run: flutter test --coverage
 
             - name: Build web (test)
-              run: flutter build web --release --web-renderer html
+              run: flutter build web --release
 
             - name: Upload coverage to Codecov
               uses: codecov/codecov-action@v3
