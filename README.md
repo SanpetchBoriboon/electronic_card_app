@@ -1,53 +1,323 @@
-# 💒 Electronic Wedding Card App | แอพการ์ดแต่งงานดิจิทัล
+# 💒 Electronic Wedding Card App
 
-A beautiful, interactive wedding invitation mobile application built with Flutter. This app provides a complete digital wedding experience with stunning animations, guest interactions, and modern design.
+A beautiful Flutter web application for wedding invitations with wishes collection system.
 
-แอปพลิเคชันการ์ดเชิญงานแต่งงานแบบโต้ตอบที่สวยงาม สร้างด้วย Flutter แอปนี้ให้ประสบการณ์งานแต่งงานดิจิทัลที่สมบูรณ์ พร้อมกราฟิกแอนิเมชันที่น่าทึ่ง การโต้ตอบกับแขก และดีไซน์ที่ทันสมัย
+## ✨ Features
 
-## ✨ Features | ฟีเจอร์
+- **Digital Wedding Invitation** - Beautiful animated wedding card
+- **Wedding Schedule** - Timeline of wedding events
+- **Photo Gallery** - Wedding photo gallery with viewer
+- **Wishes Collection** - Guests can send wishes with photos
+- **Thank You Page** - Display collected wishes
+- **Responsive Design** - Works on all devices
+- **Thai Fonts** - Beautiful Thai typography support
 
-### 🎴 3D Flip Card Animation | แอนิเมชันการ์ดพลิก 3 มิติ
+## 🚀 Quick Start
 
-- Interactive wedding invitation with smooth 3D flip animation | การ์ดเชิญงานแต่งงานแบบโต้ตอบพร้อมแอนิเมชันพลิก 3D ที่นุ่มนวล
-- Elegant card design with bride and groom details | ดีไซน์การ์ดสวยงามพร้อมรายละเอียดเจ้าบ่าวเจ้าสาว
-- Touch-responsive flip interaction | การพลิกที่ตอบสนองการสัมผัส
+### Prerequisites
 
-### ⏰ Wedding Countdown | นับถอยหลังงานแต่งงาน
+- Flutter SDK (latest stable)
+- Dart SDK
+- Git
 
-- Real-time countdown to the wedding date | นับถอยหลังแบบเรียลไทม์ถึงวันแต่งงาน
-- Beautiful animated display showing days, hours, minutes, and seconds | การแสดงผลแบบแอนิเมชันสวยงามที่แสดงวัน ชั่วโมง นาที และวินาที
+### Installation
 
-### 🗓️ Schedule Page | หน้าตารางเวลา
+```bash
+# Clone the repository
+git clone <your-repo-url>
+cd electronic_card_app
 
-- Complete wedding day timeline | ไทม์ไลน์วันแต่งงานที่สมบูรณ์
-- Ceremony and reception details | รายละเอียดพิธีและงานเลี้ยง
-- Venue information and timing | ข้อมูลสถานที่และเวลา
+# Install dependencies
+flutter pub get
 
-### 📸 Photo Gallery | แกลลอรี่รูปภาพ
+# Run the app
+flutter run -d chrome
+```
 
-- Beautiful gallery showcase | แกลลอรี่แสดงผลที่สวยงาม
-- Full-screen photo viewer with smooth transitions | โปรแกรมดูรูปเต็มจอพร้อมการเปลี่ยนที่นุ่มนวล
-- Responsive grid layout | เลย์เอาต์ตารางที่ตอบสนอง
+## 🌐 Deployment
 
-### 💝 Wishes & Blessings | คำอวยพรและความปรารถนาดี
+This project supports both **manual** and **automatic** deployment to Fly.io.
 
-- Interactive wishes submission form | ฟอร์มส่งคำอวยพรแบบโต้ตอบ
-- Photo upload functionality for guests | ฟังก์ชันอัปโหลดรูปภาพสำหรับแขก
-- Real-time API integration for storing wishes | การเชื่อมต่อ API แบบเรียลไทม์สำหรับเก็บคำอวยพร
-- Loading and success feedback | ข้อความตอบกลับขณะโหลดและเมื่อสำเร็จ
+### 🎯 Auto Deployment (Recommended)
 
-### 🌻 Thank You Page | หน้าขอบคุณ
+**Automatic deployment triggers on every push to `main` branch.**
 
-- Display all submitted wishes from guests | แสดงคำอวยพรทั้งหมดจากแขก
-- Beautiful sunflower-themed design | ดีไซน์ธีมดอกทานตะวันที่สวยงาม
-- Template color customization | การปรับแต่งสีตามเทมเพลต
-- Image proxy for CORS-free image loading | Image proxy สำหรับโหลดรูปภาพโดยไม่มีปัญหา CORS
+#### Setup Steps:
 
-### 🎨 Template Colors | สีเทมเพลต
+1. **Get Fly.io API Token:**
 
-- Dynamic color theming system | ระบบธีมสีแบบไดนามิก
-- Customizable color schemes | รูปแบบสีที่ปรับแต่งได้
-- Consistent design across all pages | ดีไซน์ที่สอดคล้องกันทั่วทุกหน้า
+    ```bash
+    flyctl auth token
+    ```
+
+2. **Add GitHub Secret:**
+    - Go to GitHub repository → Settings → Secrets and variables → Actions
+    - Create new secret:
+        - Name: `FLY_API_TOKEN`
+        - Value: [your fly.io token from step 1]
+
+3. **Push to main branch:**
+
+    ```bash
+    git push origin main
+    ```
+
+4. **Done!** 🎉 GitHub Actions will automatically:
+    - Build Flutter web app
+    - Deploy to Fly.io
+    - Your app will be live at: https://ben-mae-the-wedding.fly.dev
+
+#### Auto Deploy Features:
+
+- ✅ Triggered on every push to `main`
+- ✅ Automatic Flutter web build
+- ✅ Code analysis and testing
+- ✅ Zero-downtime deployment
+- ✅ Deployment status notifications
+
+---
+
+### 🔧 Manual Deployment
+
+For one-time deployments or when you need more control.
+
+#### Prerequisites:
+
+1. **Install Fly.io CLI:**
+
+    ```bash
+    curl -L https://fly.io/install.sh | sh
+    ```
+
+2. **Login to Fly.io:**
+    ```bash
+    flyctl auth login
+    ```
+
+#### Quick Deploy:
+
+```bash
+# One-command deployment
+./deploy.sh
+```
+
+#### Manual Step-by-Step:
+
+```bash
+# 1. Set up secrets (first time only)
+./set-secrets.sh
+
+# 2. Build Flutter web
+flutter build web --release
+
+# 3. Deploy to Fly.io
+flyctl deploy
+
+# 4. Check status
+flyctl status
+```
+
+#### Manual Deploy Features:
+
+- 🎛️ Full control over deployment process
+- 🔍 Local build verification
+- 🔧 Custom secret management
+- 📊 Immediate deployment feedback
+
+---
+
+## 🛠️ Configuration
+
+### Environment Variables
+
+Create `.env` file:
+
+```env
+# API Configuration
+API_BASE_URL=https://wedding-card-online-service.fly.dev/api
+```
+
+### Fly.io Secrets
+
+The app uses the following secrets:
+
+- `API_BASE_URL` - Backend API endpoint
+
+Set secrets:
+
+```bash
+flyctl secrets set API_BASE_URL="your-api-url"
+```
+
+## 📱 Project Structure
+
+```
+lib/
+├── main.dart              # App entry point
+├── font_styles.dart       # Thai font system
+├── config/
+│   └── api_config.dart    # API configuration
+├── gallery.dart           # Photo gallery
+├── schedule.dart          # Wedding schedule
+├── wishes.dart           # Wishes collection
+├── thank_you_page.dart   # Thank you page
+└── splash_screen.dart    # Loading screen
+
+assets/
+├── images/               # App images
+├── fonts/               # Thai fonts
+└── icons/               # App icons
+
+.github/
+└── workflows/
+    ├── ci.yml           # Continuous Integration
+    └── deploy.yml       # Auto Deployment
+```
+
+## 🔄 Development Workflow
+
+### For Contributors:
+
+1. **Create feature branch:**
+
+    ```bash
+    git checkout -b feature/my-feature
+    ```
+
+2. **Make changes and commit:**
+
+    ```bash
+    git add .
+    git commit -m "Add new feature"
+    ```
+
+3. **Push and create PR:**
+
+    ```bash
+    git push origin feature/my-feature
+    ```
+
+4. **CI automatically runs:**
+    - Code analysis
+    - Tests
+    - Build verification
+
+5. **After review, merge to main:**
+    - Auto deployment triggers
+    - App updates automatically
+
+### For Quick Changes:
+
+1. **Direct push to main:**
+
+    ```bash
+    git add .
+    git commit -m "Quick fix"
+    git push origin main
+    ```
+
+2. **Auto deployment happens immediately!**
+
+## 🚀 Deployment Options Comparison
+
+| Feature      | Auto Deploy            | Manual Deploy    |
+| ------------ | ---------------------- | ---------------- |
+| **Trigger**  | Git push to main       | Manual command   |
+| **Setup**    | One-time GitHub secret | Local Fly.io CLI |
+| **Speed**    | ~3-5 minutes           | ~1-2 minutes     |
+| **CI/CD**    | ✅ Full pipeline       | ❌ No CI         |
+| **Rollback** | GitHub revert          | Manual flyctl    |
+| **Best for** | Production             | Development      |
+
+## 📊 Monitoring
+
+### GitHub Actions
+
+- View deployment status in Actions tab
+- Get notified on deployment failures
+- See build logs and deployment time
+
+### Fly.io Dashboard
+
+- Monitor app performance
+- View logs: `flyctl logs`
+- Check status: `flyctl status`
+
+### App Health
+
+- Health check endpoint: `/health`
+- Auto-scaling based on traffic
+- Zero-downtime deployments
+
+## 🛡️ Production Checklist
+
+Before going live:
+
+- [ ] Set up auto deployment
+- [ ] Configure production API_BASE_URL
+- [ ] Test deployment pipeline
+- [ ] Set up monitoring
+- [ ] Configure domain (optional)
+- [ ] Enable HTTPS (automatic with Fly.io)
+
+## 🆘 Troubleshooting
+
+### Auto Deployment Issues:
+
+**Build fails:**
+
+```bash
+# Check GitHub Actions logs
+# Usually Flutter version or dependency issues
+```
+
+**Deployment fails:**
+
+```bash
+# Check if FLY_API_TOKEN is set correctly in GitHub secrets
+# Verify Fly.io app exists: flyctl apps list
+```
+
+### Manual Deployment Issues:
+
+**CLI not found:**
+
+```bash
+# Reinstall Fly.io CLI
+curl -L https://fly.io/install.sh | sh
+```
+
+**Auth issues:**
+
+```bash
+# Re-login to Fly.io
+flyctl auth login
+```
+
+**Build issues:**
+
+```bash
+# Clean Flutter build
+flutter clean
+flutter pub get
+```
+
+## 🎯 Live App
+
+**Production URL:** https://ben-mae-the-wedding.fly.dev
+
+## 📞 Support
+
+For deployment issues:
+
+- Check GitHub Actions logs
+- Review Fly.io dashboard
+- Run `flyctl logs` for app logs
+- Check `flyctl status` for health
+
+---
+
+**Happy Deploying!** 🚀✨
 
 ### 🚀 Splash Screen | หน้าจอเปิดแอป
 
