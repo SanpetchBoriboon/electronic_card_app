@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:electronic_card_app/font_styles.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
@@ -16,9 +17,13 @@ class GalleryPage extends StatefulWidget {
   State<GalleryPage> createState() => _GalleryPageState();
 }
 
-class _GalleryPageState extends State<GalleryPage> {
+class _GalleryPageState extends State<GalleryPage>
+    with AutomaticKeepAliveClientMixin {
   List<String> galleryImages = [];
   bool _isLoadingImages = true;
+
+  @override
+  bool get wantKeepAlive => true;
 
   @override
   void initState() {
@@ -67,6 +72,7 @@ class _GalleryPageState extends State<GalleryPage> {
 
   @override
   Widget build(BuildContext context) {
+    super.build(context); // Required for AutomaticKeepAliveClientMixin
     return Scaffold(
       backgroundColor: const Color(0xFFBFC6B4), // Sage green background
       body: SafeArea(
@@ -335,53 +341,36 @@ class FullGalleryModal extends StatelessWidget {
                           ),
                           child: ClipRRect(
                             borderRadius: BorderRadius.circular(5),
-                            child: Image.network(
-                              '${ApiConfig.cards}/image-proxy?url=${Uri.encodeComponent(images[index])}',
+                            child: CachedNetworkImage(
+                              imageUrl:
+                                  '${ApiConfig.cards}/image-proxy?url=${Uri.encodeComponent(images[index])}',
                               fit: BoxFit.cover,
-                              loadingBuilder:
-                                  (context, child, loadingProgress) {
-                                    if (loadingProgress == null) return child;
-                                    return Center(
-                                      child: CircularProgressIndicator(
-                                        value:
-                                            loadingProgress
-                                                    .expectedTotalBytes !=
-                                                null
-                                            ? loadingProgress
-                                                      .cumulativeBytesLoaded /
-                                                  loadingProgress
-                                                      .expectedTotalBytes!
-                                            : null,
-                                        valueColor:
-                                            AlwaysStoppedAnimation<Color>(
-                                              kPrimaryColor,
-                                            ),
-                                      ),
-                                    );
-                                  },
-                              errorBuilder: (context, error, stackTrace) {
-                                return Container(
-                                  decoration: BoxDecoration(
-                                    gradient: LinearGradient(
-                                      begin: Alignment.topLeft,
-                                      end: Alignment.bottomRight,
-                                      colors: [
-                                        kPrimaryColor.withValues(alpha: 0.3),
-                                        kPrimaryColor.withValues(alpha: 0.1),
-                                      ],
-                                    ),
+                              placeholder: (context, url) => Center(
+                                child: CircularProgressIndicator(
+                                  valueColor: AlwaysStoppedAnimation<Color>(
+                                    kPrimaryColor,
                                   ),
-                                  child: Center(
-                                    child: Icon(
-                                      Icons.photo,
-                                      color: kPrimaryColor.withValues(
-                                        alpha: 0.6,
-                                      ),
-                                      size: 32,
-                                    ),
+                                ),
+                              ),
+                              errorWidget: (context, url, error) => Container(
+                                decoration: BoxDecoration(
+                                  gradient: LinearGradient(
+                                    begin: Alignment.topLeft,
+                                    end: Alignment.bottomRight,
+                                    colors: [
+                                      kPrimaryColor.withValues(alpha: 0.3),
+                                      kPrimaryColor.withValues(alpha: 0.1),
+                                    ],
                                   ),
-                                );
-                              },
+                                ),
+                                child: Center(
+                                  child: Icon(
+                                    Icons.photo,
+                                    color: kPrimaryColor.withValues(alpha: 0.6),
+                                    size: 32,
+                                  ),
+                                ),
+                              ),
                             ),
                           ),
                         ),
@@ -464,40 +453,32 @@ class _ImageViewerModalState extends State<ImageViewerModal> {
                 child: Hero(
                   tag: 'gallery_image_$index',
                   child: InteractiveViewer(
-                    child: Image.network(
-                      '${ApiConfig.cards}/image-proxy?url=${Uri.encodeComponent(widget.images[index])}',
+                    child: CachedNetworkImage(
+                      imageUrl:
+                          '${ApiConfig.cards}/image-proxy?url=${Uri.encodeComponent(widget.images[index])}',
                       fit: BoxFit.contain,
-                      loadingBuilder: (context, child, loadingProgress) {
-                        if (loadingProgress == null) return child;
-                        return Center(
-                          child: CircularProgressIndicator(
-                            value: loadingProgress.expectedTotalBytes != null
-                                ? loadingProgress.cumulativeBytesLoaded /
-                                      loadingProgress.expectedTotalBytes!
-                                : null,
-                            valueColor: AlwaysStoppedAnimation<Color>(
-                              Colors.white,
-                            ),
+                      placeholder: (context, url) => Center(
+                        child: CircularProgressIndicator(
+                          valueColor: AlwaysStoppedAnimation<Color>(
+                            Colors.white,
                           ),
-                        );
-                      },
-                      errorBuilder: (context, error, stackTrace) {
-                        return Container(
-                          width: 200,
-                          height: 200,
-                          decoration: BoxDecoration(
-                            color: kPrimaryColor.withValues(alpha: 0.2),
-                            borderRadius: BorderRadius.circular(12),
+                        ),
+                      ),
+                      errorWidget: (context, url, error) => Container(
+                        width: 200,
+                        height: 200,
+                        decoration: BoxDecoration(
+                          color: kPrimaryColor.withValues(alpha: 0.2),
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        child: Center(
+                          child: Icon(
+                            Icons.photo,
+                            color: kPrimaryColor,
+                            size: 64,
                           ),
-                          child: Center(
-                            child: Icon(
-                              Icons.photo,
-                              color: kPrimaryColor,
-                              size: 64,
-                            ),
-                          ),
-                        );
-                      },
+                        ),
+                      ),
                     ),
                   ),
                 ),
