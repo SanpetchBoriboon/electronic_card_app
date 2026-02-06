@@ -116,6 +116,7 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
   late Animation<double> _flipAnimation;
   bool _isFlipped = false;
   int _currentIndex = 0;
+  late PageController _pageController;
 
   @override
   void initState() {
@@ -123,6 +124,9 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
     _weddingDate = DateTime(2026, 2, 26); // Wedding date: February 26, 2026
     _startTimer();
     _currentIndex = widget.initialIndex; // Set initial index
+
+    // Initialize PageController
+    _pageController = PageController(initialPage: widget.initialIndex);
 
     // Initialize flip animation
     _flipController = AnimationController(
@@ -157,6 +161,7 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
   void dispose() {
     _timer.cancel();
     _flipController.dispose();
+    _pageController.dispose();
     super.dispose();
   }
 
@@ -172,8 +177,13 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
     double logoSize = screenWidth * 0.5; // 50% of screen width
 
     return Scaffold(
-      body: IndexedStack(
-        index: _currentIndex,
+      body: PageView(
+        controller: _pageController,
+        onPageChanged: (index) {
+          setState(() {
+            _currentIndex = index;
+          });
+        },
         children: [
           // Wedding Invitation Page
           GestureDetector(
@@ -224,9 +234,11 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
         type: BottomNavigationBarType.fixed,
         currentIndex: _currentIndex,
         onTap: (index) {
-          setState(() {
-            _currentIndex = index;
-          });
+          _pageController.animateToPage(
+            index,
+            duration: const Duration(milliseconds: 300),
+            curve: Curves.easeInOut,
+          );
         },
         backgroundColor: Colors.white,
         selectedItemColor: kPrimaryColor,
