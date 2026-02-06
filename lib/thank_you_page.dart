@@ -1,5 +1,7 @@
+import 'dart:async';
 import 'dart:convert';
 
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 
@@ -27,6 +29,8 @@ class _ThankYouPageState extends State<ThankYouPage>
 
   List<Map<String, dynamic>> _wishes = [];
   bool _isLoading = true;
+  Timer? _refreshTimer;
+  String? _lastDataHash; // For checking data changes
 
   @override
   void initState() {
@@ -59,41 +63,116 @@ class _ThankYouPageState extends State<ThankYouPage>
 
     // Load wishes data
     _loadWishes();
+
+    // Start auto refresh timer to check for changes every 3 seconds
+    _startAutoRefreshTimer();
+  }
+
+  void _startAutoRefreshTimer() {
+    _refreshTimer = Timer.periodic(Duration(seconds: 3), (timer) {
+      _checkForDataChanges();
+    });
   }
 
   @override
   void dispose() {
     _fadeController.dispose();
     _slideController.dispose();
+    _refreshTimer?.cancel();
     super.dispose();
+  }
+
+  Future<void> _checkForDataChanges() async {
+    try {
+      final response = await http.get(
+        Uri.parse(ApiConfig.cards),
+        headers: {
+          'Content-Type': 'application/json',
+          'Access-Control-Allow-Origin': '*',
+          'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
+          'Access-Control-Allow-Headers':
+              'Origin, Content-Type, Accept, Authorization, X-Request-With',
+        },
+      );
+
+      if (response.statusCode == 200) {
+        final String newDataHash = _generateDataHash(response.body);
+
+        // Only update if data has changed
+        if (_lastDataHash != null && _lastDataHash != newDataHash) {
+          if (kDebugMode) {
+            debugPrint('Data changed, updating wishes...');
+          }
+          _parseAndUpdateWishes(response.body);
+        } else if (_lastDataHash == null) {
+          // First time loading
+          _parseAndUpdateWishes(response.body);
+        }
+
+        _lastDataHash = newDataHash;
+      }
+    } catch (e) {
+      // Silently handle errors for background checks
+      if (kDebugMode) {
+        debugPrint('Background check error: $e');
+      }
+    }
+  }
+
+  String _generateDataHash(String data) {
+    // Simple hash function using data length and first/last characters
+    // In production, you might want to use a proper hash function
+    final bytes = data.codeUnits;
+    int hash = 0;
+    for (int byte in bytes) {
+      hash = hash * 31 + byte;
+    }
+    return hash.toString();
+  }
+
+  void _parseAndUpdateWishes(String responseBody) {
+    try {
+      final Map<String, dynamic> responseData = json.decode(responseBody);
+      final List<dynamic> cardsData = responseData['cards'] ?? [];
+
+      setState(() {
+        _wishes = cardsData
+            .map(
+              (card) => {
+                'title': card['title'] ?? 'ไม่ระบุชื่อ',
+                'message': card['message'] ?? '',
+                'createdAt':
+                    card['createdAt'] ?? DateTime.now().toIso8601String(),
+                'imageUrl': card['imageUrl'],
+                'template': card['template'] ?? '#7E8B78',
+              },
+            )
+            .toList();
+        _isLoading = false;
+      });
+    } catch (e) {
+      if (kDebugMode) {
+        debugPrint('Error parsing wishes data: $e');
+      }
+    }
   }
 
   Future<void> _loadWishes() async {
     try {
       final response = await http.get(
         Uri.parse(ApiConfig.cards),
-        headers: {'Content-Type': 'application/json'},
+        headers: {
+          'Content-Type': 'application/json',
+          'Access-Control-Allow-Origin': '*',
+          'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
+          'Access-Control-Allow-Headers':
+              'Origin, Content-Type, Accept, Authorization, X-Request-With',
+        },
       );
 
       if (response.statusCode == 200) {
-        final Map<String, dynamic> responseData = json.decode(response.body);
-        final List<dynamic> cardsData = responseData['cards'] ?? [];
-
-        setState(() {
-          _wishes = cardsData
-              .map(
-                (card) => {
-                  'title': card['title'] ?? 'ไม่ระบุชื่อ',
-                  'message': card['message'] ?? '',
-                  'createdAt':
-                      card['createdAt'] ?? DateTime.now().toIso8601String(),
-                  'imageUrl': card['imageUrl'],
-                  'template': card['template'] ?? '#7E8B78',
-                },
-              )
-              .toList();
-          _isLoading = false;
-        });
+        _lastDataHash = _generateDataHash(response.body);
+        _parseAndUpdateWishes(response.body);
       } else {
         // print('Failed to load cards: ${response.statusCode}');
         setState(() {
