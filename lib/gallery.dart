@@ -1,5 +1,10 @@
+import 'dart:convert';
+
 import 'package:electronic_card_app/font_styles.dart';
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
+
+import 'config/api_config.dart';
 
 // Global color constant
 const Color kPrimaryColor = Color(0xFF7E8B78);
@@ -12,56 +17,53 @@ class GalleryPage extends StatefulWidget {
 }
 
 class _GalleryPageState extends State<GalleryPage> {
-  // Sample gallery images - you can replace with actual image paths
-  final List<String> galleryImages = [
-    "gallery/journey-images/000045_Original.jpg",
-    "gallery/journey-images/000047_Original.jpg",
-    "gallery/journey-images/000048_Original.jpg",
-    "gallery/journey-images/000053_Original.jpg",
-    "gallery/journey-images/25660507-_TTL5949_Original.jpg",
-    "gallery/journey-images/25660507-_TTL5960_Original.jpg",
-    "gallery/journey-images/25660507-_TTL5961_Original.jpg",
-    "gallery/journey-images/25660507-_TTL5963_Original.jpg",
-    "gallery/journey-images/25660521-_DSF0156_Original.jpg",
-    "gallery/journey-images/25660521-_DSF0161_Original.jpg",
-    "gallery/journey-images/25660521-_DSF0166_Original.jpg",
-    "gallery/journey-images/25660813-DSCF0384_Original.jpg",
-    "gallery/journey-images/25660813-DSCF0390_Original.jpg",
-    "gallery/journey-images/25660813-DSCF0391_Original.jpg",
-    "gallery/journey-images/25660813-DSCF0394_Original.jpg",
-    "gallery/journey-images/25660813-DSCF0395_Original.jpg",
-    "gallery/journey-images/25660813-DSCF0487_Original.jpg",
-    "gallery/journey-images/25660813-DSCF0489_Original.jpg",
-    "gallery/journey-images/25660813-DSCF0490_Original.jpg",
-    "gallery/journey-images/Road-Trip-425_Original.jpg",
-    "gallery/journey-images/Road-Trip-451_Original.jpg",
-    "gallery/journey-images/Road-Trip-453_Original.jpg",
-    "gallery/journey-images/_DSF0068_Original.jpg",
-    "gallery/journey-images/_DSF0069-2_Original.jpg",
-    "gallery/journey-images/fuji-25661229-154549_Original.jpg",
-    "gallery/journey-images/fuji-25661229-154711_Original.jpg",
-    "gallery/journey-images/fuji-25661229-154713_Original.jpg",
-    "gallery/journey-images/fuji-25661229-154719_Original.jpg",
-    "gallery/journey-images/fuji-25670720-084941_Original.jpg",
-    "gallery/journey-images/fuji-25670720-085143_Original.jpg",
-    "gallery/journey-images/fuji-25670720-085239_Original.jpg",
-    "gallery/journey-images/fuji-25670720-085311_Original.jpg",
-    "gallery/journey-images/fuji-25670720-085324_Original.jpg",
-    "gallery/journey-images/fuji-25670720-142216_Original.jpg",
-    "gallery/journey-images/fuji-25670720-142226_Original.jpg",
-    "gallery/journey-images/fuji-25670720-142235_Original.jpg",
-    "gallery/journey-images/fuji-25670720-182054_Original.jpg",
-    "gallery/journey-images/fuji-25670720-183905_Original.jpg",
-    "gallery/journey-images/fujiflim-0062_Original.jpg",
-    "gallery/journey-images/fujiflim-0318_Original.jpg",
-    "gallery/journey-images/fujiflim-0319_Original.jpg",
-    "gallery/journey-images/fujiflim-0320_Original.jpg",
-    "gallery/journey-images/fujiflim-0321_Original.jpg",
-    "gallery/journey-images/fujiflim-0324_Original.jpg",
-    "gallery/journey-images/fujiflim-0325_Original.jpg",
-    "gallery/journey-images/fujixt20-0161_Original.jpg",
-    "gallery/journey-images/fujixt20-0221_Original.jpg",
-  ];
+  List<String> galleryImages = [];
+  bool _isLoadingImages = true;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadGalleryImages();
+  }
+
+  Future<void> _loadGalleryImages() async {
+    try {
+      final response = await http.get(
+        Uri.parse('${ApiConfig.images}?prefix=journey-of-us-images&limit=100'),
+        headers: {
+          'Content-Type': 'application/json',
+          'Access-Control-Allow-Origin': '*',
+          'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
+          'Access-Control-Allow-Headers':
+              'Origin, Content-Type, Accept, Authorization, X-Request-With',
+        },
+      );
+
+      if (response.statusCode == 200) {
+        final Map<String, dynamic> responseData = json.decode(response.body);
+        final List<dynamic> images = responseData['images'] ?? [];
+
+        setState(() {
+          galleryImages = images
+              .where(
+                (image) =>
+                    image['contentType'] == 'image/jpeg' && image['size'] > 0,
+              )
+              .map<String>((image) => image['publicUrl'] as String)
+              .toList();
+          _isLoadingImages = false;
+        });
+      } else {
+        setState(() {
+          _isLoadingImages = false;
+        });
+      }
+    } catch (e) {
+      setState(() {
+        _isLoadingImages = false;
+      });
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -204,9 +206,11 @@ class _GalleryPageState extends State<GalleryPage> {
                 width: double.infinity,
                 margin: const EdgeInsets.symmetric(horizontal: 40),
                 child: ElevatedButton(
-                  onPressed: () {
-                    _showFullGallery(context);
-                  },
+                  onPressed: _isLoadingImages || galleryImages.isEmpty
+                      ? null
+                      : () {
+                          _showFullGallery(context);
+                        },
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Colors.white,
                     foregroundColor: kPrimaryColor,
@@ -217,7 +221,11 @@ class _GalleryPageState extends State<GalleryPage> {
                     elevation: 2,
                   ),
                   child: Text(
-                    'ดูรูปทั้งหมด',
+                    _isLoadingImages
+                        ? 'กำลังโหลด...'
+                        : galleryImages.isEmpty
+                        ? 'ไม่มีรูปภาพ'
+                        : 'ดูรูปทั้งหมด',
                     style: TextStyle(
                       fontSize: 16,
                       fontWeight: FontWeight.w500,
@@ -327,9 +335,30 @@ class FullGalleryModal extends StatelessWidget {
                           ),
                           child: ClipRRect(
                             borderRadius: BorderRadius.circular(5),
-                            child: Image.asset(
-                              '/images/${images[index]}',
+                            child: Image.network(
+                              '${ApiConfig.cards}/image-proxy?url=${Uri.encodeComponent(images[index])}',
                               fit: BoxFit.cover,
+                              loadingBuilder:
+                                  (context, child, loadingProgress) {
+                                    if (loadingProgress == null) return child;
+                                    return Center(
+                                      child: CircularProgressIndicator(
+                                        value:
+                                            loadingProgress
+                                                    .expectedTotalBytes !=
+                                                null
+                                            ? loadingProgress
+                                                      .cumulativeBytesLoaded /
+                                                  loadingProgress
+                                                      .expectedTotalBytes!
+                                            : null,
+                                        valueColor:
+                                            AlwaysStoppedAnimation<Color>(
+                                              kPrimaryColor,
+                                            ),
+                                      ),
+                                    );
+                                  },
                               errorBuilder: (context, error, stackTrace) {
                                 return Container(
                                   decoration: BoxDecoration(
@@ -435,9 +464,23 @@ class _ImageViewerModalState extends State<ImageViewerModal> {
                 child: Hero(
                   tag: 'gallery_image_$index',
                   child: InteractiveViewer(
-                    child: Image.asset(
-                      '/images/${widget.images[index]}',
+                    child: Image.network(
+                      '${ApiConfig.cards}/image-proxy?url=${Uri.encodeComponent(widget.images[index])}',
                       fit: BoxFit.contain,
+                      loadingBuilder: (context, child, loadingProgress) {
+                        if (loadingProgress == null) return child;
+                        return Center(
+                          child: CircularProgressIndicator(
+                            value: loadingProgress.expectedTotalBytes != null
+                                ? loadingProgress.cumulativeBytesLoaded /
+                                      loadingProgress.expectedTotalBytes!
+                                : null,
+                            valueColor: AlwaysStoppedAnimation<Color>(
+                              Colors.white,
+                            ),
+                          ),
+                        );
+                      },
                       errorBuilder: (context, error, stackTrace) {
                         return Container(
                           width: 200,

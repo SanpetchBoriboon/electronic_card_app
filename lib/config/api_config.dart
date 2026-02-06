@@ -16,6 +16,7 @@ class ApiConfig {
   static String get uploadCardImage => '$baseUrl/upload/card-image';
   static String get guestTokens => '$baseUrl/auth/guest/tokens';
   static String get cards => '$baseUrl/cards';
+  static String get images => '$baseUrl/images';
 
   // Helper method for image proxy
   static String imageProxy(String imageUrl) {
