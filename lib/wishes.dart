@@ -815,6 +815,24 @@ class _WishesPageState extends State<WishesPage> {
   }
 
   void _showTimeNotReachedDialog(Map<String, dynamic> errorData) {
+    // Check if the current date is after the allowed date
+    final now = DateTime.now();
+
+    // Parse the allowed date from the error data
+    DateTime allowedDate;
+    try {
+      final allowedDateString = errorData['allowedDate'] as String?;
+      if (allowedDateString != null) {
+        allowedDate = DateTime.parse(allowedDateString);
+      } else {
+        allowedDate = DateTime(2026, 2, 26); // Fallback
+      }
+    } catch (e) {
+      allowedDate = DateTime(2026, 2, 26); // Fallback
+    }
+
+    final isAfterWeddingDate = now.isAfter(allowedDate);
+
     showDialog(
       context: context,
       barrierDismissible: false,
@@ -825,10 +843,14 @@ class _WishesPageState extends State<WishesPage> {
           ),
           title: Row(
             children: [
-              Icon(Icons.access_time, color: kPrimaryColor, size: 24),
+              Icon(
+                isAfterWeddingDate ? Icons.event_busy : Icons.access_time,
+                color: kPrimaryColor,
+                size: 24,
+              ),
               const SizedBox(width: 8),
               Text(
-                'ยังไม่ถึงเวลา',
+                isAfterWeddingDate ? 'งานจบแล้ว' : 'ยังไม่ถึงเวลา',
                 style: TextStyle(
                   color: kPrimaryColor,
                   fontSize: 20,
@@ -842,7 +864,9 @@ class _WishesPageState extends State<WishesPage> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                'การเขียนคำอวยพรจะเปิดให้ใช้งานในวันงานเท่านั้น',
+                isAfterWeddingDate
+                    ? 'การเขียนคำอวยพรได้ปิดให้บริการแล้ว เนื่องจากงานแต่งงานได้จบสิ้นลงแล้ว'
+                    : 'การเขียนคำอวยพรจะเปิดให้ใช้งานในวันงานเท่านั้น',
                 style: TextStyle(
                   fontSize: 16,
                   color: Colors.grey[700],
@@ -864,7 +888,7 @@ class _WishesPageState extends State<WishesPage> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      '📅 วันที่เปิดใช้งาน: ${_formatDateToThai(errorData['allowedDate'])}',
+                      '📅 วันที่งานแต่งงาน: ${_formatDateToThai(errorData['allowedDate'])}',
                       style: TextStyle(
                         fontSize: 14,
                         color: kPrimaryColor,
@@ -881,7 +905,9 @@ class _WishesPageState extends State<WishesPage> {
               ),
               const SizedBox(height: 16),
               Text(
-                'กรุณากลับมาใหม่ในวันงานเพื่อส่งคำอวยพรให้บ่าวสาว! 💕',
+                isAfterWeddingDate
+                    ? 'ขอบคุณสำหรับความรักและกำลังใจที่มีให้บ่าวสาว! 💕'
+                    : 'กรุณากลับมาใหม่ในวันงานเพื่อส่งคำอวยพรให้บ่าวสาว! 💕',
                 style: TextStyle(
                   fontSize: 14,
                   color: Colors.grey[600],

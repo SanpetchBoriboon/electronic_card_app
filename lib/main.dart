@@ -258,11 +258,11 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.edit_note),
-            label: 'คำอวยพร',
+            label: 'เขียนคำอวยพร',
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.auto_awesome),
-            label: 'ขอบคุณ',
+            label: 'ดูคำอวยพร',
           ),
         ],
       ),
