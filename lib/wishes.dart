@@ -103,292 +103,303 @@ class _WishesPageState extends State<WishesPage> {
                   const SizedBox(height: 40),
 
                   // Form Container
-                  Container(
-                    width: double.infinity,
-                    padding: const EdgeInsets.all(25.0),
-                    decoration: BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.circular(20),
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.black.withValues(alpha: 0.1),
-                          spreadRadius: 2,
-                          blurRadius: 10,
-                          offset: const Offset(0, 4),
-                        ),
-                      ],
-                    ),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        // Wishes Field
-                        Text(
-                          'เขียนคำอวยพร',
-                          style: TextStyle(
-                            fontSize: 16,
-                            color: Colors.grey[800],
-                            fontWeight: FontWeight.w500,
+                  Center(
+                    child: Container(
+                      width: double.infinity,
+                      constraints: const BoxConstraints(
+                        maxWidth: 500, // Maximum width for desktop
+                      ),
+                      padding: const EdgeInsets.all(25.0),
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(20),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.black.withValues(alpha: 0.1),
+                            spreadRadius: 2,
+                            blurRadius: 10,
+                            offset: const Offset(0, 4),
                           ),
-                        ),
-                        const SizedBox(height: 10),
-                        Container(
-                          width: double.infinity,
-                          decoration: BoxDecoration(
-                            border: Border.all(color: Colors.grey[300]!),
-                            borderRadius: BorderRadius.circular(12),
-                          ),
-                          child: TextField(
-                            controller: _wishController,
-                            maxLines: 6,
-                            maxLength: _maxLength,
-                            decoration: InputDecoration(
-                              hintText: 'ขอให้รักกันแบบนี้ไปนาน ๆ นะคะ...',
-                              hintStyle: TextStyle(
-                                color: Colors.grey[400],
-                                fontSize: 14,
-                              ),
-                              border: InputBorder.none,
-                              contentPadding: const EdgeInsets.all(15),
-                              counterText: '',
-                            ),
+                        ],
+                      ),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          // Wishes Field
+                          Text(
+                            'เขียนคำอวยพร',
                             style: TextStyle(
                               fontSize: 16,
                               color: Colors.grey[800],
+                              fontWeight: FontWeight.w500,
                             ),
                           ),
-                        ),
-
-                        // Character Counter
-                        Align(
-                          alignment: Alignment.centerRight,
-                          child: Text(
-                            '$_currentLength/$_maxLength ตัวอักษร',
-                            style: TextStyle(
-                              fontSize: 12,
-                              color: Colors.grey[500],
+                          const SizedBox(height: 10),
+                          Container(
+                            width: double.infinity,
+                            decoration: BoxDecoration(
+                              border: Border.all(color: Colors.grey[300]!),
+                              borderRadius: BorderRadius.circular(12),
                             ),
-                          ),
-                        ),
-
-                        const SizedBox(height: 25),
-
-                        // Attach Photo Button
-                        Container(
-                          width: double.infinity,
-                          height: 60,
-                          decoration: BoxDecoration(
-                            gradient: LinearGradient(
-                              colors: [
-                                kPrimaryColor.withValues(alpha: 0.1),
-                                kPrimaryColor.withValues(alpha: 0.05),
-                              ],
-                              begin: Alignment.topLeft,
-                              end: Alignment.bottomRight,
-                            ),
-                            border: Border.all(
-                              color: kPrimaryColor.withValues(alpha: 0.3),
-                              style: BorderStyle.solid,
-                              width: 2,
-                            ),
-                            borderRadius: BorderRadius.circular(16),
-                            boxShadow: [
-                              BoxShadow(
-                                color: kPrimaryColor.withValues(alpha: 0.1),
-                                spreadRadius: 1,
-                                blurRadius: 8,
-                                offset: const Offset(0, 2),
-                              ),
-                            ],
-                          ),
-                          child: InkWell(
-                            onTap: _showImagePickerDialog,
-                            borderRadius: BorderRadius.circular(16),
-                            child: Padding(
-                              padding: const EdgeInsets.symmetric(
-                                horizontal: 16,
-                              ),
-                              child: Row(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  Container(
-                                    padding: EdgeInsets.all(8),
-                                    decoration: BoxDecoration(
-                                      color: kPrimaryColor.withValues(
-                                        alpha: 0.15,
-                                      ),
-                                      borderRadius: BorderRadius.circular(10),
-                                    ),
-                                    child: Icon(
-                                      Icons.add_photo_alternate_outlined,
-                                      color: kPrimaryColor,
-                                      size: 24,
-                                    ),
-                                  ),
-                                  const SizedBox(width: 12),
-                                  Expanded(
-                                    child: Column(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.center,
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.start,
-                                      children: [
-                                        Text(
-                                          'แนบรูปภาพ',
-                                          style: TextStyle(
-                                            fontSize: 16,
-                                            color: kPrimaryColor,
-                                            fontWeight: FontWeight.w600,
-                                          ),
-                                        ),
-                                        Text(
-                                          '${kIsWeb ? (_selectedImagesData.isNotEmpty ? "1" : "0") : (_selectedImages.isNotEmpty ? "1" : "0")} รูปที่เลือก',
-                                          style: TextStyle(
-                                            fontSize: 12,
-                                            color: Colors.grey[600],
-                                            fontWeight: FontWeight.w400,
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                  Icon(
-                                    Icons.arrow_forward_ios,
-                                    color: kPrimaryColor.withValues(alpha: 0.7),
-                                    size: 16,
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ),
-                        ),
-
-                        // Selected Images Preview
-                        if ((kIsWeb && _selectedImagesData.isNotEmpty) ||
-                            (!kIsWeb && _selectedImages.isNotEmpty))
-                          Column(
-                            children: [
-                              const SizedBox(height: 20),
-                              Row(
-                                children: [
-                                  Icon(
-                                    Icons.collections_outlined,
-                                    color: kPrimaryColor,
-                                    size: 20,
-                                  ),
-                                  const SizedBox(width: 8),
-                                  Text(
-                                    'รูปภาพที่เลือก',
-                                    style: TextStyle(
-                                      fontSize: 14,
-                                      color: kPrimaryColor,
-                                      fontWeight: FontWeight.w600,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                              const SizedBox(height: 12),
-                              // Full width image preview for single image
-                              Container(
-                                width: double.infinity,
-                                height: 200,
-                                decoration: BoxDecoration(
-                                  border: Border.all(color: Colors.grey[300]!),
-                                  borderRadius: BorderRadius.circular(12),
+                            child: TextField(
+                              controller: _wishController,
+                              maxLines: 6,
+                              maxLength: _maxLength,
+                              decoration: InputDecoration(
+                                hintText: 'ขอให้รักกันแบบนี้ไปนาน ๆ นะคะ...',
+                                hintStyle: TextStyle(
+                                  color: Colors.grey[400],
+                                  fontSize: 14,
                                 ),
-                                child: Stack(
+                                border: InputBorder.none,
+                                contentPadding: const EdgeInsets.all(15),
+                                counterText: '',
+                              ),
+                              style: TextStyle(
+                                fontSize: 16,
+                                color: Colors.grey[800],
+                              ),
+                            ),
+                          ),
+
+                          // Character Counter
+                          Align(
+                            alignment: Alignment.centerRight,
+                            child: Text(
+                              '$_currentLength/$_maxLength ตัวอักษร',
+                              style: TextStyle(
+                                fontSize: 12,
+                                color: Colors.grey[500],
+                              ),
+                            ),
+                          ),
+
+                          const SizedBox(height: 25),
+
+                          // Attach Photo Button
+                          Container(
+                            width: double.infinity,
+                            height: 60,
+                            decoration: BoxDecoration(
+                              gradient: LinearGradient(
+                                colors: [
+                                  kPrimaryColor.withValues(alpha: 0.1),
+                                  kPrimaryColor.withValues(alpha: 0.05),
+                                ],
+                                begin: Alignment.topLeft,
+                                end: Alignment.bottomRight,
+                              ),
+                              border: Border.all(
+                                color: kPrimaryColor.withValues(alpha: 0.3),
+                                style: BorderStyle.solid,
+                                width: 2,
+                              ),
+                              borderRadius: BorderRadius.circular(16),
+                              boxShadow: [
+                                BoxShadow(
+                                  color: kPrimaryColor.withValues(alpha: 0.1),
+                                  spreadRadius: 1,
+                                  blurRadius: 8,
+                                  offset: const Offset(0, 2),
+                                ),
+                              ],
+                            ),
+                            child: InkWell(
+                              onTap: _showImagePickerDialog,
+                              borderRadius: BorderRadius.circular(16),
+                              child: Padding(
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 16,
+                                ),
+                                child: Row(
+                                  mainAxisAlignment: MainAxisAlignment.center,
                                   children: [
-                                    ClipRRect(
-                                      borderRadius: BorderRadius.circular(11),
-                                      child: SizedBox(
-                                        width: double.infinity,
-                                        height: 200,
-                                        child: kIsWeb
-                                            ? Image.memory(
-                                                _selectedImagesData.first,
-                                                width: double.infinity,
-                                                height: 200,
-                                                fit: BoxFit.cover,
-                                              )
-                                            : Image.file(
-                                                _selectedImages.first,
-                                                width: double.infinity,
-                                                height: 200,
-                                                fit: BoxFit.cover,
-                                              ),
+                                    Container(
+                                      padding: EdgeInsets.all(8),
+                                      decoration: BoxDecoration(
+                                        color: kPrimaryColor.withValues(
+                                          alpha: 0.15,
+                                        ),
+                                        borderRadius: BorderRadius.circular(10),
+                                      ),
+                                      child: Icon(
+                                        Icons.add_photo_alternate_outlined,
+                                        color: kPrimaryColor,
+                                        size: 24,
                                       ),
                                     ),
-                                    Positioned(
-                                      top: 8,
-                                      right: 8,
-                                      child: GestureDetector(
-                                        onTap: () {
-                                          if (mounted) {
-                                            setState(() {
-                                              if (kIsWeb) {
-                                                _selectedImagesData.clear();
-                                                _selectedImageNames.clear();
-                                              } else {
-                                                _selectedImages.clear();
-                                              }
-                                            });
-                                          }
-                                        },
-                                        child: Container(
-                                          padding: EdgeInsets.all(6),
-                                          decoration: BoxDecoration(
-                                            color: Colors.red.shade500,
-                                            shape: BoxShape.circle,
-                                            boxShadow: [
-                                              BoxShadow(
-                                                color: Colors.red.withValues(
-                                                  alpha: 0.4,
-                                                ),
-                                                spreadRadius: 1,
-                                                blurRadius: 4,
-                                                offset: const Offset(0, 2),
-                                              ),
-                                            ],
+                                    const SizedBox(width: 12),
+                                    Expanded(
+                                      child: Column(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.center,
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        children: [
+                                          Text(
+                                            'แนบรูปภาพ',
+                                            style: TextStyle(
+                                              fontSize: 16,
+                                              color: kPrimaryColor,
+                                              fontWeight: FontWeight.w600,
+                                            ),
                                           ),
-                                          child: Icon(
-                                            Icons.close,
-                                            color: Colors.white,
-                                            size: 16,
+                                          Text(
+                                            '${kIsWeb ? (_selectedImagesData.isNotEmpty ? "1" : "0") : (_selectedImages.isNotEmpty ? "1" : "0")} รูปที่เลือก',
+                                            style: TextStyle(
+                                              fontSize: 12,
+                                              color: Colors.grey[600],
+                                              fontWeight: FontWeight.w400,
+                                            ),
                                           ),
-                                        ),
+                                        ],
                                       ),
+                                    ),
+                                    Icon(
+                                      Icons.arrow_forward_ios,
+                                      color: kPrimaryColor.withValues(
+                                        alpha: 0.7,
+                                      ),
+                                      size: 16,
                                     ),
                                   ],
                                 ),
                               ),
-                            ],
-                          ),
-
-                        const SizedBox(height: 30),
-
-                        // Send Button
-                        SizedBox(
-                          width: double.infinity,
-                          child: ElevatedButton(
-                            onPressed: _sendWishes,
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor: kPrimaryColor,
-                              foregroundColor: Colors.white,
-                              padding: const EdgeInsets.symmetric(vertical: 15),
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(25),
-                              ),
-                              elevation: 2,
-                            ),
-                            child: Text(
-                              'ส่งคำอวยพร',
-                              style: TextStyle(
-                                fontSize: 16,
-                                fontWeight: FontWeight.w500,
-                              ),
                             ),
                           ),
-                        ),
-                      ],
+
+                          // Selected Images Preview
+                          if ((kIsWeb && _selectedImagesData.isNotEmpty) ||
+                              (!kIsWeb && _selectedImages.isNotEmpty))
+                            Column(
+                              children: [
+                                const SizedBox(height: 20),
+                                Row(
+                                  children: [
+                                    Icon(
+                                      Icons.collections_outlined,
+                                      color: kPrimaryColor,
+                                      size: 20,
+                                    ),
+                                    const SizedBox(width: 8),
+                                    Text(
+                                      'รูปภาพที่เลือก',
+                                      style: TextStyle(
+                                        fontSize: 14,
+                                        color: kPrimaryColor,
+                                        fontWeight: FontWeight.w600,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                                const SizedBox(height: 12),
+                                // Full width image preview for single image
+                                Container(
+                                  width: double.infinity,
+                                  height: 200,
+                                  decoration: BoxDecoration(
+                                    border: Border.all(
+                                      color: Colors.grey[300]!,
+                                    ),
+                                    borderRadius: BorderRadius.circular(12),
+                                  ),
+                                  child: Stack(
+                                    children: [
+                                      ClipRRect(
+                                        borderRadius: BorderRadius.circular(11),
+                                        child: SizedBox(
+                                          width: double.infinity,
+                                          height: 200,
+                                          child: kIsWeb
+                                              ? Image.memory(
+                                                  _selectedImagesData.first,
+                                                  width: double.infinity,
+                                                  height: 200,
+                                                  fit: BoxFit.cover,
+                                                )
+                                              : Image.file(
+                                                  _selectedImages.first,
+                                                  width: double.infinity,
+                                                  height: 200,
+                                                  fit: BoxFit.cover,
+                                                ),
+                                        ),
+                                      ),
+                                      Positioned(
+                                        top: 8,
+                                        right: 8,
+                                        child: GestureDetector(
+                                          onTap: () {
+                                            if (mounted) {
+                                              setState(() {
+                                                if (kIsWeb) {
+                                                  _selectedImagesData.clear();
+                                                  _selectedImageNames.clear();
+                                                } else {
+                                                  _selectedImages.clear();
+                                                }
+                                              });
+                                            }
+                                          },
+                                          child: Container(
+                                            padding: EdgeInsets.all(6),
+                                            decoration: BoxDecoration(
+                                              color: Colors.red.shade500,
+                                              shape: BoxShape.circle,
+                                              boxShadow: [
+                                                BoxShadow(
+                                                  color: Colors.red.withValues(
+                                                    alpha: 0.4,
+                                                  ),
+                                                  spreadRadius: 1,
+                                                  blurRadius: 4,
+                                                  offset: const Offset(0, 2),
+                                                ),
+                                              ],
+                                            ),
+                                            child: Icon(
+                                              Icons.close,
+                                              color: Colors.white,
+                                              size: 16,
+                                            ),
+                                          ),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ],
+                            ),
+
+                          const SizedBox(height: 30),
+
+                          // Send Button
+                          SizedBox(
+                            width: double.infinity,
+                            child: ElevatedButton(
+                              onPressed: _sendWishes,
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: kPrimaryColor,
+                                foregroundColor: Colors.white,
+                                padding: const EdgeInsets.symmetric(
+                                  vertical: 15,
+                                ),
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(25),
+                                ),
+                                elevation: 2,
+                              ),
+                              child: Text(
+                                'ส่งคำอวยพร',
+                                style: TextStyle(
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.w500,
+                                ),
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
                     ),
                   ),
 

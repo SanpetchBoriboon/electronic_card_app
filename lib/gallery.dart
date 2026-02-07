@@ -21,6 +21,7 @@ class _GalleryPageState extends State<GalleryPage>
     with AutomaticKeepAliveClientMixin {
   List<String> galleryImages = [];
   bool _isLoadingImages = true;
+  bool _showGif = false; // Track if showing GIF
 
   @override
   bool get wantKeepAlive => true;
@@ -110,96 +111,211 @@ class _GalleryPageState extends State<GalleryPage>
 
               // Photo Card
               Expanded(
-                child: Container(
-                  width: double.infinity,
-                  margin: const EdgeInsets.symmetric(horizontal: 20),
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.circular(20),
-                    boxShadow: [
-                      BoxShadow(
-                        color: Colors.black.withValues(alpha: 0.1),
-                        spreadRadius: 2,
-                        blurRadius: 10,
-                        offset: const Offset(0, 4),
-                      ),
-                    ],
-                  ),
-                  child: Padding(
-                    padding: const EdgeInsets.all(15.0),
-                    child: Column(
-                      children: [
-                        // Photo Container
-                        Expanded(
-                          child: Container(
-                            width: double.infinity,
-                            decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(15),
-                              color: Colors.grey[200],
-                            ),
-                            child: ClipRRect(
-                              borderRadius: BorderRadius.circular(15),
-                              child: Image.asset(
-                                'assets/images/gallery-preview.jpeg',
-                                fit: BoxFit.cover,
-                                errorBuilder: (context, error, stackTrace) {
-                                  return Container(
-                                    decoration: BoxDecoration(
-                                      borderRadius: BorderRadius.circular(15),
-                                      gradient: LinearGradient(
-                                        begin: Alignment.topLeft,
-                                        end: Alignment.bottomRight,
-                                        colors: [
-                                          const Color(
-                                            0xFFBFC6B4,
-                                          ).withValues(alpha: 0.3),
-                                          const Color(
-                                            0xFF7E8B78,
-                                          ).withValues(alpha: 0.1),
-                                        ],
-                                      ),
-                                    ),
-                                    child: Center(
-                                      child: Column(
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.center,
-                                        children: [
-                                          Icon(
-                                            Icons.photo_camera_outlined,
-                                            size: 80,
-                                            color: kPrimaryColor.withValues(
-                                              alpha: 0.6,
-                                            ),
-                                          ),
-                                          const SizedBox(height: 15),
-                                          Text(
-                                            'Wedding Photos',
-                                            style: TextStyle(
-                                              fontSize: 18,
-                                              color: kPrimaryColor,
-                                              fontWeight: FontWeight.w500,
-                                            ),
-                                          ),
-                                          const SizedBox(height: 8),
-                                          Text(
-                                            'Coming Soon',
-                                            style: TextStyle(
-                                              fontSize: 14,
-                                              color: kPrimaryColor.withValues(
-                                                alpha: 0.7,
-                                              ),
-                                            ),
-                                          ),
-                                        ],
-                                      ),
-                                    ),
-                                  );
+                child: Center(
+                  child: Container(
+                    width: double.infinity,
+                    constraints: const BoxConstraints(
+                      maxWidth: 400, // Maximum width for desktop
+                      maxHeight: 600, // Maximum height for desktop
+                    ),
+                    margin: const EdgeInsets.symmetric(horizontal: 20),
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(20),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black.withValues(alpha: 0.1),
+                          spreadRadius: 2,
+                          blurRadius: 10,
+                          offset: const Offset(0, 4),
+                        ),
+                      ],
+                    ),
+                    child: Padding(
+                      padding: const EdgeInsets.all(15.0),
+                      child: Column(
+                        children: [
+                          // Photo Container
+                          Expanded(
+                            child: Container(
+                              width: double.infinity,
+                              decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(15),
+                                color: Colors.grey[200],
+                              ),
+                              child: GestureDetector(
+                                onTap: () {
+                                  setState(() {
+                                    _showGif = !_showGif;
+                                  });
                                 },
+                                child: ClipRRect(
+                                  borderRadius: BorderRadius.circular(15),
+                                  child: _showGif
+                                      ? Image.asset(
+                                          'assets/images/gallery-preview.GIF',
+                                          fit: BoxFit.cover,
+                                          errorBuilder: (context, error, stackTrace) {
+                                            // If GIF fails to load, fallback to JPEG
+                                            return Image.asset(
+                                              'assets/images/gallery-preview.jpeg',
+                                              fit: BoxFit.cover,
+                                              errorBuilder: (context, error, stackTrace) {
+                                                return Container(
+                                                  decoration: BoxDecoration(
+                                                    borderRadius:
+                                                        BorderRadius.circular(
+                                                          15,
+                                                        ),
+                                                    gradient: LinearGradient(
+                                                      begin: Alignment.topLeft,
+                                                      end:
+                                                          Alignment.bottomRight,
+                                                      colors: [
+                                                        const Color(
+                                                          0xFFBFC6B4,
+                                                        ).withValues(
+                                                          alpha: 0.3,
+                                                        ),
+                                                        const Color(
+                                                          0xFF7E8B78,
+                                                        ).withValues(
+                                                          alpha: 0.1,
+                                                        ),
+                                                      ],
+                                                    ),
+                                                  ),
+                                                  child: Center(
+                                                    child: Column(
+                                                      mainAxisAlignment:
+                                                          MainAxisAlignment
+                                                              .center,
+                                                      children: [
+                                                        Icon(
+                                                          Icons
+                                                              .photo_camera_outlined,
+                                                          size: 80,
+                                                          color: kPrimaryColor
+                                                              .withValues(
+                                                                alpha: 0.6,
+                                                              ),
+                                                        ),
+                                                        const SizedBox(
+                                                          height: 15,
+                                                        ),
+                                                        Text(
+                                                          'Wedding Photos',
+                                                          style: TextStyle(
+                                                            fontSize: 18,
+                                                            color:
+                                                                kPrimaryColor,
+                                                            fontWeight:
+                                                                FontWeight.w500,
+                                                          ),
+                                                        ),
+                                                        const SizedBox(
+                                                          height: 8,
+                                                        ),
+                                                        Text(
+                                                          'Coming Soon',
+                                                          style: TextStyle(
+                                                            fontSize: 14,
+                                                            color: kPrimaryColor
+                                                                .withValues(
+                                                                  alpha: 0.7,
+                                                                ),
+                                                          ),
+                                                        ),
+                                                      ],
+                                                    ),
+                                                  ),
+                                                );
+                                              },
+                                            );
+                                          },
+                                        )
+                                      : Image.asset(
+                                          'assets/images/gallery-preview.jpeg',
+                                          fit: BoxFit.cover,
+                                          errorBuilder:
+                                              (context, error, stackTrace) {
+                                                return Container(
+                                                  decoration: BoxDecoration(
+                                                    borderRadius:
+                                                        BorderRadius.circular(
+                                                          15,
+                                                        ),
+                                                    gradient: LinearGradient(
+                                                      begin: Alignment.topLeft,
+                                                      end:
+                                                          Alignment.bottomRight,
+                                                      colors: [
+                                                        const Color(
+                                                          0xFFBFC6B4,
+                                                        ).withValues(
+                                                          alpha: 0.3,
+                                                        ),
+                                                        const Color(
+                                                          0xFF7E8B78,
+                                                        ).withValues(
+                                                          alpha: 0.1,
+                                                        ),
+                                                      ],
+                                                    ),
+                                                  ),
+                                                  child: Center(
+                                                    child: Column(
+                                                      mainAxisAlignment:
+                                                          MainAxisAlignment
+                                                              .center,
+                                                      children: [
+                                                        Icon(
+                                                          Icons
+                                                              .photo_camera_outlined,
+                                                          size: 80,
+                                                          color: kPrimaryColor
+                                                              .withValues(
+                                                                alpha: 0.6,
+                                                              ),
+                                                        ),
+                                                        const SizedBox(
+                                                          height: 15,
+                                                        ),
+                                                        Text(
+                                                          'Wedding Photos',
+                                                          style: TextStyle(
+                                                            fontSize: 18,
+                                                            color:
+                                                                kPrimaryColor,
+                                                            fontWeight:
+                                                                FontWeight.w500,
+                                                          ),
+                                                        ),
+                                                        const SizedBox(
+                                                          height: 8,
+                                                        ),
+                                                        Text(
+                                                          'Coming Soon',
+                                                          style: TextStyle(
+                                                            fontSize: 14,
+                                                            color: kPrimaryColor
+                                                                .withValues(
+                                                                  alpha: 0.7,
+                                                                ),
+                                                          ),
+                                                        ),
+                                                      ],
+                                                    ),
+                                                  ),
+                                                );
+                                              },
+                                        ),
+                                ),
                               ),
                             ),
                           ),
-                        ),
-                      ],
+                        ],
+                      ),
                     ),
                   ),
                 ),
@@ -208,34 +324,39 @@ class _GalleryPageState extends State<GalleryPage>
               const SizedBox(height: 40),
 
               // View All Photos Button
-              Container(
-                width: double.infinity,
-                margin: const EdgeInsets.symmetric(horizontal: 40),
-                child: ElevatedButton(
-                  onPressed: _isLoadingImages || galleryImages.isEmpty
-                      ? null
-                      : () {
-                          _showFullGallery(context);
-                        },
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.white,
-                    foregroundColor: kPrimaryColor,
-                    padding: const EdgeInsets.symmetric(vertical: 15),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(25),
-                    ),
-                    elevation: 2,
+              Center(
+                child: Container(
+                  width: double.infinity,
+                  constraints: const BoxConstraints(
+                    maxWidth: 400, // Maximum width for desktop
                   ),
-                  child: Text(
-                    _isLoadingImages
-                        ? 'กำลังโหลด...'
-                        : galleryImages.isEmpty
-                        ? 'ไม่มีรูปภาพ'
-                        : 'ดูรูปทั้งหมด',
-                    style: TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.w500,
-                      color: kPrimaryColor,
+                  margin: const EdgeInsets.symmetric(horizontal: 40),
+                  child: ElevatedButton(
+                    onPressed: _isLoadingImages || galleryImages.isEmpty
+                        ? null
+                        : () {
+                            _showFullGallery(context);
+                          },
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.white,
+                      foregroundColor: kPrimaryColor,
+                      padding: const EdgeInsets.symmetric(vertical: 15),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(25),
+                      ),
+                      elevation: 2,
+                    ),
+                    child: Text(
+                      _isLoadingImages
+                          ? 'กำลังโหลด...'
+                          : galleryImages.isEmpty
+                          ? 'ไม่มีรูปภาพ'
+                          : 'ดูรูปทั้งหมด',
+                      style: TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.w500,
+                        color: kPrimaryColor,
+                      ),
                     ),
                   ),
                 ),
@@ -313,74 +434,250 @@ class FullGalleryModal extends StatelessWidget {
             Expanded(
               child: Padding(
                 padding: const EdgeInsets.all(16.0),
-                child: GridView.builder(
-                  gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                    crossAxisCount: 3,
-                    crossAxisSpacing: 8,
-                    mainAxisSpacing: 8,
-                    childAspectRatio: 1,
-                  ),
-                  itemCount: images.length,
-                  itemBuilder: (context, index) {
-                    return GestureDetector(
-                      onTap: () => _showImageViewer(context, index),
-                      child: Hero(
-                        tag: 'gallery_image_$index',
-                        child: Container(
-                          decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(8),
-                            border: Border.all(color: Colors.white, width: 3),
-                            boxShadow: [
-                              BoxShadow(
-                                color: Colors.black.withValues(alpha: 0.1),
-                                spreadRadius: 1,
-                                blurRadius: 4,
-                                offset: const Offset(0, 2),
-                              ),
-                            ],
-                          ),
-                          child: ClipRRect(
-                            borderRadius: BorderRadius.circular(5),
-                            child: CachedNetworkImage(
-                              imageUrl:
-                                  '${ApiConfig.cards}/image-proxy?url=${Uri.encodeComponent(images[index])}',
-                              fit: BoxFit.cover,
-                              placeholder: (context, url) => Center(
-                                child: CircularProgressIndicator(
-                                  valueColor: AlwaysStoppedAnimation<Color>(
-                                    kPrimaryColor,
-                                  ),
-                                ),
-                              ),
-                              errorWidget: (context, url, error) => Container(
-                                decoration: BoxDecoration(
-                                  gradient: LinearGradient(
-                                    begin: Alignment.topLeft,
-                                    end: Alignment.bottomRight,
-                                    colors: [
-                                      kPrimaryColor.withValues(alpha: 0.3),
-                                      kPrimaryColor.withValues(alpha: 0.1),
-                                    ],
-                                  ),
-                                ),
-                                child: Center(
-                                  child: Icon(
-                                    Icons.photo,
-                                    color: kPrimaryColor.withValues(alpha: 0.6),
-                                    size: 32,
-                                  ),
-                                ),
-                              ),
-                            ),
-                          ),
-                        ),
-                      ),
-                    );
-                  },
-                ),
+                child: _buildMasonryGrid(context),
               ),
             ),
           ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildMasonryGrid(BuildContext context) {
+    if (images.isEmpty) {
+      return const Center(
+        child: Text(
+          'ไม่มีรูปภาพ',
+          style: TextStyle(fontSize: 18, color: Colors.grey),
+        ),
+      );
+    }
+
+    final screenWidth = MediaQuery.of(context).size.width;
+    final isDesktop = screenWidth > 768;
+
+    if (isDesktop) {
+      return _buildDesktopGrid(context);
+    } else {
+      return _buildMobileGrid(context);
+    }
+  }
+
+  Widget _buildDesktopGrid(BuildContext context) {
+    return GridView.builder(
+      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+        crossAxisCount: 4,
+        crossAxisSpacing: 12,
+        mainAxisSpacing: 12,
+        childAspectRatio: 1,
+      ),
+      itemCount: images.length,
+      itemBuilder: (context, index) {
+        return GestureDetector(
+          onTap: () => _showImageViewer(context, index),
+          child: Hero(
+            tag: 'gallery_image_$index',
+            child: Container(
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(12),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withValues(alpha: 0.08),
+                    spreadRadius: 0,
+                    blurRadius: 8,
+                    offset: const Offset(0, 4),
+                  ),
+                ],
+              ),
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(12),
+                child: CachedNetworkImage(
+                  imageUrl:
+                      '${ApiConfig.cards}/image-proxy?url=${Uri.encodeComponent(images[index])}',
+                  fit: BoxFit.cover,
+                  placeholder: (context, url) => Container(
+                    color: Colors.grey[200],
+                    child: Center(
+                      child: CircularProgressIndicator(
+                        valueColor: AlwaysStoppedAnimation<Color>(
+                          kPrimaryColor,
+                        ),
+                        strokeWidth: 2,
+                      ),
+                    ),
+                  ),
+                  errorWidget: (context, url, error) => Container(
+                    decoration: BoxDecoration(
+                      gradient: LinearGradient(
+                        begin: Alignment.topLeft,
+                        end: Alignment.bottomRight,
+                        colors: [
+                          kPrimaryColor.withValues(alpha: 0.3),
+                          kPrimaryColor.withValues(alpha: 0.1),
+                        ],
+                      ),
+                    ),
+                    child: Center(
+                      child: Icon(
+                        Icons.photo,
+                        color: kPrimaryColor.withValues(alpha: 0.6),
+                        size: 32,
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          ),
+        );
+      },
+    );
+  }
+
+  Widget _buildMobileGrid(BuildContext context) {
+    return SingleChildScrollView(
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          // Column 1
+          Expanded(
+            child: Column(children: _buildBalancedColumnImages(context, 0)),
+          ),
+          const SizedBox(width: 8),
+          // Column 2
+          Expanded(
+            child: Column(children: _buildBalancedColumnImages(context, 1)),
+          ),
+        ],
+      ),
+    );
+  }
+
+  List<Widget> _buildBalancedColumnImages(
+    BuildContext context,
+    int columnIndex,
+  ) {
+    List<Widget> columnImages = [];
+    List<int> column1Indices = [];
+    List<int> column2Indices = [];
+
+    // Distribute images more evenly between columns
+    for (int i = 0; i < images.length; i++) {
+      if (i % 2 == 0) {
+        column1Indices.add(i);
+      } else {
+        column2Indices.add(i);
+      }
+    }
+
+    // Balance the columns by moving images if one column has too many
+    if (column1Indices.length > column2Indices.length + 2) {
+      // Move some images from column 1 to column 2
+      int toMove = (column1Indices.length - column2Indices.length) ~/ 2;
+      for (int i = 0; i < toMove; i++) {
+        column2Indices.add(column1Indices.removeLast());
+      }
+    } else if (column2Indices.length > column1Indices.length + 2) {
+      // Move some images from column 2 to column 1
+      int toMove = (column2Indices.length - column1Indices.length) ~/ 2;
+      for (int i = 0; i < toMove; i++) {
+        column1Indices.add(column2Indices.removeLast());
+      }
+    }
+
+    List<int> targetIndices = columnIndex == 0
+        ? column1Indices
+        : column2Indices;
+
+    for (int imageIndex in targetIndices) {
+      double aspectRatio = _getAspectRatio(imageIndex);
+
+      columnImages.add(
+        Padding(
+          padding: const EdgeInsets.only(bottom: 8.0),
+          child: _buildImageItem(context, imageIndex, aspectRatio),
+        ),
+      );
+    }
+
+    return columnImages;
+  }
+
+  double _getAspectRatio(int index) {
+    // Create varied aspect ratios to mimic real photo gallery layout
+    List<double> aspectRatios = [
+      1.0, // Square
+      0.75, // Portrait
+      1.33, // Landscape
+      0.8, // Tall portrait
+      1.5, // Wide landscape
+      0.9, // Near square
+      1.2, // Wide
+      0.7, // Very tall
+      1.4, // Very wide
+      1.1, // Slightly wide
+      0.85, // Slightly tall
+      1.25, // Medium wide
+    ];
+    return aspectRatios[index % aspectRatios.length];
+  }
+
+  Widget _buildImageItem(BuildContext context, int index, double aspectRatio) {
+    return GestureDetector(
+      onTap: () => _showImageViewer(context, index),
+      child: Hero(
+        tag: 'gallery_image_$index',
+        child: Container(
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(12),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withValues(alpha: 0.08),
+                spreadRadius: 0,
+                blurRadius: 8,
+                offset: const Offset(0, 4),
+              ),
+            ],
+          ),
+          child: ClipRRect(
+            borderRadius: BorderRadius.circular(12),
+            child: AspectRatio(
+              aspectRatio: aspectRatio,
+              child: CachedNetworkImage(
+                imageUrl:
+                    '${ApiConfig.cards}/image-proxy?url=${Uri.encodeComponent(images[index])}',
+                fit: BoxFit.cover,
+                placeholder: (context, url) => Container(
+                  color: Colors.grey[200],
+                  child: Center(
+                    child: CircularProgressIndicator(
+                      valueColor: AlwaysStoppedAnimation<Color>(kPrimaryColor),
+                      strokeWidth: 2,
+                    ),
+                  ),
+                ),
+                errorWidget: (context, url, error) => Container(
+                  decoration: BoxDecoration(
+                    gradient: LinearGradient(
+                      begin: Alignment.topLeft,
+                      end: Alignment.bottomRight,
+                      colors: [
+                        kPrimaryColor.withValues(alpha: 0.3),
+                        kPrimaryColor.withValues(alpha: 0.1),
+                      ],
+                    ),
+                  ),
+                  child: Center(
+                    child: Icon(
+                      Icons.photo,
+                      color: kPrimaryColor.withValues(alpha: 0.6),
+                      size: 32,
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          ),
         ),
       ),
     );
