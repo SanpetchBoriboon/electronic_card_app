@@ -1,3 +1,4 @@
+import 'package:electronic_card_app/font_styles.dart';
 import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
 
@@ -150,19 +151,29 @@ class SchedulePage extends StatelessWidget {
               _buildTimelineItem(
                 '07.00 น.',
                 'พิธีสงฆ์',
-                iconData: Icons.self_improvement,
+                customIcon: Image.asset(
+                  'assets/icons/monk.png',
+                  width: 24,
+                  height: 24,
+                  color: kPrimaryColor,
+                ),
                 isFirst: true,
               ),
               _buildTimelineItem(
                 '08.29 น.',
                 'พิธีแห่ขันหมาก',
-                iconData: Icons.card_giftcard,
+                customIcon: Image.asset(
+                  'assets/icons/gift.png',
+                  width: 24,
+                  height: 24,
+                  color: kPrimaryColor,
+                ),
               ),
               _buildTimelineItem(
                 '09.00 น.',
                 'พิธีหมั้น',
                 customIcon: Image.asset(
-                  'assets/icons/wedding.png',
+                  'assets/icons/ring.png',
                   width: 24,
                   height: 24,
                   color: kPrimaryColor,
@@ -171,12 +182,22 @@ class SchedulePage extends StatelessWidget {
               _buildTimelineItem(
                 '10.00 น.',
                 'พิธีผูกข้อไม้ข้อมือ',
-                iconData: Icons.favorite,
+                customIcon: Image.asset(
+                  'assets/icons/wedding.png',
+                  width: 24,
+                  height: 24,
+                  color: kPrimaryColor,
+                ),
               ),
               _buildTimelineItem(
                 '11.00 น.',
                 'ฉลองมงคลสมรส (บุฟเฟ่ต์)',
-                iconData: Icons.celebration,
+                customIcon: Image.asset(
+                  'assets/icons/after-party.png',
+                  width: 24,
+                  height: 24,
+                  color: kPrimaryColor,
+                ),
                 isLast: true,
               ),
               const SizedBox(height: 40),
@@ -228,12 +249,12 @@ class SchedulePage extends StatelessWidget {
             children: [
               // Vertical line
               Positioned(
-                left: 24,
+                left: 23,
                 top: 0,
                 bottom: 0,
                 child: Container(
-                  width: 2,
-                  color: Colors.white.withValues(alpha: 0.5),
+                  width: 4,
+                  color: Colors.white.withValues(alpha: 0.8),
                 ),
               ),
               // Circle with icon
@@ -287,19 +308,19 @@ class SchedulePage extends StatelessWidget {
               children: [
                 Text(
                   time,
-                  style: TextStyle(
+                  style: AppFonts.kanit(
                     fontSize: 14,
                     color: kPrimaryColor,
-                    fontWeight: FontWeight.bold,
+                    fontWeight: AppFonts.bold,
                   ),
                 ),
                 const SizedBox(height: 6),
                 Text(
                   activity,
-                  style: TextStyle(
+                  style: AppFonts.kanit(
                     fontSize: 16,
                     color: Colors.grey[800],
-                    fontWeight: FontWeight.w500,
+                    fontWeight: AppFonts.light,
                   ),
                 ),
               ],
