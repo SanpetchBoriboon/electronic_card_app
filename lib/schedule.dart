@@ -48,18 +48,6 @@ class SchedulePage extends StatelessWidget {
               ),
               const SizedBox(height: 40),
 
-              // Schedule Items
-              _buildScheduleItem('พิธีสวดมนต์', '07.00 น.'),
-              const SizedBox(height: 10),
-              _buildScheduleItem('พิธีแห่ขันหมาก', '08.29 น.'),
-              const SizedBox(height: 10),
-              _buildScheduleItem('พิธีหมั้น', '09.00 น.'),
-              const SizedBox(height: 10),
-              _buildScheduleItem('พิธีผูกข้อมือใข้อมือ', '10.00 น.'),
-              const SizedBox(height: 10),
-              _buildScheduleItem('ฉลองมงคลสมรส (บุฟเฟ่ต์)', '11.00 น.'),
-              const SizedBox(height: 40),
-
               // Hashtag
               Text(
                 '#เบญจเมแต่งแล้วครับ',
@@ -109,9 +97,9 @@ class SchedulePage extends StatelessWidget {
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
                             Icon(
-                              Icons.map_outlined,
+                              Icons.location_on,
                               size: 60,
-                              color: kPrimaryColor,
+                              color: Colors.red,
                             ),
                             const SizedBox(height: 10),
                             Text(
@@ -157,6 +145,41 @@ class SchedulePage extends StatelessWidget {
                 ),
               ),
               const SizedBox(height: 20),
+
+              // Journey Timeline
+              _buildTimelineItem(
+                '07.00 น.',
+                'พิธีสงฆ์',
+                iconData: Icons.self_improvement,
+                isFirst: true,
+              ),
+              _buildTimelineItem(
+                '08.29 น.',
+                'พิธีแห่ขันหมาก',
+                iconData: Icons.card_giftcard,
+              ),
+              _buildTimelineItem(
+                '09.00 น.',
+                'พิธีหมั้น',
+                customIcon: Image.asset(
+                  'assets/icons/wedding.png',
+                  width: 24,
+                  height: 24,
+                  color: kPrimaryColor,
+                ),
+              ),
+              _buildTimelineItem(
+                '10.00 น.',
+                'พิธีผูกข้อไม้ข้อมือ',
+                iconData: Icons.favorite,
+              ),
+              _buildTimelineItem(
+                '11.00 น.',
+                'ฉลองมงคลสมรส (บุฟเฟ่ต์)',
+                iconData: Icons.celebration,
+                isLast: true,
+              ),
+              const SizedBox(height: 40),
             ],
           ),
         ),
@@ -183,37 +206,107 @@ class SchedulePage extends StatelessWidget {
     );
   }
 
-  Widget _buildScheduleItem(String activity, String time) {
-    return Container(
-      width: double.infinity,
-      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 15),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(25),
-      ),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          Expanded(
-            child: Text(
-              activity,
-              style: TextStyle(
-                fontSize: 16,
-                color: Colors.grey[800],
-                fontWeight: FontWeight.w400,
+  Widget _buildTimelineItem(
+    String time,
+    String activity, {
+    IconData? iconData,
+    Widget? customIcon,
+    bool isFirst = false,
+    bool isLast = false,
+  }) {
+    // ต้องมีอย่างน้อย 1 อัน
+    assert(iconData != null || customIcon != null);
+
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.center,
+      children: [
+        // Timeline indicator column
+        SizedBox(
+          width: 50,
+          child: Stack(
+            alignment: Alignment.center,
+            children: [
+              // Vertical line
+              Positioned(
+                left: 24,
+                top: 0,
+                bottom: 0,
+                child: Container(
+                  width: 2,
+                  color: Colors.white.withValues(alpha: 0.5),
+                ),
               ),
+              // Circle with icon
+              Container(
+                width: 50,
+                height: 50,
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  shape: BoxShape.circle,
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withValues(alpha: 0.15),
+                      spreadRadius: 2,
+                      blurRadius: 5,
+                      offset: const Offset(0, 2),
+                    ),
+                  ],
+                ),
+                child: Center(
+                  child:
+                      customIcon ??
+                      Icon(iconData, color: kPrimaryColor, size: 24),
+                ),
+              ),
+            ],
+          ),
+        ),
+        const SizedBox(width: 20),
+        // Content
+        Expanded(
+          child: Container(
+            margin: EdgeInsets.only(
+              top: isFirst ? 0 : 10,
+              bottom: isLast ? 0 : 10,
+            ),
+            padding: const EdgeInsets.all(16),
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(15),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withValues(alpha: 0.1),
+                  spreadRadius: 1,
+                  blurRadius: 4,
+                  offset: const Offset(0, 2),
+                ),
+              ],
+            ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  time,
+                  style: TextStyle(
+                    fontSize: 14,
+                    color: kPrimaryColor,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                const SizedBox(height: 6),
+                Text(
+                  activity,
+                  style: TextStyle(
+                    fontSize: 16,
+                    color: Colors.grey[800],
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
+              ],
             ),
           ),
-          Text(
-            time,
-            style: TextStyle(
-              fontSize: 16,
-              color: Colors.grey[600],
-              fontWeight: FontWeight.w400,
-            ),
-          ),
-        ],
-      ),
+        ),
+      ],
     );
   }
 }
