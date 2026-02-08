@@ -1,0 +1,223 @@
+{
+    "journey": [
+        {
+            "id": 1,
+            "imagePath": "assets/images/journey-of-us/journey-of-us-01.jpg",
+            "title": "Journey of Us",
+            "description": "เจอกันครั้งแรก",
+            "category": "preparation"
+        },
+        {
+            "id": 3,
+            "imagePath": "assets/images/journey-of-us/journey-of-us-03.jpg",
+            "title": "Journey of Us",
+            "description": "เจอกันครั้งแรก",
+            "category": "preparation"
+        },
+        {
+            "id": 4,
+            "imagePath": "assets/images/journey-of-us/journey-of-us-04.jpg",
+            "title": "Journey of Us",
+            "description": "เจอกันครั้งแรก",
+            "category": "preparation"
+        },
+        {
+            "id": 5,
+            "imagePath": "assets/images/journey-of-us/journey-of-us-05.jpg",
+            "title": "Journey of Us",
+            "description": "เริ่มการผจญภัย",
+            "category": "preparation"
+        },
+        {
+            "id": 6,
+            "imagePath": "assets/images/journey-of-us/journey-of-us-06.jpg",
+            "title": "Journey of Us",
+            "description": "เริ่มการผจญภัย",
+            "category": "preparation"
+        },
+        {
+            "id": 7,
+            "imagePath": "assets/images/journey-of-us/journey-of-us-07.jpg",
+            "title": "Journey of Us",
+            "description": "เริ่มการผจญภัย",
+            "category": "preparation"
+        },
+        {
+            "id": 8,
+            "imagePath": "assets/images/journey-of-us/journey-of-us-08.jpg",
+            "title": "Journey of Us",
+            "description": "เริ่มการผจญภัย",
+            "category": "preparation"
+        },
+        {
+            "id": 9,
+            "imagePath": "assets/images/journey-of-us/journey-of-us-09.jpg",
+            "title": "Journey of Us",
+            "description": "เริ่มการผจญภัย",
+            "category": "preparation"
+        },
+        {
+            "id": 10,
+            "imagePath": "assets/images/journey-of-us/journey-of-us-10.jpg",
+            "title": "Journey of Us",
+            "description": "เริ่มการผจญภัย",
+            "category": "preparation"
+        },
+
+        {
+            "id": 15,
+            "imagePath": "assets/images/journey-of-us/journey-of-us-15.jpg",
+            "title": "Journey of Us",
+            "description": "เริ่มการผจญภัย",
+            "category": "preparation"
+        },
+        {
+            "id": 16,
+            "imagePath": "assets/images/journey-of-us/journey-of-us-16.jpg",
+            "title": "Journey of Us",
+            "description": "เริ่มการผจญภัย",
+            "category": "preparation"
+        },
+        {
+            "id": 17,
+            "imagePath": "assets/images/journey-of-us/journey-of-us-17.jpg",
+            "title": "Journey of Us",
+            "description": "เริ่มการผจญภัย",
+            "category": "preparation"
+        },
+        {
+            "id": 18,
+            "imagePath": "assets/images/journey-of-us/journey-of-us-18.jpg",
+            "title": "Journey of Us",
+            "description": "เริ่มการผจญภัย",
+            "category": "preparation"
+        },
+        {
+            "id": 19,
+            "imagePath": "assets/images/journey-of-us/journey-of-us-19.jpg",
+            "title": "Journey of Us",
+            "description": "เริ่มการผจญภัย",
+            "category": "preparation"
+        },
+        {
+            "id": 20,
+            "imagePath": "assets/images/journey-of-us/journey-of-us-20.jpg",
+            "title": "Journey of Us",
+            "description": "เริ่มการผจญภัย",
+            "category": "preparation"
+        },
+        {
+            "id": 21,
+            "imagePath": "assets/images/journey-of-us/journey-of-us-21.jpg",
+            "title": "Journey of Us",
+            "description": "เริ่มการผจญภัย",
+            "category": "preparation"
+        },
+
+        {
+            "id": 26,
+            "imagePath": "assets/images/journey-of-us/journey-of-us-26.jpg",
+            "title": "Journey of Us",
+            "description": "เริ่มการผจญภัย",
+            "category": "preparation"
+        },
+        {
+            "id": 27,
+            "imagePath": "assets/images/journey-of-us/journey-of-us-27.jpg",
+            "title": "Journey of Us",
+            "description": "เริ่มการผจญภัย",
+            "category": "preparation"
+        },
+        {
+            "id": 28,
+            "imagePath": "assets/images/journey-of-us/journey-of-us-28.jpg",
+            "title": "Journey of Us",
+            "description": "เริ่มการผจญภัย",
+            "category": "preparation"
+        },
+        {
+            "id": 29,
+            "imagePath": "assets/images/journey-of-us/journey-of-us-29.jpg",
+            "title": "Journey of Us",
+            "description": "เริ่มการผจญภัย",
+            "category": "preparation"
+        },
+        {
+            "id": 30,
+            "imagePath": "assets/images/journey-of-us/journey-of-us-30.jpg",
+            "title": "Journey of Us",
+            "description": "เริ่มการผจญภัย",
+            "category": "preparation"
+        },
+        {
+            "id": 31,
+            "imagePath": "assets/images/journey-of-us/journey-of-us-31.jpg",
+            "title": "Journey of Us",
+            "description": "เริ่มการผจญภัย",
+            "category": "preparation"
+        },
+        {
+            "id": 32,
+            "imagePath": "assets/images/journey-of-us/journey-of-us-32.jpg",
+            "title": "Journey of Us",
+            "description": "เริ่มการผจญภัย",
+            "category": "preparation"
+        },
+        {
+            "id": 11,
+            "imagePath": "assets/images/journey-of-us/journey-of-us-11.jpg",
+            "title": "Journey of Us",
+            "description": "เริ่มการผจญภัย",
+            "category": "preparation"
+        },
+        {
+            "id": 12,
+            "imagePath": "assets/images/journey-of-us/journey-of-us-12.jpg",
+            "title": "Journey of Us",
+            "description": "เริ่มการผจญภัย",
+            "category": "preparation"
+        },
+        {
+            "id": 13,
+            "imagePath": "assets/images/journey-of-us/journey-of-us-13.jpg",
+            "title": "Journey of Us",
+            "description": "เริ่มการผจญภัย",
+            "category": "preparation"
+        },
+        {
+            "id": 14,
+            "imagePath": "assets/images/journey-of-us/journey-of-us-14.jpg",
+            "title": "Journey of Us",
+            "description": "เริ่มการผจญภัย",
+            "category": "preparation"
+        },
+        {
+            "id": 22,
+            "imagePath": "assets/images/journey-of-us/journey-of-us-22.jpg",
+            "title": "Journey of Us",
+            "description": "เริ่มการผจญภัย",
+            "category": "preparation"
+        },
+        {
+            "id": 23,
+            "imagePath": "assets/images/journey-of-us/journey-of-us-23.jpg",
+            "title": "Journey of Us",
+            "description": "เริ่มการผจญภัย",
+            "category": "preparation"
+        },
+        {
+            "id": 24,
+            "imagePath": "assets/images/journey-of-us/journey-of-us-24.jpg",
+            "title": "Journey of Us",
+            "description": "เริ่มการผจญภัย",
+            "category": "preparation"
+        },
+        {
+            "id": 25,
+            "imagePath": "assets/images/journey-of-us/journey-of-us-25.jpg",
+            "title": "Journey of Us",
+            "description": "จบเรื่องราวการผจญภัย เริ่มต้น EP2",
+            "category": "preparation"
+        }
+    ]
+}
