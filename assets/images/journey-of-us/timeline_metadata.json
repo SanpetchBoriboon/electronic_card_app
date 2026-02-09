@@ -5,10 +5,10 @@
             "title": "จุดเริ่มต้นของเรา",
             "description": "ปีแห่งการพบกันครั้งแรก ความทรงจำแรกที่เริ่มต้นทุกสิ่ง",
             "images": [
-                { "path": "images/journey-of-us/2017/1.jpg", "title": "My Story", "description": "#เบญจเมแต่งแล้วครับ" },
-                { "path": "images/journey-of-us/2017/2.jpg", "title": "My Story", "description": "#เบญจเมแต่งแล้วครับ" },
-                { "path": "images/journey-of-us/2017/3.jpg", "title": "My Story", "description": "#เบญจเมแต่งแล้วครับ" },
-                { "path": "images/journey-of-us/2017/4.jpg", "title": "My Story", "description": "#เบญจเมแต่งแล้วครับ" }
+                { "path": "assets/images/journey-of-us/2017/1.jpg", "title": "My Story", "description": "#เบญจเมแต่งแล้วครับ" },
+                { "path": "assets/images/journey-of-us/2017/2.jpg", "title": "My Story", "description": "#เบญจเมแต่งแล้วครับ" },
+                { "path": "assets/images/journey-of-us/2017/3.jpg", "title": "My Story", "description": "#เบญจเมแต่งแล้วครับ" },
+                { "path": "assets/images/journey-of-us/2017/4.jpg", "title": "My Story", "description": "#เบญจเมแต่งแล้วครับ" }
             ]
         },
         {
@@ -16,12 +16,12 @@
             "title": "เติบโตไปด้วยกัน",
             "description": "ปีที่เราเริ่มเข้าใจกันมากขึ้น",
             "images": [
-                { "path": "images/journey-of-us/2018/1.jpg", "title": "My Story", "description": "#เบญจเมแต่งแล้วครับ" },
-                { "path": "images/journey-of-us/2018/2.jpg", "title": "My Story", "description": "#เบญจเมแต่งแล้วครับ" },
-                { "path": "images/journey-of-us/2018/3.jpg", "title": "My Story", "description": "#เบญจเมแต่งแล้วครับ" },
-                { "path": "images/journey-of-us/2018/4.jpg", "title": "My Story", "description": "#เบญจเมแต่งแล้วครับ" },
-                { "path": "images/journey-of-us/2018/5.jpg", "title": "My Story", "description": "#เบญจเมแต่งแล้วครับ" },
-                { "path": "images/journey-of-us/2018/6.jpg", "title": "My Story", "description": "#เบญจเมแต่งแล้วครับ" }
+                { "path": "assets/images/journey-of-us/2018/1.jpg", "title": "My Story", "description": "#เบญจเมแต่งแล้วครับ" },
+                { "path": "assets/images/journey-of-us/2018/2.jpg", "title": "My Story", "description": "#เบญจเมแต่งแล้วครับ" },
+                { "path": "assets/images/journey-of-us/2018/3.jpg", "title": "My Story", "description": "#เบญจเมแต่งแล้วครับ" },
+                { "path": "assets/images/journey-of-us/2018/4.jpg", "title": "My Story", "description": "#เบญจเมแต่งแล้วครับ" },
+                { "path": "assets/images/journey-of-us/2018/5.jpg", "title": "My Story", "description": "#เบญจเมแต่งแล้วครับ" },
+                { "path": "assets/images/journey-of-us/2018/6.jpg", "title": "My Story", "description": "#เบญจเมแต่งแล้วครับ" }
             ]
         },
         {
@@ -29,8 +29,8 @@
             "title": "ความผูกพัน",
             "description": "ปีแห่งความผูกพันที่แน่นแฟ้น",
             "images": [
-                { "path": "images/journey-of-us/2019/1.jpg", "title": "My Story", "description": "#เบญจเมแต่งแล้วครับ" },
-                { "path": "images/journey-of-us/2019/2.jpg", "title": "My Story", "description": "#เบญจเมแต่งแล้วครับ" }
+                { "path": "assets/images/journey-of-us/2019/1.jpg", "title": "My Story", "description": "#เบญจเมแต่งแล้วครับ" },
+                { "path": "assets/images/journey-of-us/2019/2.jpg", "title": "My Story", "description": "#เบญจเมแต่งแล้วครับ" }
             ]
         },
         {
@@ -38,11 +38,11 @@
             "title": "การเดินทางต่อ",
             "description": "เส้นทางที่เราเดินด้วยกัน",
             "images": [
-                { "path": "images/journey-of-us/2022/1.jpg", "title": "My Story", "description": "#เบญจเมแต่งแล้วครับ" },
-                { "path": "images/journey-of-us/2022/2.jpg", "title": "My Story", "description": "#เบญจเมแต่งแล้วครับ" },
-                { "path": "images/journey-of-us/2022/3.jpg", "title": "My Story", "description": "#เบญจเมแต่งแล้วครับ" },
-                { "path": "images/journey-of-us/2022/4.jpg", "title": "My Story", "description": "#เบญจเมแต่งแล้วครับ" },
-                { "path": "images/journey-of-us/2022/5.jpg", "title": "My Story", "description": "#เบญจเมแต่งแล้วครับ" }
+                { "path": "assets/images/journey-of-us/2022/1.jpg", "title": "My Story", "description": "#เบญจเมแต่งแล้วครับ" },
+                { "path": "assets/images/journey-of-us/2022/2.jpg", "title": "My Story", "description": "#เบญจเมแต่งแล้วครับ" },
+                { "path": "assets/images/journey-of-us/2022/3.jpg", "title": "My Story", "description": "#เบญจเมแต่งแล้วครับ" },
+                { "path": "assets/images/journey-of-us/2022/4.jpg", "title": "My Story", "description": "#เบญจเมแต่งแล้วครับ" },
+                { "path": "assets/images/journey-of-us/2022/5.jpg", "title": "My Story", "description": "#เบญจเมแต่งแล้วครับ" }
             ]
         },
         {
@@ -50,25 +50,25 @@
             "title": "ความทรงจำใหม่",
             "description": "สร้างความทรงจำใหม่ๆ ไปด้วยกัน",
             "images": [
-                { "path": "images/journey-of-us/2023/1.jpg", "title": "My Story", "description": "#เบญจเมแต่งแล้วครับ" },
-                { "path": "images/journey-of-us/2023/3.jpg", "title": "My Story", "description": "#เบญจเมแต่งแล้วครับ" },
-                { "path": "images/journey-of-us/2023/4.jpg", "title": "My Story", "description": "#เบญจเมแต่งแล้วครับ" },
-                { "path": "images/journey-of-us/2023/8.jpg", "title": "My Story", "description": "#เบญจเมแต่งแล้วครับ" },
-                { "path": "images/journey-of-us/2023/10.jpg", "title": "My Story", "description": "#เบญจเมแต่งแล้วครับ" },
-                { "path": "images/journey-of-us/2023/12.jpg", "title": "My Story", "description": "#เบญจเมแต่งแล้วครับ" },
-                { "path": "images/journey-of-us/2023/14.jpg", "title": "My Story", "description": "#เบญจเมแต่งแล้วครับ" },
-                { "path": "images/journey-of-us/2023/16.jpg", "title": "My Story", "description": "#เบญจเมแต่งแล้วครับ" },
-                { "path": "images/journey-of-us/2023/19.jpg", "title": "My Story", "description": "#เบญจเมแต่งแล้วครับ" },
-                { "path": "images/journey-of-us/2023/20.jpg", "title": "My Story", "description": "#เบญจเมแต่งแล้วครับ" },
-                { "path": "images/journey-of-us/2023/21.jpg", "title": "My Story", "description": "#เบญจเมแต่งแล้วครับ" },
-                { "path": "images/journey-of-us/2023/23.jpg", "title": "My Story", "description": "#เบญจเมแต่งแล้วครับ" },
-                { "path": "images/journey-of-us/2023/24.jpg", "title": "My Story", "description": "#เบญจเมแต่งแล้วครับ" },
-                { "path": "images/journey-of-us/2023/25.jpg", "title": "My Story", "description": "#เบญจเมแต่งแล้วครับ" },
-                { "path": "images/journey-of-us/2023/26.jpg", "title": "My Story", "description": "#เบญจเมแต่งแล้วครับ" },
-                { "path": "images/journey-of-us/2023/28.jpg", "title": "My Story", "description": "#เบญจเมแต่งแล้วครับ" },
-                { "path": "images/journey-of-us/2023/29.jpg", "title": "My Story", "description": "#เบญจเมแต่งแล้วครับ" },
-                { "path": "images/journey-of-us/2023/31.jpg", "title": "My Story", "description": "#เบญจเมแต่งแล้วครับ" },
-                { "path": "images/journey-of-us/2023/33.jpg", "title": "My Story", "description": "#เบญจเมแต่งแล้วครับ" }
+                { "path": "assets/images/journey-of-us/2023/1.jpg", "title": "My Story", "description": "#เบญจเมแต่งแล้วครับ" },
+                { "path": "assets/images/journey-of-us/2023/3.jpg", "title": "My Story", "description": "#เบญจเมแต่งแล้วครับ" },
+                { "path": "assets/images/journey-of-us/2023/4.jpg", "title": "My Story", "description": "#เบญจเมแต่งแล้วครับ" },
+                { "path": "assets/images/journey-of-us/2023/8.jpg", "title": "My Story", "description": "#เบญจเมแต่งแล้วครับ" },
+                { "path": "assets/images/journey-of-us/2023/10.jpg", "title": "My Story", "description": "#เบญจเมแต่งแล้วครับ" },
+                { "path": "assets/images/journey-of-us/2023/12.jpg", "title": "My Story", "description": "#เบญจเมแต่งแล้วครับ" },
+                { "path": "assets/images/journey-of-us/2023/14.jpg", "title": "My Story", "description": "#เบญจเมแต่งแล้วครับ" },
+                { "path": "assets/images/journey-of-us/2023/16.jpg", "title": "My Story", "description": "#เบญจเมแต่งแล้วครับ" },
+                { "path": "assets/images/journey-of-us/2023/19.jpg", "title": "My Story", "description": "#เบญจเมแต่งแล้วครับ" },
+                { "path": "assets/images/journey-of-us/2023/20.jpg", "title": "My Story", "description": "#เบญจเมแต่งแล้วครับ" },
+                { "path": "assets/images/journey-of-us/2023/21.jpg", "title": "My Story", "description": "#เบญจเมแต่งแล้วครับ" },
+                { "path": "assets/images/journey-of-us/2023/23.jpg", "title": "My Story", "description": "#เบญจเมแต่งแล้วครับ" },
+                { "path": "assets/images/journey-of-us/2023/24.jpg", "title": "My Story", "description": "#เบญจเมแต่งแล้วครับ" },
+                { "path": "assets/images/journey-of-us/2023/25.jpg", "title": "My Story", "description": "#เบญจเมแต่งแล้วครับ" },
+                { "path": "assets/images/journey-of-us/2023/26.jpg", "title": "My Story", "description": "#เบญจเมแต่งแล้วครับ" },
+                { "path": "assets/images/journey-of-us/2023/28.jpg", "title": "My Story", "description": "#เบญจเมแต่งแล้วครับ" },
+                { "path": "assets/images/journey-of-us/2023/29.jpg", "title": "My Story", "description": "#เบญจเมแต่งแล้วครับ" },
+                { "path": "assets/images/journey-of-us/2023/31.jpg", "title": "My Story", "description": "#เบญจเมแต่งแล้วครับ" },
+                { "path": "assets/images/journey-of-us/2023/33.jpg", "title": "My Story", "description": "#เบญจเมแต่งแล้วครับ" }
             ]
         },
         {
@@ -76,17 +76,17 @@
             "title": "ปีแห่งความสุข",
             "description": "ช่วงเวลาพิเศษที่มีต่อกัน",
             "images": [
-                { "path": "images/journey-of-us/2024/1.jpg", "title": "My Story", "description": "#เบญจเมแต่งแล้วครับ" },
-                { "path": "images/journey-of-us/2024/2.jpg", "title": "My Story", "description": "#เบญจเมแต่งแล้วครับ" },
-                { "path": "images/journey-of-us/2024/3.jpg", "title": "My Story", "description": "#เบญจเมแต่งแล้วครับ" },
-                { "path": "images/journey-of-us/2024/4.jpg", "title": "My Story", "description": "#เบญจเมแต่งแล้วครับ" },
-                { "path": "images/journey-of-us/2024/5.jpg", "title": "My Story", "description": "#เบญจเมแต่งแล้วครับ" },
-                { "path": "images/journey-of-us/2024/6.jpg", "title": "My Story", "description": "#เบญจเมแต่งแล้วครับ" },
-                { "path": "images/journey-of-us/2024/7.jpg", "title": "My Story", "description": "#เบญจเมแต่งแล้วครับ" },
-                { "path": "images/journey-of-us/2024/8.jpg", "title": "My Story", "description": "#เบญจเมแต่งแล้วครับ" },
-                { "path": "images/journey-of-us/2024/9.jpg", "title": "My Story", "description": "#เบญจเมแต่งแล้วครับ" },
-                { "path": "images/journey-of-us/2024/10.jpg", "title": "My Story", "description": "#เบญจเมแต่งแล้วครับ" },
-                { "path": "images/journey-of-us/2024/11.jpg", "title": "My Story", "description": "#เบญจเมแต่งแล้วครับ" }
+                { "path": "assets/images/journey-of-us/2024/1.jpg", "title": "My Story", "description": "#เบญจเมแต่งแล้วครับ" },
+                { "path": "assets/images/journey-of-us/2024/2.jpg", "title": "My Story", "description": "#เบญจเมแต่งแล้วครับ" },
+                { "path": "assets/images/journey-of-us/2024/3.jpg", "title": "My Story", "description": "#เบญจเมแต่งแล้วครับ" },
+                { "path": "assets/images/journey-of-us/2024/4.jpg", "title": "My Story", "description": "#เบญจเมแต่งแล้วครับ" },
+                { "path": "assets/images/journey-of-us/2024/5.jpg", "title": "My Story", "description": "#เบญจเมแต่งแล้วครับ" },
+                { "path": "assets/images/journey-of-us/2024/6.jpg", "title": "My Story", "description": "#เบญจเมแต่งแล้วครับ" },
+                { "path": "assets/images/journey-of-us/2024/7.jpg", "title": "My Story", "description": "#เบญจเมแต่งแล้วครับ" },
+                { "path": "assets/images/journey-of-us/2024/8.jpg", "title": "My Story", "description": "#เบญจเมแต่งแล้วครับ" },
+                { "path": "assets/images/journey-of-us/2024/9.jpg", "title": "My Story", "description": "#เบญจเมแต่งแล้วครับ" },
+                { "path": "assets/images/journey-of-us/2024/10.jpg", "title": "My Story", "description": "#เบญจเมแต่งแล้วครับ" },
+                { "path": "assets/images/journey-of-us/2024/11.jpg", "title": "My Story", "description": "#เบญจเมแต่งแล้วครับ" }
             ]
         },
         {
@@ -94,15 +94,15 @@
             "title": "ก้าวสู่อนาคต",
             "description": "เริ่มต้นบทใหม่ของชีวิตคู่",
             "images": [
-                { "path": "images/journey-of-us/2025/1.jpg", "title": "My Story", "description": "#เบญจเมแต่งแล้วครับ" },
-                { "path": "images/journey-of-us/2025/2.jpg", "title": "My Story", "description": "#เบญจเมแต่งแล้วครับ" },
-                { "path": "images/journey-of-us/2025/3.jpg", "title": "My Story", "description": "#เบญจเมแต่งแล้วครับ" },
-                { "path": "images/journey-of-us/2025/4.jpg", "title": "My Story", "description": "#เบญจเมแต่งแล้วครับ" },
-                { "path": "images/journey-of-us/2025/5.jpg", "title": "My Story", "description": "#เบญจเมแต่งแล้วครับ" },
-                { "path": "images/journey-of-us/2025/6.jpg", "title": "My Story", "description": "#เบญจเมแต่งแล้วครับ" },
-                { "path": "images/journey-of-us/2025/7.jpg", "title": "My Story", "description": "#เบญจเมแต่งแล้วครับ" },
-                { "path": "images/journey-of-us/2025/8.jpg", "title": "My Story", "description": "#เบญจเมแต่งแล้วครับ" },
-                { "path": "images/journey-of-us/2025/9.jpg", "title": "My Story", "description": "#เบญจเมแต่งแล้วครับ" }
+                { "path": "assets/images/journey-of-us/2025/1.jpg", "title": "My Story", "description": "#เบญจเมแต่งแล้วครับ" },
+                { "path": "assets/images/journey-of-us/2025/2.jpg", "title": "My Story", "description": "#เบญจเมแต่งแล้วครับ" },
+                { "path": "assets/images/journey-of-us/2025/3.jpg", "title": "My Story", "description": "#เบญจเมแต่งแล้วครับ" },
+                { "path": "assets/images/journey-of-us/2025/4.jpg", "title": "My Story", "description": "#เบญจเมแต่งแล้วครับ" },
+                { "path": "assets/images/journey-of-us/2025/5.jpg", "title": "My Story", "description": "#เบญจเมแต่งแล้วครับ" },
+                { "path": "assets/images/journey-of-us/2025/6.jpg", "title": "My Story", "description": "#เบญจเมแต่งแล้วครับ" },
+                { "path": "assets/images/journey-of-us/2025/7.jpg", "title": "My Story", "description": "#เบญจเมแต่งแล้วครับ" },
+                { "path": "assets/images/journey-of-us/2025/8.jpg", "title": "My Story", "description": "#เบญจเมแต่งแล้วครับ" },
+                { "path": "assets/images/journey-of-us/2025/9.jpg", "title": "My Story", "description": "#เบญจเมแต่งแล้วครับ" }
             ]
         },
         {
@@ -110,12 +110,12 @@
             "title": "วันสำคัญที่สุด",
             "description": "ปีที่เราเป็นหนึ่งเดียวกัน - งานแต่งงานและชีวิตคู่ใหม่",
             "images": [
-                { "path": "images/journey-of-us/2026/3.jpg", "title": "My Story", "description": "#เบญจเมแต่งแล้วครับ" },
-                { "path": "images/journey-of-us/2026/4.jpg", "title": "My Story", "description": "#เบญจเมแต่งแล้วครับ" },
-                { "path": "images/journey-of-us/2026/5.jpg", "title": "My Story", "description": "#เบญจเมแต่งแล้วครับ" },
-                { "path": "images/journey-of-us/2026/6.jpg", "title": "My Story", "description": "#เบญจเมแต่งแล้วครับ" },
-                { "path": "images/journey-of-us/2026/7.jpg", "title": "My Story", "description": "#เบญจเมแต่งแล้วครับ" },
-                { "path": "images/journey-of-us/2026/8.jpg", "title": "My Story", "description": "#เบญจเมแต่งแล้วครับ" }
+                { "path": "assets/images/journey-of-us/2026/3.jpg", "title": "My Story", "description": "#เบญจเมแต่งแล้วครับ" },
+                { "path": "assets/images/journey-of-us/2026/4.jpg", "title": "My Story", "description": "#เบญจเมแต่งแล้วครับ" },
+                { "path": "assets/images/journey-of-us/2026/5.jpg", "title": "My Story", "description": "#เบญจเมแต่งแล้วครับ" },
+                { "path": "assets/images/journey-of-us/2026/6.jpg", "title": "My Story", "description": "#เบญจเมแต่งแล้วครับ" },
+                { "path": "assets/images/journey-of-us/2026/7.jpg", "title": "My Story", "description": "#เบญจเมแต่งแล้วครับ" },
+                { "path": "assets/images/journey-of-us/2026/8.jpg", "title": "My Story", "description": "#เบญจเมแต่งแล้วครับ" }
             ]
         }
     ]
