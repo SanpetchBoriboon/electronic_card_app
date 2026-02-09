@@ -96,15 +96,7 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-    // Precache main logo
-    precacheImage(
-      const AssetImage('assets/images/main-logo.png'),
-      context,
-    ).catchError((_) {});
-    precacheImage(
-      const AssetImage('assets/icons/wedding-invitation.png'),
-      context,
-    ).catchError((_) {});
+    // Images will be loaded lazily when needed
   }
 
   void _startTimer() {

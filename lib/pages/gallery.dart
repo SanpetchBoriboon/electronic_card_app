@@ -375,6 +375,38 @@ class WeddingTimelineModal extends StatelessWidget {
     required this.yearGroups,
   });
 
+  void _precacheJourneyImages(BuildContext context, int index) {
+    if (journeyItems.isEmpty) return;
+
+    // Precache current image
+    if (index >= 0 && index < journeyItems.length) {
+      precacheImage(
+        AssetImage(journeyItems[index].imagePath),
+        context,
+      ).catchError((_) {});
+    }
+
+    // Precache next 2 images
+    for (int i = 1; i <= 2; i++) {
+      final nextIndex = index + i;
+      if (nextIndex < journeyItems.length) {
+        precacheImage(
+          AssetImage(journeyItems[nextIndex].imagePath),
+          context,
+        ).catchError((_) {});
+      }
+    }
+
+    // Precache previous image
+    final prevIndex = index - 1;
+    if (prevIndex >= 0) {
+      precacheImage(
+        AssetImage(journeyItems[prevIndex].imagePath),
+        context,
+      ).catchError((_) {});
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final screenWidth = MediaQuery.of(context).size.width;
@@ -728,6 +760,10 @@ class WeddingTimelineModal extends StatelessWidget {
         height: MediaQuery.of(context).size.height * 0.75,
         child: PageView.builder(
           itemCount: journeyItems.length,
+          onPageChanged: (index) {
+            // Precache nearby images when swiping
+            _precacheJourneyImages(context, index);
+          },
           itemBuilder: (context, index) {
             final item = journeyItems[index];
             return GestureDetector(
@@ -1121,6 +1157,43 @@ class _ImageViewerModalState extends State<ImageViewerModal> {
     super.initState();
     currentIndex = widget.initialIndex;
     _pageController = PageController(initialPage: widget.initialIndex);
+
+    // Precache current and nearby images for smoother experience
+    _precacheNearbyImages(widget.initialIndex);
+  }
+
+  void _precacheNearbyImages(int index) {
+    if (!mounted) return;
+
+    // Precache current image
+    if (index >= 0 && index < widget.images.length) {
+      precacheImage(
+        AssetImage(widget.images[index]),
+        context,
+      ).catchError((_) {});
+    }
+
+    // Precache next 2 images
+    for (int i = 1; i <= 2; i++) {
+      final nextIndex = index + i;
+      if (nextIndex < widget.images.length) {
+        precacheImage(
+          AssetImage(widget.images[nextIndex]),
+          context,
+        ).catchError((_) {});
+      }
+    }
+
+    // Precache previous 2 images
+    for (int i = 1; i <= 2; i++) {
+      final prevIndex = index - i;
+      if (prevIndex >= 0) {
+        precacheImage(
+          AssetImage(widget.images[prevIndex]),
+          context,
+        ).catchError((_) {});
+      }
+    }
   }
 
   @override
@@ -1142,6 +1215,8 @@ class _ImageViewerModalState extends State<ImageViewerModal> {
               setState(() {
                 currentIndex = index;
               });
+              // Precache nearby images when page changes
+              _precacheNearbyImages(index);
             },
             itemCount: widget.images.length,
             itemBuilder: (context, index) {
