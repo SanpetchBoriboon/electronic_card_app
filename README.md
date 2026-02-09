@@ -135,7 +135,7 @@ See [docs/IMAGE_OPTIMIZATION.md](docs/IMAGE_OPTIMIZATION.md) for details.
     git add .
     git commit -m "feat: Your feature description"
     git push origin main
-    
+
     # Create and push version tag
     git tag -a v1.0.0 -m "Release version 1.0.0"
     git push origin v1.0.0
@@ -150,7 +150,7 @@ See [docs/IMAGE_OPTIMIZATION.md](docs/IMAGE_OPTIMIZATION.md) for details.
 
 #### Deployment Features:
 
-- ✅ Triggered only on version tags (v*)
+- ✅ Triggered only on version tags (v\*)
 - ✅ Automatic image optimization checks
 - ✅ Code analysis before deploy
 - ✅ Zero-downtime deployment
@@ -320,6 +320,7 @@ This project uses PR-based workflow with branch protection:
 ### PR Template
 
 Automatically populated when creating PRs:
+
 - Description
 - Type of change
 - Testing checklist
@@ -340,16 +341,16 @@ See [.github/BRANCH_PROTECTION.md](.github/BRANCH_PROTECTION.md) for setup guide
 
 ## 🚀 Deployment Options Comparison
 
-| Feature          | Tag-Based Deploy       | Manual Deploy    |
-| ---------------- | ---------------------- | ---------------- |
-| **Trigger**      | Version tag (v*)       | Manual command   |
-| **Setup**        | One-time GitHub secret | Local Fly.io CLI |
-| **Speed**        | ~5-7 minutes           | ~2-3 minutes     |
-| **CI/CD**        | ✅ Full pipeline       | ❌ No CI         |
-| **Rollback**     | Revert tag/commit      | Manual flyctl    |
-| **Safeguards**   | ✅ Tests + Analysis    | ⚠️ Manual verify |
-| **Best for**     | Production releases    | Development test |
-| **Version Track**| ✅ Automatic           | ❌ Manual        |
+| Feature           | Tag-Based Deploy       | Manual Deploy    |
+| ----------------- | ---------------------- | ---------------- |
+| **Trigger**       | Version tag (v\*)      | Manual command   |
+| **Setup**         | One-time GitHub secret | Local Fly.io CLI |
+| **Speed**         | ~5-7 minutes           | ~2-3 minutes     |
+| **CI/CD**         | ✅ Full pipeline       | ❌ No CI         |
+| **Rollback**      | Revert tag/commit      | Manual flyctl    |
+| **Safeguards**    | ✅ Tests + Analysis    | ⚠️ Manual verify |
+| **Best for**      | Production releases    | Development test |
+| **Version Track** | ✅ Automatic           | ❌ Manual        |
 
 ## 📊 Monitoring & Health
 
@@ -444,11 +445,13 @@ flutter build web --release
 ### Deployment Failures
 
 **GitHub Actions fails:**
+
 - Check logs in Actions tab
 - Verify FLY_API_TOKEN secret is set
 - Ensure Flutter version compatibility
 
 **Manual deploy fails:**
+
 - Verify Fly.io CLI: `flyctl version`
 - Re-authenticate: `flyctl auth login`
 - Check app exists: `flyctl apps list`
@@ -483,7 +486,7 @@ flutter test
 ## 📞 Support & Resources
 
 - **Documentation**: `/docs` directory
-- **Issues**: GitHub Issues tab  
+- **Issues**: GitHub Issues tab
 - **Image Optimization**: [docs/IMAGE_OPTIMIZATION.md](docs/IMAGE_OPTIMIZATION.md)
 - **Branch Protection**: [.github/BRANCH_PROTECTION.md](.github/BRANCH_PROTECTION.md)
 - **Fly.io Docs**: https://fly.io/docs
