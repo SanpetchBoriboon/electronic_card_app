@@ -3,6 +3,8 @@ name: Deploy to Fly.io
 on:
     push:
         branches: [main]
+        tags:
+            - "v*"
     pull_request:
         branches: [main]
 
@@ -10,7 +12,7 @@ jobs:
     deploy:
         name: Deploy app
         runs-on: ubuntu-latest
-        if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+        if: startsWith(github.ref, 'refs/tags/v')
 
         steps:
             - name: Checkout code
@@ -77,4 +79,5 @@ jobs:
             - name: Get deployment URL
               run: |
                   echo "🚀 Deployment successful!"
+                  echo "📦 Version: ${GITHUB_REF#refs/tags/}"
                   echo "🌐 App URL: https://ben-mae-the-wedding.fly.dev"
