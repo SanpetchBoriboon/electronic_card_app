@@ -775,11 +775,10 @@ class _WishesPageState extends State<WishesPage> {
               ),
               child: Text(
                 'ยกเลิก',
-                style: TextStyle(
-                  fontFamily: 'Kanit',
+                style: AppFonts.kanit(
                   color: Colors.grey[600],
                   fontSize: 16,
-                  fontWeight: FontWeight.w300,
+                  fontWeight: AppFonts.light,
                 ),
               ),
             ),
@@ -800,11 +799,10 @@ class _WishesPageState extends State<WishesPage> {
               ),
               child: Text(
                 'ส่งคำอวยพร',
-                style: TextStyle(
-                  fontFamily: 'Kanit',
+                style: AppFonts.kanit(
                   color: Colors.white,
                   fontSize: 16,
-                  fontWeight: FontWeight.w300,
+                  fontWeight: AppFonts.light,
                 ),
               ),
             ),
