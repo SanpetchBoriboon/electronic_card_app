@@ -8,6 +8,54 @@ import 'package:flutter/services.dart';
 const Color kPrimaryColor = Color(0xFF7E8B78);
 const Color kAccentColor = Color(0xFFD4C5B0); // Beige/Tan color
 
+// Image metadata model
+class ImageMetadata {
+  final String path;
+  final String title;
+  final String description;
+
+  ImageMetadata({
+    required this.path,
+    required this.title,
+    required this.description,
+  });
+
+  factory ImageMetadata.fromJson(Map<String, dynamic> json) {
+    // Image.asset() automatically adds 'assets/' prefix, so we don't need it
+    return ImageMetadata(
+      path: json['path'],
+      title: json['title'],
+      description: json['description'],
+    );
+  }
+}
+
+// Year group model for timeline
+class YearGroup {
+  final String year;
+  final String title;
+  final String description;
+  final List<ImageMetadata> images;
+
+  YearGroup({
+    required this.year,
+    required this.title,
+    required this.description,
+    required this.images,
+  });
+
+  factory YearGroup.fromJson(Map<String, dynamic> json) {
+    return YearGroup(
+      year: json['year'],
+      title: json['title'],
+      description: json['description'],
+      images: (json['images'] as List)
+          .map((img) => ImageMetadata.fromJson(img))
+          .toList(),
+    );
+  }
+}
+
 // Journey metadata model
 class JourneyItem {
   final int id;
@@ -49,6 +97,7 @@ class _GalleryPageState extends State<GalleryPage>
     with AutomaticKeepAliveClientMixin {
   List<String> galleryImages = [];
   List<JourneyItem> journeyItems = [];
+  List<YearGroup> yearGroups = [];
   bool _isLoadingImages = true;
 
   @override
@@ -62,43 +111,32 @@ class _GalleryPageState extends State<GalleryPage>
 
   Future<void> _loadGalleryImages() async {
     try {
-      // Load journey metadata JSON
-      try {
-        final jsonString = await rootBundle.loadString(
-          'assets/images/journey-of-us/journey_metadata.json',
-        );
-        final jsonData = json.decode(jsonString);
-        final List<dynamic> journeyList = jsonData['journey'];
-        journeyItems = journeyList
-            .map((item) => JourneyItem.fromJson(item))
-            .toList();
+      // Load timeline metadata JSON
+      final jsonString = await rootBundle.loadString(
+        'assets/images/journey-of-us/timeline_metadata.json',
+      );
+      final jsonData = json.decode(jsonString);
+      final List<dynamic> timelineList = jsonData['timeline'];
 
-        // Use images from metadata
-        galleryImages = journeyItems.map((item) => item.imagePath).toList();
-      } catch (e) {
-        // Fallback: Load from asset manifest if JSON fails
-        final manifestContent = await rootBundle.loadString(
-          'AssetManifest.json',
-        );
-        final Map<String, dynamic> manifestMap = json.decode(manifestContent);
+      // Parse year groups from JSON
+      yearGroups = timelineList
+          .map((item) => YearGroup.fromJson(item))
+          .where(
+            (group) => group.images.isNotEmpty,
+          ) // Only include years with images
+          .toList();
 
-        final imagePaths = manifestMap.keys
-            .where(
-              (String key) =>
-                  key.startsWith('assets/images/journey-of-us/') &&
-                  !key.endsWith('.json') &&
-                  (key.endsWith('.jpg') ||
-                      key.endsWith('.jpeg') ||
-                      key.endsWith('.png')),
-            )
-            .toList();
-        galleryImages = imagePaths;
+      // Flatten all images for gallery
+      galleryImages = [];
+      for (var group in yearGroups) {
+        galleryImages.addAll(group.images.map((img) => img.path));
       }
 
       setState(() {
         _isLoadingImages = false;
       });
     } catch (e) {
+      print('Error loading gallery images: $e');
       setState(() {
         _isLoadingImages = false;
       });
@@ -305,6 +343,7 @@ class _GalleryPageState extends State<GalleryPage>
             child: WeddingTimelineModal(
               images: galleryImages,
               journeyItems: journeyItems,
+              yearGroups: yearGroups,
             ),
           );
         },
@@ -316,11 +355,13 @@ class _GalleryPageState extends State<GalleryPage>
 class WeddingTimelineModal extends StatelessWidget {
   final List<String> images;
   final List<JourneyItem> journeyItems;
+  final List<YearGroup> yearGroups;
 
   const WeddingTimelineModal({
     super.key,
     required this.images,
     required this.journeyItems,
+    required this.yearGroups,
   });
 
   @override
@@ -353,12 +394,10 @@ class WeddingTimelineModal extends StatelessWidget {
                         ),
                         child: Column(
                           children: [
-                            // Header
-                            _buildHeader(),
-                            const SizedBox(height: 40),
-
-                            // Timeline
-                            if (journeyItems.isNotEmpty)
+                            // Timeline by Year
+                            if (yearGroups.isNotEmpty)
+                              _buildYearTimeline(context, isDesktop)
+                            else if (journeyItems.isNotEmpty)
                               _buildWeddingTimeline(context, isDesktop)
                             else
                               _buildPhotoGrid(context, isDesktop),
@@ -402,44 +441,258 @@ class WeddingTimelineModal extends StatelessWidget {
     );
   }
 
-  Widget _buildHeader() {
+  Widget _buildYearTimeline(BuildContext context, bool isDesktop) {
     return Column(
-      children: [
-        // Header banner
-        Container(
-          padding: const EdgeInsets.symmetric(horizontal: 40, vertical: 16),
-          decoration: BoxDecoration(
-            color: kAccentColor,
-            borderRadius: BorderRadius.circular(8),
-          ),
-          child: Row(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Text(
-                'Journey of Us',
-                style: AppFonts.ttHovesPro(
-                  color: Colors.white,
-                  fontSize: 42,
-                  fontWeight: AppFonts.regular,
-                  fontStyle: FontStyle.italic,
-                  shadows: [
-                    Shadow(
-                      color: Colors.black.withValues(alpha: 0.3),
-                      offset: const Offset(2, 2),
-                      blurRadius: 4,
+      children: yearGroups.map((yearGroup) {
+        return Column(
+          children: [
+            // Year Header
+            Container(
+              width: double.infinity,
+              padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 24),
+              margin: const EdgeInsets.only(bottom: 24),
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                  colors: [
+                    kPrimaryColor.withValues(alpha: 0.8),
+                    kPrimaryColor.withValues(alpha: 0.6),
+                  ],
+                  begin: Alignment.centerLeft,
+                  end: Alignment.centerRight,
+                ),
+                borderRadius: BorderRadius.circular(8),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withValues(alpha: 0.1),
+                    blurRadius: 8,
+                    offset: const Offset(0, 2),
+                  ),
+                ],
+              ),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Icon(
+                        Icons.calendar_today,
+                        color: Colors.white,
+                        size: isDesktop ? 28 : 20,
+                      ),
+                      const SizedBox(width: 12),
+                      Text(
+                        yearGroup.year,
+                        style: AppFonts.ttHovesPro(
+                          fontSize: isDesktop ? 36 : 28,
+                          color: Colors.white,
+                          fontWeight: AppFonts.bold,
+                          shadows: [
+                            Shadow(
+                              color: Colors.black.withValues(alpha: 0.3),
+                              offset: const Offset(1, 1),
+                              blurRadius: 2,
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 8),
+                  Text(
+                    yearGroup.title,
+                    style: AppFonts.ttHovesPro(
+                      fontSize: isDesktop ? 20 : 16,
+                      color: Colors.white,
+                      fontWeight: AppFonts.medium,
                     ),
-                    Shadow(
-                      color: Colors.black.withValues(alpha: 0.1),
-                      offset: const Offset(4, 4),
-                      blurRadius: 8,
+                    textAlign: TextAlign.center,
+                  ),
+                  if (yearGroup.description.isNotEmpty) ...[
+                    const SizedBox(height: 4),
+                    Text(
+                      yearGroup.description,
+                      style: TextStyle(
+                        fontSize: isDesktop ? 14 : 12,
+                        color: Colors.white.withValues(alpha: 0.9),
+                      ),
+                      textAlign: TextAlign.center,
+                    ),
+                  ],
+                ],
+              ),
+            ),
+
+            // Images for this year
+            if (isDesktop)
+              _buildYearImagesGrid(context, yearGroup)
+            else
+              _buildYearImagesCarousel(context, yearGroup),
+
+            const SizedBox(height: 48),
+          ],
+        );
+      }).toList(),
+    );
+  }
+
+  Widget _buildYearImagesGrid(BuildContext context, YearGroup yearGroup) {
+    return Wrap(
+      spacing: 16,
+      runSpacing: 16,
+      alignment: WrapAlignment.center,
+      children: yearGroup.images.asMap().entries.map((entry) {
+        final imageMetadata = entry.value;
+        final globalIndex = images.indexOf(imageMetadata.path);
+        return GestureDetector(
+          onTap: () => _showImageViewer(context, globalIndex),
+          child: Hero(
+            tag: 'gallery_image_$globalIndex',
+            child: Container(
+              width: 280,
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(8),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withValues(alpha: 0.15),
+                    spreadRadius: 0,
+                    blurRadius: 12,
+                    offset: const Offset(0, 4),
+                  ),
+                ],
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  ClipRRect(
+                    borderRadius: const BorderRadius.only(
+                      topLeft: Radius.circular(8),
+                      topRight: Radius.circular(8),
+                    ),
+                    child: Image.asset(
+                      imageMetadata.path,
+                      width: 280,
+                      height: 350,
+                      fit: BoxFit.cover,
+                      errorBuilder: (context, error, stackTrace) => Container(
+                        width: 280,
+                        height: 350,
+                        color: Colors.grey[300],
+                        child: Icon(
+                          Icons.image_not_supported,
+                          color: Colors.grey[600],
+                          size: 48,
+                        ),
+                      ),
+                    ),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.all(16),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          imageMetadata.title,
+                          style: TextStyle(
+                            fontSize: 14,
+                            fontWeight: FontWeight.bold,
+                            color: kPrimaryColor,
+                          ),
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                        const SizedBox(height: 4),
+                        Text(
+                          imageMetadata.description,
+                          style: TextStyle(
+                            fontSize: 12,
+                            color: Colors.grey[600],
+                          ),
+                          maxLines: 2,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        );
+      }).toList(),
+    );
+  }
+
+  Widget _buildYearImagesCarousel(BuildContext context, YearGroup yearGroup) {
+    return Column(
+      children: yearGroup.images.asMap().entries.map((entry) {
+        final imageMetadata = entry.value;
+        final globalIndex = images.indexOf(imageMetadata.path);
+        return Padding(
+          padding: const EdgeInsets.only(bottom: 16),
+          child: GestureDetector(
+            onTap: () => _showImageViewer(context, globalIndex),
+            child: Hero(
+              tag: 'gallery_image_$globalIndex',
+              child: Container(
+                width: double.infinity,
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(12),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withValues(alpha: 0.15),
+                      spreadRadius: 0,
+                      blurRadius: 12,
+                      offset: const Offset(0, 4),
                     ),
                   ],
                 ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    ClipRRect(
+                      borderRadius: const BorderRadius.only(
+                        topLeft: Radius.circular(12),
+                        topRight: Radius.circular(12),
+                      ),
+                      child: Image.asset(
+                        imageMetadata.path,
+                        width: double.infinity,
+                        fit: BoxFit.cover,
+                        errorBuilder: (context, error, stackTrace) => Container(
+                          width: double.infinity,
+                          height: 300,
+                          color: Colors.grey[300],
+                          child: Icon(
+                            Icons.image_not_supported,
+                            color: Colors.grey[600],
+                            size: 48,
+                          ),
+                        ),
+                      ),
+                    ),
+                    if (imageMetadata.title.isNotEmpty)
+                      Padding(
+                        padding: const EdgeInsets.all(12),
+                        child: Text(
+                          imageMetadata.title,
+                          style: TextStyle(
+                            fontSize: 13,
+                            fontWeight: FontWeight.bold,
+                            color: kPrimaryColor,
+                          ),
+                          textAlign: TextAlign.center,
+                        ),
+                      ),
+                  ],
+                ),
               ),
-            ],
+            ),
           ),
-        ),
-      ],
+        );
+      }).toList(),
     );
   }
 
@@ -1000,54 +1253,42 @@ class _ImageViewerModalState extends State<ImageViewerModal> {
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  // Journey info if available
-                  if (widget.journeyItems.isNotEmpty &&
-                      currentIndex < widget.journeyItems.length)
-                    Container(
-                      margin: const EdgeInsets.only(bottom: 12),
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 24,
-                        vertical: 16,
-                      ),
-                      decoration: BoxDecoration(
-                        color: Colors.white.withValues(alpha: 0.25),
-                        borderRadius: BorderRadius.circular(16),
-                      ),
-                      child: Column(
-                        children: [
-                          Text(
-                            widget.journeyItems[currentIndex].time,
-                            style: TextStyle(
-                              color: kAccentColor,
-                              fontSize: 14,
-                              fontWeight: FontWeight.w600,
-                              letterSpacing: 1,
-                            ),
-                          ),
-                          const SizedBox(height: 8),
-                          Text(
-                            widget.journeyItems[currentIndex].title,
-                            style: const TextStyle(
-                              color: Colors.white,
-                              fontSize: 20,
-                              fontWeight: FontWeight.bold,
-                              letterSpacing: 0.5,
-                            ),
-                            textAlign: TextAlign.center,
-                          ),
-                          const SizedBox(height: 6),
-                          Text(
-                            widget.journeyItems[currentIndex].description,
-                            style: TextStyle(
-                              color: Colors.white.withValues(alpha: 0.9),
-                              fontSize: 14,
-                              height: 1.4,
-                            ),
-                            textAlign: TextAlign.center,
-                          ),
-                        ],
+                  // Year info from image path
+                  Container(
+                    margin: const EdgeInsets.only(bottom: 12),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 24,
+                      vertical: 12,
+                    ),
+                    decoration: BoxDecoration(
+                      color: Colors.white.withValues(alpha: 0.25),
+                      borderRadius: BorderRadius.circular(16),
+                      border: Border.all(
+                        color: Colors.white.withValues(alpha: 0.3),
+                        width: 1,
                       ),
                     ),
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Icon(
+                          Icons.calendar_today,
+                          color: Colors.white,
+                          size: 16,
+                        ),
+                        const SizedBox(width: 8),
+                        Text(
+                          _getYearFromPath(widget.images[currentIndex]),
+                          style: const TextStyle(
+                            color: Colors.white,
+                            fontSize: 18,
+                            fontWeight: FontWeight.bold,
+                            letterSpacing: 1,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
 
                   // Image counter
                   Container(
@@ -1075,5 +1316,17 @@ class _ImageViewerModalState extends State<ImageViewerModal> {
         ],
       ),
     );
+  }
+
+  String _getYearFromPath(String path) {
+    // Extract year from path: assets/images/journey-of-us/2024/image.jpg
+    final parts = path.split('/');
+    if (parts.length >= 5) {
+      return parts[3];
+    }
+    if (parts.length >= 4) {
+      return parts[2];
+    }
+    return '';
   }
 }

@@ -73,6 +73,7 @@ flutter:
         - assets/images/
         - assets/images/perview/
         - assets/images/journey-of-us/
+        - assets/images/journey-of-us/timeline_metadata.json
         - assets/icons/
         - assets/fonts/
 
