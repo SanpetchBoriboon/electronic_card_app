@@ -93,6 +93,20 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
     );
   }
 
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    // Precache main logo
+    precacheImage(
+      const AssetImage('assets/images/main-logo.png'),
+      context,
+    ).catchError((_) {});
+    precacheImage(
+      const AssetImage('assets/icons/wedding-invitation.png'),
+      context,
+    ).catchError((_) {});
+  }
+
   void _startTimer() {
     _timer = Timer.periodic(const Duration(seconds: 1), (timer) {
       setState(() {

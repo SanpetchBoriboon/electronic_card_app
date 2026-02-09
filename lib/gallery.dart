@@ -132,6 +132,17 @@ class _GalleryPageState extends State<GalleryPage>
         galleryImages.addAll(group.images.map((img) => img.path));
       }
 
+      // Precache all gallery images for better performance
+      if (mounted) {
+        for (var imagePath in galleryImages) {
+          try {
+            await precacheImage(AssetImage(imagePath), context);
+          } catch (e) {
+            debugPrint('Error precaching image $imagePath: $e');
+          }
+        }
+      }
+
       setState(() {
         _isLoadingImages = false;
       });

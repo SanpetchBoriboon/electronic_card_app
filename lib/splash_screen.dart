@@ -16,6 +16,7 @@ class _SplashScreenState extends State<SplashScreen>
   late Animation<double> _fadeAnimation;
   late Animation<double> _scaleAnimation;
   late Animation<double> _whiteFadeAnimation;
+  bool _imagesPreloaded = false;
 
   @override
   void initState() {
@@ -49,29 +50,69 @@ class _SplashScreenState extends State<SplashScreen>
       CurvedAnimation(parent: _whiteFadeController, curve: Curves.easeInOut),
     );
 
+    // Preload images
+    _preloadImages();
+
     // Start initial animation
     _animationController.forward();
+  }
 
-    // Start white fade and navigate after delay
-    Future.delayed(const Duration(milliseconds: 2500), () {
+  Future<void> _preloadImages() async {
+    try {
+      // List of critical images to preload
+      final imagesToPreload = [
+        'assets/images/main-logo.png',
+        'assets/images/mini-logo.png',
+        'assets/images/thank-you-logo.png',
+        'assets/images/tag-thank-you.png',
+        'assets/images/qr-code.jpg',
+        'assets/images/perview/gallery-preview.GIF',
+        'assets/icons/wedding-invitation.png',
+      ];
+
+      // Preload all images
+      await Future.wait(
+        imagesToPreload.map((imagePath) {
+          return precacheImage(AssetImage(imagePath), context).catchError((_) {
+            // Ignore errors for individual images
+            return null;
+          });
+        }),
+      );
+
       if (mounted) {
-        _whiteFadeController.forward().then((_) {
-          if (mounted) {
-            Navigator.of(context).pushReplacement(
-              PageRouteBuilder(
-                pageBuilder: (context, animation, secondaryAnimation) =>
-                    const MyHomePage(),
-                transitionDuration: const Duration(milliseconds: 1000),
-                transitionsBuilder:
-                    (context, animation, secondaryAnimation, child) {
-                      return FadeTransition(opacity: animation, child: child);
-                    },
-              ),
-            );
-          }
+        setState(() {
+          _imagesPreloaded = true;
         });
       }
-    });
+    } catch (e) {
+      debugPrint('Error preloading images: $e');
+      if (mounted) {
+        setState(() {
+          _imagesPreloaded = true; // Continue anyway
+        });
+      }
+    }
+
+    // Navigate after images are loaded and animation completes
+    await Future.delayed(const Duration(milliseconds: 2500));
+    if (mounted) {
+      _whiteFadeController.forward().then((_) {
+        if (mounted) {
+          Navigator.of(context).pushReplacement(
+            PageRouteBuilder(
+              pageBuilder: (context, animation, secondaryAnimation) =>
+                  const MyHomePage(),
+              transitionDuration: const Duration(milliseconds: 1000),
+              transitionsBuilder:
+                  (context, animation, secondaryAnimation, child) {
+                    return FadeTransition(opacity: animation, child: child);
+                  },
+            ),
+          );
+        }
+      });
+    }
   }
 
   @override
