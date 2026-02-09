@@ -237,7 +237,7 @@ class _WishesPageState extends State<WishesPage> {
                                             CrossAxisAlignment.start,
                                         children: [
                                           Text(
-                                            'แนบรูปภาพ',
+                                            'แชร์ภาพพร้อมกับคำอวยพร',
                                             style: TextStyle(
                                               fontSize: 16,
                                               color: kPrimaryColor,
