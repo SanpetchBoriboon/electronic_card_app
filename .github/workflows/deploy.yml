@@ -2,11 +2,8 @@ name: Deploy to Fly.io
 
 on:
     push:
-        branches: [main]
         tags:
             - "v*"
-    pull_request:
-        branches: [main]
 
 jobs:
     deploy:
