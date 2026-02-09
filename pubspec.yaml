@@ -73,7 +73,14 @@ flutter:
         - assets/images/
         - assets/images/perview/
         - assets/images/journey-of-us/
-        - assets/images/journey-of-us/timeline_metadata.json
+        - assets/images/journey-of-us/2017/
+        - assets/images/journey-of-us/2018/
+        - assets/images/journey-of-us/2019/
+        - assets/images/journey-of-us/2022/
+        - assets/images/journey-of-us/2023/
+        - assets/images/journey-of-us/2024/
+        - assets/images/journey-of-us/2025/
+        - assets/images/journey-of-us/2026/
         - assets/icons/
         - assets/fonts/
 
