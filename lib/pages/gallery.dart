@@ -223,70 +223,91 @@ class _GalleryPageState extends State<GalleryPage>
                       padding: const EdgeInsets.all(15.0),
                       child: ClipRRect(
                         borderRadius: BorderRadius.circular(15),
-                        child: Image.asset(
-                          'assets/images/perview/gallery-preview.GIF',
-                          fit: BoxFit.cover,
-                          errorBuilder: (context, error, stackTrace) {
-                            return Image.asset(
-                              'assets/images/gallery-preview.jpeg',
-                              fit: BoxFit.cover,
-                              errorBuilder: (context, error, stackTrace) {
-                                return Container(
-                                  height: 300,
-                                  decoration: BoxDecoration(
-                                    borderRadius: BorderRadius.circular(15),
-                                    gradient: LinearGradient(
-                                      begin: Alignment.topLeft,
-                                      end: Alignment.bottomRight,
-                                      colors: [
-                                        const Color(
-                                          0xFFBFC6B4,
-                                        ).withValues(alpha: 0.3),
-                                        const Color(
-                                          0xFF7E8B78,
-                                        ).withValues(alpha: 0.1),
-                                      ],
+                        child: _isLoadingImages
+                            ? Center(
+                                child: Column(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    CircularProgressIndicator(
+                                      color: kPrimaryColor,
                                     ),
-                                  ),
-                                  child: Center(
-                                    child: Column(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.center,
-                                      children: [
-                                        Icon(
-                                          Icons.photo_camera_outlined,
-                                          size: 80,
-                                          color: kPrimaryColor.withValues(
-                                            alpha: 0.6,
-                                          ),
-                                        ),
-                                        const SizedBox(height: 15),
-                                        Text(
-                                          'Wedding Photos',
-                                          style: TextStyle(
-                                            fontSize: 18,
-                                            color: kPrimaryColor,
-                                            fontWeight: FontWeight.w500,
-                                          ),
-                                        ),
-                                        const SizedBox(height: 8),
-                                        Text(
-                                          'Coming Soon',
-                                          style: TextStyle(
-                                            fontSize: 14,
-                                            color: kPrimaryColor.withValues(
-                                              alpha: 0.7,
-                                            ),
-                                          ),
-                                        ),
-                                      ],
+                                    const SizedBox(height: 20),
+                                    Text(
+                                      'กำลังโหลดรูปภาพ...',
+                                      style: TextStyle(
+                                        fontSize: 16,
+                                        color: kPrimaryColor,
+                                        fontWeight: FontWeight.w500,
+                                      ),
                                     ),
-                                  ),
-                                );
-                              },
-                            );
-                          },
-                        ),
+                                  ],
+                                ),
+                              )
+                            : Image.asset(
+                                'assets/images/perview/gallery-preview.GIF',
+                                fit: BoxFit.cover,
+                                errorBuilder: (context, error, stackTrace) {
+                                  return Image.asset(
+                                    'assets/images/gallery-preview.jpeg',
+                                    fit: BoxFit.cover,
+                                    errorBuilder: (context, error, stackTrace) {
+                                      return Container(
+                                        height: 300,
+                                        decoration: BoxDecoration(
+                                          borderRadius: BorderRadius.circular(
+                                            15,
+                                          ),
+                                          gradient: LinearGradient(
+                                            begin: Alignment.topLeft,
+                                            end: Alignment.bottomRight,
+                                            colors: [
+                                              const Color(
+                                                0xFFBFC6B4,
+                                              ).withValues(alpha: 0.3),
+                                              const Color(
+                                                0xFF7E8B78,
+                                              ).withValues(alpha: 0.1),
+                                            ],
+                                          ),
+                                        ),
+                                        child: Center(
+                                          child: Column(
+                                            mainAxisAlignment:
+                                                MainAxisAlignment.center,
+                                            children: [
+                                              Icon(
+                                                Icons.photo_camera_outlined,
+                                                size: 80,
+                                                color: kPrimaryColor.withValues(
+                                                  alpha: 0.6,
+                                                ),
+                                              ),
+                                              const SizedBox(height: 15),
+                                              Text(
+                                                'Wedding Photos',
+                                                style: TextStyle(
+                                                  fontSize: 18,
+                                                  color: kPrimaryColor,
+                                                  fontWeight: FontWeight.w500,
+                                                ),
+                                              ),
+                                              const SizedBox(height: 8),
+                                              Text(
+                                                'Coming Soon',
+                                                style: TextStyle(
+                                                  fontSize: 14,
+                                                  color: kPrimaryColor
+                                                      .withValues(alpha: 0.7),
+                                                ),
+                                              ),
+                                            ],
+                                          ),
+                                        ),
+                                      );
+                                    },
+                                  );
+                                },
+                              ),
                       ),
                     ),
                   ),
@@ -318,19 +339,46 @@ class _GalleryPageState extends State<GalleryPage>
                         borderRadius: BorderRadius.circular(25),
                       ),
                       elevation: 2,
-                    ),
-                    child: Text(
-                      _isLoadingImages
-                          ? 'กำลังโหลด...'
-                          : galleryImages.isEmpty
-                          ? 'ไม่มีรูปภาพ'
-                          : 'ดูรูปทั้งหมด',
-                      style: TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.w500,
-                        color: kPrimaryColor,
+                      disabledBackgroundColor: Colors.white.withValues(
+                        alpha: 0.7,
+                      ),
+                      disabledForegroundColor: kPrimaryColor.withValues(
+                        alpha: 0.5,
                       ),
                     ),
+                    child: _isLoadingImages
+                        ? Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              SizedBox(
+                                width: 20,
+                                height: 20,
+                                child: CircularProgressIndicator(
+                                  strokeWidth: 2,
+                                  color: kPrimaryColor.withValues(alpha: 0.5),
+                                ),
+                              ),
+                              const SizedBox(width: 12),
+                              Text(
+                                'กำลังโหลด...',
+                                style: TextStyle(
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.w500,
+                                  color: kPrimaryColor.withValues(alpha: 0.5),
+                                ),
+                              ),
+                            ],
+                          )
+                        : Text(
+                            galleryImages.isEmpty
+                                ? 'ไม่มีรูปภาพ'
+                                : 'ดูรูปทั้งหมด',
+                            style: TextStyle(
+                              fontSize: 16,
+                              fontWeight: FontWeight.w500,
+                              color: kPrimaryColor,
+                            ),
+                          ),
                   ),
                 ),
               ),
@@ -367,7 +415,7 @@ class _GalleryPageState extends State<GalleryPage>
   }
 }
 
-class WeddingTimelineModal extends StatelessWidget {
+class WeddingTimelineModal extends StatefulWidget {
   final List<String> images;
   final List<JourneyItem> journeyItems;
   final List<YearGroup> yearGroups;
@@ -379,13 +427,37 @@ class WeddingTimelineModal extends StatelessWidget {
     required this.yearGroups,
   });
 
+  @override
+  State<WeddingTimelineModal> createState() => _WeddingTimelineModalState();
+}
+
+class _WeddingTimelineModalState extends State<WeddingTimelineModal> {
+  bool _isImagesReady = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _prepareImages();
+  }
+
+  Future<void> _prepareImages() async {
+    // Give a small delay to let the modal animation complete
+    await Future.delayed(const Duration(milliseconds: 100));
+
+    if (mounted) {
+      setState(() {
+        _isImagesReady = true;
+      });
+    }
+  }
+
   void _precacheJourneyImages(BuildContext context, int index) {
-    if (journeyItems.isEmpty) return;
+    if (widget.journeyItems.isEmpty) return;
 
     // Precache current image
-    if (index >= 0 && index < journeyItems.length) {
+    if (index >= 0 && index < widget.journeyItems.length) {
       precacheImage(
-        AssetImage(journeyItems[index].imagePath),
+        AssetImage(widget.journeyItems[index].imagePath),
         context,
       ).catchError((_) {});
     }
@@ -393,9 +465,9 @@ class WeddingTimelineModal extends StatelessWidget {
     // Precache next 2 images
     for (int i = 1; i <= 2; i++) {
       final nextIndex = index + i;
-      if (nextIndex < journeyItems.length) {
+      if (nextIndex < widget.journeyItems.length) {
         precacheImage(
-          AssetImage(journeyItems[nextIndex].imagePath),
+          AssetImage(widget.journeyItems[nextIndex].imagePath),
           context,
         ).catchError((_) {});
       }
@@ -405,7 +477,7 @@ class WeddingTimelineModal extends StatelessWidget {
     final prevIndex = index - 1;
     if (prevIndex >= 0) {
       precacheImage(
-        AssetImage(journeyItems[prevIndex].imagePath),
+        AssetImage(widget.journeyItems[prevIndex].imagePath),
         context,
       ).catchError((_) {});
     }
@@ -421,41 +493,68 @@ class WeddingTimelineModal extends StatelessWidget {
       body: SafeArea(
         child: Stack(
           children: [
-            // Main Content
-            Column(
-              children: [
-                const SizedBox(height: 70),
-                Expanded(
-                  child: SingleChildScrollView(
-                    physics: const BouncingScrollPhysics(
-                      parent: AlwaysScrollableScrollPhysics(),
-                    ),
-                    padding: EdgeInsets.symmetric(
-                      horizontal: isDesktop ? 60 : 20,
-                      vertical: 20,
-                    ),
-                    child: Center(
-                      child: Container(
-                        constraints: BoxConstraints(
-                          maxWidth: isDesktop ? 1400 : double.infinity,
+            // Loading Indicator
+            if (!_isImagesReady)
+              Container(
+                color: const Color(0xFFF5F5F0),
+                child: Center(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      CircularProgressIndicator(
+                        color: kPrimaryColor,
+                        strokeWidth: 3,
+                      ),
+                      const SizedBox(height: 24),
+                      Text(
+                        'กำลังเตรียมรูปภาพ...',
+                        style: TextStyle(
+                          fontSize: 16,
+                          color: kPrimaryColor,
+                          fontWeight: FontWeight.w500,
                         ),
-                        child: Column(
-                          children: [
-                            // Timeline by Year
-                            if (yearGroups.isNotEmpty)
-                              _buildYearTimeline(context, isDesktop)
-                            else if (journeyItems.isNotEmpty)
-                              _buildWeddingTimeline(context, isDesktop)
-                            else
-                              _buildPhotoGrid(context, isDesktop),
-                          ],
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+
+            // Main Content
+            if (_isImagesReady)
+              Column(
+                children: [
+                  const SizedBox(height: 70),
+                  Expanded(
+                    child: SingleChildScrollView(
+                      physics: const BouncingScrollPhysics(
+                        parent: AlwaysScrollableScrollPhysics(),
+                      ),
+                      padding: EdgeInsets.symmetric(
+                        horizontal: isDesktop ? 60 : 20,
+                        vertical: 20,
+                      ),
+                      child: Center(
+                        child: Container(
+                          constraints: BoxConstraints(
+                            maxWidth: isDesktop ? 1400 : double.infinity,
+                          ),
+                          child: Column(
+                            children: [
+                              // Timeline by Year
+                              if (widget.yearGroups.isNotEmpty)
+                                _buildYearTimeline(context, isDesktop)
+                              else if (widget.journeyItems.isNotEmpty)
+                                _buildWeddingTimeline(context, isDesktop)
+                              else
+                                _buildPhotoGrid(context, isDesktop),
+                            ],
+                          ),
                         ),
                       ),
                     ),
                   ),
-                ),
-              ],
-            ),
+                ],
+              ),
 
             // Close Button (Fixed)
             Positioned(
@@ -490,7 +589,7 @@ class WeddingTimelineModal extends StatelessWidget {
 
   Widget _buildYearTimeline(BuildContext context, bool isDesktop) {
     return Column(
-      children: yearGroups.map((yearGroup) {
+      children: widget.yearGroups.map((yearGroup) {
         return Column(
           children: [
             // Year Header
@@ -590,7 +689,7 @@ class WeddingTimelineModal extends StatelessWidget {
       alignment: WrapAlignment.center,
       children: yearGroup.images.asMap().entries.map((entry) {
         final imageMetadata = entry.value;
-        final globalIndex = images.indexOf(imageMetadata.path);
+        final globalIndex = widget.images.indexOf(imageMetadata.path);
         return GestureDetector(
           onTap: () => _showImageViewer(context, globalIndex),
           child: Hero(
@@ -675,7 +774,7 @@ class WeddingTimelineModal extends StatelessWidget {
     return Column(
       children: yearGroup.images.asMap().entries.map((entry) {
         final imageMetadata = entry.value;
-        final globalIndex = images.indexOf(imageMetadata.path);
+        final globalIndex = widget.images.indexOf(imageMetadata.path);
         return Padding(
           padding: const EdgeInsets.only(bottom: 16),
           child: GestureDetector(
@@ -752,7 +851,7 @@ class WeddingTimelineModal extends StatelessWidget {
             spacing: 16,
             runSpacing: 16,
             alignment: WrapAlignment.center,
-            children: journeyItems.map((item) {
+            children: widget.journeyItems.map((item) {
               return _buildTimelineCard(context, item, isDesktop);
             }).toList(),
           );
@@ -763,13 +862,13 @@ class WeddingTimelineModal extends StatelessWidget {
       return SizedBox(
         height: MediaQuery.of(context).size.height * 0.75,
         child: PageView.builder(
-          itemCount: journeyItems.length,
+          itemCount: widget.journeyItems.length,
           onPageChanged: (index) {
             // Precache nearby images when swiping
             _precacheJourneyImages(context, index);
           },
           itemBuilder: (context, index) {
-            final item = journeyItems[index];
+            final item = widget.journeyItems[index];
             return GestureDetector(
               onTap: () => _showImageViewer(context, index),
               child: Padding(
@@ -899,7 +998,7 @@ class WeddingTimelineModal extends StatelessWidget {
                         borderRadius: BorderRadius.circular(20),
                       ),
                       child: Text(
-                        '${index + 1} / ${journeyItems.length}',
+                        '${index + 1} / ${widget.journeyItems.length}',
                         style: TextStyle(
                           fontSize: 13,
                           color: kAccentColor,
@@ -926,7 +1025,7 @@ class WeddingTimelineModal extends StatelessWidget {
     final imageHeight = isDesktop ? 350.0 : 200.0;
 
     return GestureDetector(
-      onTap: () => _showImageViewer(context, journeyItems.indexOf(item)),
+      onTap: () => _showImageViewer(context, widget.journeyItems.indexOf(item)),
       child: Container(
         width: cardWidth,
         decoration: BoxDecoration(
@@ -1033,7 +1132,7 @@ class WeddingTimelineModal extends StatelessWidget {
           mainAxisSpacing: 16,
           childAspectRatio: 0.75,
         ),
-        itemCount: images.length,
+        itemCount: widget.images.length,
         itemBuilder: (context, index) {
           return GestureDetector(
             onTap: () => _showImageViewer(context, index),
@@ -1053,7 +1152,7 @@ class WeddingTimelineModal extends StatelessWidget {
                 ),
                 child: ClipRRect(
                   borderRadius: BorderRadius.circular(8),
-                  child: Image.asset(images[index], fit: BoxFit.cover),
+                  child: Image.asset(widget.images[index], fit: BoxFit.cover),
                 ),
               ),
             ),
@@ -1065,7 +1164,7 @@ class WeddingTimelineModal extends StatelessWidget {
       return SizedBox(
         height: 500,
         child: PageView.builder(
-          itemCount: images.length,
+          itemCount: widget.images.length,
           itemBuilder: (context, index) {
             return GestureDetector(
               onTap: () => _showImageViewer(context, index),
@@ -1085,7 +1184,7 @@ class WeddingTimelineModal extends StatelessWidget {
                 child: ClipRRect(
                   borderRadius: BorderRadius.circular(12),
                   child: Image.asset(
-                    images[index],
+                    widget.images[index],
                     fit: BoxFit.cover,
                     errorBuilder: (context, error, stackTrace) => Container(
                       decoration: BoxDecoration(
@@ -1125,9 +1224,9 @@ class WeddingTimelineModal extends StatelessWidget {
           return FadeTransition(
             opacity: animation,
             child: ImageViewerModal(
-              images: images,
+              images: widget.images,
               initialIndex: initialIndex,
-              journeyItems: journeyItems,
+              journeyItems: widget.journeyItems,
             ),
           );
         },
