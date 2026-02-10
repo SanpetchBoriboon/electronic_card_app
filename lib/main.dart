@@ -13,6 +13,13 @@ import 'pages/wishes.dart';
 const Color kPrimaryColor = Color(0xFF7E8B78);
 
 void main() {
+  // Configure image cache for better memory management on mobile
+  WidgetsFlutterBinding.ensureInitialized();
+
+  // Set image cache limits (30MB cache, 200 images max) - Optimized for mobile!
+  PaintingBinding.instance.imageCache.maximumSizeBytes = 30 * 1024 * 1024; // 30MB (reduced from 100MB)
+  PaintingBinding.instance.imageCache.maximumSize = 200; // 200 images (reduced from 1000)
+
   runApp(const MyApp());
 }
 
@@ -83,9 +90,9 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
     // Initialize PageController
     _pageController = PageController(initialPage: widget.initialIndex);
 
-    // Initialize flip animation
+    // Initialize flip animation - FASTER!
     _flipController = AnimationController(
-      duration: const Duration(milliseconds: 800),
+      duration: const Duration(milliseconds: 400), // Reduced from 800ms
       vsync: this,
     );
     _flipAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(
@@ -207,8 +214,8 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
         onTap: (index) {
           _pageController.animateToPage(
             index,
-            duration: const Duration(milliseconds: 300),
-            curve: Curves.easeInOut,
+            duration: const Duration(milliseconds: 250), // Faster page transitions
+            curve: Curves.easeOut, // Snappier curve
           );
         },
         backgroundColor: Colors.white,
@@ -331,6 +338,7 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
                     height: logoSize,
                     width: logoSize,
                     fit: BoxFit.contain,
+                    cacheWidth: (logoSize * 2).toInt(), // 2x for Retina, maintains aspect
                     errorBuilder: (context, error, stackTrace) {
                       return Container(
                         height: logoSize,
@@ -362,6 +370,8 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
                   letterSpacing: 1.0,
                 ),
                 textAlign: TextAlign.center,
+                maxLines: 2,
+                overflow: TextOverflow.ellipsis,
               ),
 
               const SizedBox(height: 8),
@@ -375,6 +385,8 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
                   letterSpacing: 1.0,
                 ),
                 textAlign: TextAlign.center,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
               ),
 
               const SizedBox(height: 20),
@@ -436,6 +448,8 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
                   fontWeight: AppFonts.regular,
                 ),
                 textAlign: TextAlign.center,
+                maxLines: 2,
+                overflow: TextOverflow.ellipsis,
               ),
 
               const SizedBox(height: 8),
@@ -449,6 +463,8 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
                   fontWeight: AppFonts.regular,
                 ),
                 textAlign: TextAlign.center,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
               ),
 
               const SizedBox(height: 20),
@@ -667,6 +683,7 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
                     height: screenWidth * 0.1,
                     width: screenWidth * 0.1,
                     fit: BoxFit.contain,
+                    cacheWidth: (screenWidth * 0.2).toInt(), // 2x for Retina, maintains aspect
                     errorBuilder: (context, error, stackTrace) {
                       return Container(
                         height: screenWidth * 0.09,
@@ -868,7 +885,12 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
               fontWeight: FontWeight.bold,
             ),
           ),
-          Text(activity, style: TextStyle(fontSize: 12, color: kPrimaryColor)),
+          Text(
+            activity,
+            style: TextStyle(fontSize: 12, color: kPrimaryColor),
+            maxLines: 2,
+            overflow: TextOverflow.ellipsis,
+          ),
         ],
       ),
     );

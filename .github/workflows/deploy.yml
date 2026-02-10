@@ -56,6 +56,27 @@ jobs:
             - name: Run tests
               run: flutter test || echo "⚠️  No tests found or tests failed, continuing deployment..."
 
+            - name: Extract version from tag
+              id: version
+              run: |
+                  # Extract version from tag (e.g., v1.2.3 -> 1.2.3)
+                  VERSION=${GITHUB_REF#refs/tags/v}
+                  echo "version=$VERSION" >> $GITHUB_OUTPUT
+                  echo "📦 Deploying version: $VERSION"
+
+                  # Extract build number from version (e.g., 1.2.3+4 -> 4, or use commit count)
+                  if [[ $VERSION == *"+"* ]]; then
+                      BUILD_NUMBER=${VERSION#*+}
+                      VERSION_NAME=${VERSION%+*}
+                  else
+                      BUILD_NUMBER=${{ github.run_number }}
+                      VERSION_NAME=$VERSION
+                  fi
+                  echo "version_name=$VERSION_NAME" >> $GITHUB_OUTPUT
+                  echo "build_number=$BUILD_NUMBER" >> $GITHUB_OUTPUT
+                  echo "🔢 Version Name: $VERSION_NAME"
+                  echo "🔢 Build Number: $BUILD_NUMBER"
+
             - name: Clean previous builds
               run: |
                   rm -rf build
@@ -63,7 +84,11 @@ jobs:
                   flutter pub get
 
             - name: Build web app
-              run: flutter build web --release --dart-define=API_BASE_URL="${{ secrets.API_BASE_URL }}"
+              run: |
+                  flutter build web --release \
+                    --build-name=${{ steps.version.outputs.version_name }} \
+                    --build-number=${{ steps.version.outputs.build_number }} \
+                    --dart-define=API_BASE_URL="${{ secrets.API_BASE_URL }}"
 
             - name: Set up Fly CLI
               uses: superfly/flyctl-actions/setup-flyctl@master
@@ -76,5 +101,7 @@ jobs:
             - name: Get deployment URL
               run: |
                   echo "🚀 Deployment successful!"
-                  echo "📦 Version: ${GITHUB_REF#refs/tags/}"
+                  echo "📦 Version: ${{ steps.version.outputs.version_name }}"
+                  echo "🔢 Build: ${{ steps.version.outputs.build_number }}"
+                  echo "🏷️  Tag: ${GITHUB_REF#refs/tags/}"
                   echo "🌐 App URL: https://ben-mae-the-wedding.fly.dev"

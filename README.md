@@ -48,11 +48,11 @@ scripts/                # Build and optimization scripts
 ## ⚡ Performance Optimizations
 
 - **Image Optimization**: All images compressed (reduced from 58MB to 19MB)
-- **Image Precaching**: Critical images loaded during splash screen
+- **Lazy Loading**: Images load on-demand with smart precaching
+- **Smart Caching**: Predictive precaching of nearby images for smooth experience
 - **Nginx Caching**: Aggressive caching for static assets (7 days for images)
 - **Gzip Compression**: Enabled for text-based files
 - **Code Splitting**: Optimized Flutter web build
-- **Lazy Loading**: Images loaded as needed
 
 ## 🚀 Quick Start
 
@@ -136,21 +136,29 @@ See [docs/IMAGE_OPTIMIZATION.md](docs/IMAGE_OPTIMIZATION.md) for details.
     git commit -m "feat: Your feature description"
     git push origin main
 
-    # Create and push version tag
+    # Create and push version tag with build number
+    # Format: v<major>.<minor>.<patch>+<build>
+    git tag -a v1.0.0+1 -m "Release version 1.0.0 build 1"
+    git push origin v1.0.0+1
+
+    # Or without build number (uses GitHub run number)
     git tag -a v1.0.0 -m "Release version 1.0.0"
     git push origin v1.0.0
     ```
 
 4. **Done!** 🎉 GitHub Actions will automatically:
+    - Extract version from tag
     - Check assets integrity
     - Analyze code
-    - Build Flutter web app
+    - Build Flutter web app with correct version
     - Deploy to Fly.io
     - Your app will be live at: https://ben-mae-the-wedding.fly.dev
 
 #### Deployment Features:
 
 - ✅ Triggered only on version tags (v\*)
+- ✅ Automatic version extraction from Git tags
+- ✅ No manual pubspec.yaml updates needed
 - ✅ Automatic image optimization checks
 - ✅ Code analysis before deploy
 - ✅ Zero-downtime deployment
@@ -310,12 +318,25 @@ This project uses PR-based workflow with branch protection:
 5. **Deploy to production:**
 
     ```bash
-    # After merge, create version tag
+    # After merge, create version tag with build number
     git checkout main
     git pull origin main
+
+    # Create tag with version format: v<major>.<minor>.<patch>+<build>
+    git tag -a v1.0.1+2 -m "Release version 1.0.1 build 2"
+
+    # Or without explicit build number (will use GitHub run number)
     git tag -a v1.0.1 -m "Release version 1.0.1"
-    git push origin v1.0.1
+
+    # Push tag to trigger deployment
+    git push origin v1.0.1+2
     ```
+
+    The GitHub Actions workflow will:
+    - ✅ Extract version from tag automatically
+    - ✅ Build with correct version and build number
+    - ✅ Deploy to Fly.io
+    - ✅ Update pubspec.yaml version (no manual edit needed)
 
 ### PR Template
 
@@ -341,16 +362,27 @@ See [.github/BRANCH_PROTECTION.md](.github/BRANCH_PROTECTION.md) for setup guide
 
 ## 🚀 Deployment Options Comparison
 
-| Feature           | Tag-Based Deploy       | Manual Deploy    |
-| ----------------- | ---------------------- | ---------------- |
-| **Trigger**       | Version tag (v\*)      | Manual command   |
-| **Setup**         | One-time GitHub secret | Local Fly.io CLI |
-| **Speed**         | ~5-7 minutes           | ~2-3 minutes     |
-| **CI/CD**         | ✅ Full pipeline       | ❌ No CI         |
-| **Rollback**      | Revert tag/commit      | Manual flyctl    |
-| **Safeguards**    | ✅ Tests + Analysis    | ⚠️ Manual verify |
-| **Best for**      | Production releases    | Development test |
-| **Version Track** | ✅ Automatic           | ❌ Manual        |
+| Feature           | Tag-Based Deploy            | Manual Deploy    |
+| ----------------- | --------------------------- | ---------------- |
+| **Trigger**       | Version tag (v\*)           | Manual command   |
+| **Version**       | ✅ Auto from Git tag        | ❌ Manual        |
+| **Setup**         | One-time GitHub secret      | Local Fly.io CLI |
+| **Speed**         | ~5-7 minutes                | ~2-3 minutes     |
+| **CI/CD**         | ✅ Full pipeline            | ❌ No CI         |
+| **Rollback**      | Revert tag/redeploy old tag | Manual flyctl    |
+| **Safeguards**    | ✅ Tests + Analysis         | ⚠️ Manual verify |
+| **Best for**      | Production releases         | Development test |
+| **Version Track** | ✅ Automatic                | ❌ Manual        |
+| **pubspec.yaml**  | ✅ No manual update needed  | ❌ Must update   |
+
+### Version Tag Examples
+
+| Git Tag      | Version Name | Build Number      | Use Case          |
+| ------------ | ------------ | ----------------- | ----------------- |
+| `v1.0.0`     | 1.0.0        | auto (run number) | Simple versioning |
+| `v1.0.0+1`   | 1.0.0        | 1                 | With build number |
+| `v1.2.3+45`  | 1.2.3        | 45                | Patch with builds |
+| `v2.0.0+100` | 2.0.0        | 100               | Major release     |
 
 ## 📊 Monitoring & Health
 
@@ -481,6 +513,28 @@ flutter build web --release
 # Verify no errors
 flutter analyze
 flutter test
+```
+
+### Version/Tag Issues
+
+**Wrong version in build:**
+
+- Ensure tag format is correct: `v1.2.3` or `v1.2.3+4`
+- Check tag was pushed: `git tag -l`
+- Verify GitHub Actions extracted version correctly in logs
+
+**Tag already exists:**
+
+```bash
+# Delete local tag
+git tag -d v1.0.0
+
+# Delete remote tag
+git push origin :refs/tags/v1.0.0
+
+# Create new tag
+git tag -a v1.0.0+2 -m "Release version 1.0.0 build 2"
+git push origin v1.0.0+2
 ```
 
 ## 📞 Support & Resources

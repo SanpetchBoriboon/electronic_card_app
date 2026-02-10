@@ -447,8 +447,8 @@ class _ThankYouPageState extends State<ThankYouPage>
     final bool isLargeScreen = screenWidth > 1000;
 
     return AnimatedContainer(
-      duration: Duration(milliseconds: 300 + (index * 100)),
-      curve: Curves.easeOutCubic,
+      duration: const Duration(milliseconds: 200), // Fixed duration - no cascading delay!
+      curve: Curves.easeOut,
       margin: isLargeScreen
           ? EdgeInsets
                 .zero // GridView handles spacing
@@ -870,6 +870,7 @@ class _ThankYouPageState extends State<ThankYouPage>
     Widget imageWidget = Image.network(
       proxyUrl,
       fit: BoxFit.cover,
+      cacheWidth: isInDetail ? 1500 : 800, // Optimize width, maintains aspect ratio
       loadingBuilder: (context, child, loadingProgress) {
         if (loadingProgress == null) return child;
         return Center(
@@ -977,6 +978,7 @@ class _ThankYouPageState extends State<ThankYouPage>
                   child: Image.network(
                     proxyUrl,
                     fit: BoxFit.contain,
+                    cacheWidth: 2000, // High-res modal, maintains aspect ratio
                     loadingBuilder: (context, child, loadingProgress) {
                       if (loadingProgress == null) return child;
                       return Center(
