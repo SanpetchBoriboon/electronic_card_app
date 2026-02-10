@@ -14,7 +14,6 @@ class AppFonts {
 
   // ตรวจสอบว่าฟอนต์มีอยู่หรือไม่
   static String _getFontWithFallback(String fontFamily) {
-    // ในการใช้งานจริง อาจต้องตรวจสอบว่าฟอนต์โหลดสำเร็จหรือไม่
     return fontFamily;
   }
 
