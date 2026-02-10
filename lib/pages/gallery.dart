@@ -502,7 +502,7 @@ class _WeddingTimelineModalState extends State<WeddingTimelineModal> {
                 Expanded(
                   child: SingleChildScrollView(
                     physics: const BouncingScrollPhysics(
-                      parent: AlwaysScrollableScrollPhysics(),
+                      decelerationRate: ScrollDecelerationRate.fast,
                     ),
                     padding: EdgeInsets.symmetric(
                       horizontal: isDesktop ? 60 : 24,
@@ -784,6 +784,9 @@ class _WeddingTimelineModalState extends State<WeddingTimelineModal> {
     return SizedBox(
       height: 520,
       child: PageView.builder(
+        physics: const BouncingScrollPhysics(
+          decelerationRate: ScrollDecelerationRate.fast,
+        ),
         itemCount: yearGroup.images.length,
         itemBuilder: (context, index) {
           final imageMetadata = yearGroup.images[index];
@@ -915,6 +918,9 @@ class _WeddingTimelineModalState extends State<WeddingTimelineModal> {
       return SizedBox(
         height: MediaQuery.of(context).size.height * 0.75,
         child: PageView.builder(
+          physics: const BouncingScrollPhysics(
+            decelerationRate: ScrollDecelerationRate.fast,
+          ),
           itemCount: widget.journeyItems.length,
           onPageChanged: (index) {
             // Precache nearby images when swiping
@@ -1233,6 +1239,9 @@ class _WeddingTimelineModalState extends State<WeddingTimelineModal> {
       return SizedBox(
         height: 500,
         child: PageView.builder(
+          physics: const BouncingScrollPhysics(
+            decelerationRate: ScrollDecelerationRate.fast,
+          ),
           itemCount: widget.images.length,
           itemBuilder: (context, index) {
             return GestureDetector(
@@ -1370,6 +1379,9 @@ class _ImageViewerModalState extends State<ImageViewerModal> {
         children: [
           // Image PageView
           PageView.builder(
+            physics: const BouncingScrollPhysics(
+              decelerationRate: ScrollDecelerationRate.fast,
+            ),
             controller: _pageController,
             onPageChanged: (index) {
               if (mounted) {
@@ -1441,8 +1453,8 @@ class _ImageViewerModalState extends State<ImageViewerModal> {
                 child: GestureDetector(
                   onTap: () {
                     _pageController.previousPage(
-                      duration: const Duration(milliseconds: 300),
-                      curve: Curves.easeInOut,
+                      duration: const Duration(milliseconds: 400),
+                      curve: Curves.easeInOutCubic,
                     );
                   },
                   child: Container(
@@ -1472,8 +1484,8 @@ class _ImageViewerModalState extends State<ImageViewerModal> {
                 child: GestureDetector(
                   onTap: () {
                     _pageController.nextPage(
-                      duration: const Duration(milliseconds: 300),
-                      curve: Curves.easeInOut,
+                      duration: const Duration(milliseconds: 400),
+                      curve: Curves.easeInOutCubic,
                     );
                   },
                   child: Container(
