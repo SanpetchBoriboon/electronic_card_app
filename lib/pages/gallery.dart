@@ -272,12 +272,12 @@ class _GalleryPageState extends State<GalleryPage> {
                             : Image.asset(
                                 'assets/images/perview/gallery-preview.GIF',
                                 fit: BoxFit.cover,
-                                cacheHeight: 600, // Match preview height
+                                filterQuality: FilterQuality.high,
                                 errorBuilder: (context, error, stackTrace) {
                                   return Image.asset(
                                     'assets/images/gallery-preview.jpeg',
                                     fit: BoxFit.cover,
-                                    cacheHeight: 600,
+                                    filterQuality: FilterQuality.high,
                                     errorBuilder: (context, error, stackTrace) {
                                       return Container(
                                         height: 300,
@@ -502,7 +502,7 @@ class _WeddingTimelineModalState extends State<WeddingTimelineModal> {
                 Expanded(
                   child: SingleChildScrollView(
                     physics: const BouncingScrollPhysics(
-                      parent: AlwaysScrollableScrollPhysics(),
+                      decelerationRate: ScrollDecelerationRate.fast,
                     ),
                     padding: EdgeInsets.symmetric(
                       horizontal: isDesktop ? 60 : 24,
@@ -713,9 +713,8 @@ class _WeddingTimelineModalState extends State<WeddingTimelineModal> {
                             imageMetadata.path,
                             width: double.infinity,
                             fit: BoxFit.cover,
-                            cacheHeight: 500,
                             filterQuality: FilterQuality.high,
-                            gaplessPlayback: false,
+                            isAntiAlias: true,
                             errorBuilder: (context, error, stackTrace) =>
                                 Container(
                                   width: double.infinity,
@@ -784,6 +783,9 @@ class _WeddingTimelineModalState extends State<WeddingTimelineModal> {
     return SizedBox(
       height: 520,
       child: PageView.builder(
+        physics: const BouncingScrollPhysics(
+          decelerationRate: ScrollDecelerationRate.fast,
+        ),
         itemCount: yearGroup.images.length,
         itemBuilder: (context, index) {
           final imageMetadata = yearGroup.images[index];
@@ -824,8 +826,8 @@ class _WeddingTimelineModalState extends State<WeddingTimelineModal> {
                             imageMetadata.path,
                             width: double.infinity,
                             fit: BoxFit.cover,
-                            cacheHeight: 350,
-                            gaplessPlayback: false,
+                            filterQuality: FilterQuality.high,
+                            isAntiAlias: true,
                             errorBuilder: (context, error, stackTrace) =>
                                 Container(
                                   width: double.infinity,
@@ -915,6 +917,9 @@ class _WeddingTimelineModalState extends State<WeddingTimelineModal> {
       return SizedBox(
         height: MediaQuery.of(context).size.height * 0.75,
         child: PageView.builder(
+          physics: const BouncingScrollPhysics(
+            decelerationRate: ScrollDecelerationRate.fast,
+          ),
           itemCount: widget.journeyItems.length,
           onPageChanged: (index) {
             // Precache nearby images when swiping
@@ -951,8 +956,8 @@ class _WeddingTimelineModalState extends State<WeddingTimelineModal> {
                               item.imagePath,
                               width: double.infinity,
                               fit: BoxFit.cover,
-                              cacheHeight: 450,
-                              gaplessPlayback: false,
+                              filterQuality: FilterQuality.high,
+                              isAntiAlias: true,
                               errorBuilder: (context, error, stackTrace) =>
                                   Container(
                                     decoration: BoxDecoration(
@@ -1114,8 +1119,8 @@ class _WeddingTimelineModalState extends State<WeddingTimelineModal> {
                     width: double.infinity,
                     height: imageHeight,
                     fit: BoxFit.cover,
-                    cacheHeight: isDesktop ? 500 : 350,
-                    gaplessPlayback: false,
+                    filterQuality: FilterQuality.high,
+                    isAntiAlias: true,
                     errorBuilder: (context, error, stackTrace) => Container(
                       width: double.infinity,
                       height: imageHeight,
@@ -1218,8 +1223,8 @@ class _WeddingTimelineModalState extends State<WeddingTimelineModal> {
                     child: Image.asset(
                       widget.images[index],
                       fit: BoxFit.cover,
-                      cacheHeight: 250,
-                      gaplessPlayback: false,
+                      filterQuality: FilterQuality.high,
+                      isAntiAlias: true,
                     ),
                   ),
                 ),
@@ -1233,6 +1238,9 @@ class _WeddingTimelineModalState extends State<WeddingTimelineModal> {
       return SizedBox(
         height: 500,
         child: PageView.builder(
+          physics: const BouncingScrollPhysics(
+            decelerationRate: ScrollDecelerationRate.fast,
+          ),
           itemCount: widget.images.length,
           itemBuilder: (context, index) {
             return GestureDetector(
@@ -1258,8 +1266,8 @@ class _WeddingTimelineModalState extends State<WeddingTimelineModal> {
                   child: Image.asset(
                     widget.images[index],
                     fit: BoxFit.cover,
-                    cacheHeight: 350,
-                    gaplessPlayback: false,
+                    filterQuality: FilterQuality.high,
+                    isAntiAlias: true,
                     errorBuilder: (context, error, stackTrace) => Container(
                       decoration: BoxDecoration(
                         gradient: LinearGradient(
@@ -1370,6 +1378,9 @@ class _ImageViewerModalState extends State<ImageViewerModal> {
         children: [
           // Image PageView
           PageView.builder(
+            physics: const BouncingScrollPhysics(
+              decelerationRate: ScrollDecelerationRate.fast,
+            ),
             controller: _pageController,
             onPageChanged: (index) {
               if (mounted) {
@@ -1389,8 +1400,8 @@ class _ImageViewerModalState extends State<ImageViewerModal> {
                     child: Image.asset(
                       widget.images[index],
                       fit: BoxFit.contain,
-                      cacheWidth: 900,
-                      gaplessPlayback: false,
+                      filterQuality: FilterQuality.high,
+                      isAntiAlias: true,
                       errorBuilder: (context, error, stackTrace) => Container(
                         width: 200,
                         height: 200,
@@ -1441,8 +1452,8 @@ class _ImageViewerModalState extends State<ImageViewerModal> {
                 child: GestureDetector(
                   onTap: () {
                     _pageController.previousPage(
-                      duration: const Duration(milliseconds: 300),
-                      curve: Curves.easeInOut,
+                      duration: const Duration(milliseconds: 400),
+                      curve: Curves.easeInOutCubic,
                     );
                   },
                   child: Container(
@@ -1472,8 +1483,8 @@ class _ImageViewerModalState extends State<ImageViewerModal> {
                 child: GestureDetector(
                   onTap: () {
                     _pageController.nextPage(
-                      duration: const Duration(milliseconds: 300),
-                      curve: Curves.easeInOut,
+                      duration: const Duration(milliseconds: 400),
+                      curve: Curves.easeInOutCubic,
                     );
                   },
                   child: Container(
