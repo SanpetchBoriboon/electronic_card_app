@@ -93,15 +93,19 @@ class GalleryPage extends StatefulWidget {
   State<GalleryPage> createState() => _GalleryPageState();
 }
 
-class _GalleryPageState extends State<GalleryPage>
-    with AutomaticKeepAliveClientMixin {
+class _GalleryPageState extends State<GalleryPage> {
   List<String> galleryImages = [];
   List<JourneyItem> journeyItems = [];
   List<YearGroup> yearGroups = [];
   bool _isLoadingImages = true;
 
   @override
-  bool get wantKeepAlive => true;
+  void dispose() {
+    // Clear image cache to free memory
+    imageCache.clear();
+    imageCache.clearLiveImages();
+    super.dispose();
+  }
 
   @override
   void initState() {
@@ -115,12 +119,37 @@ class _GalleryPageState extends State<GalleryPage>
       final jsonString = await rootBundle.loadString(
         'assets/images/journey-of-us/timeline_metadata.json',
       );
-      final jsonData = json.decode(jsonString);
-      final List<dynamic> timelineList = jsonData['timeline'];
 
-      // Parse year groups from JSON
+      if (!mounted) return;
+
+      final jsonData = json.decode(jsonString);
+
+      // Check if 'timeline' key exists and is not null
+      if (jsonData == null || jsonData['timeline'] == null) {
+        debugPrint('Error: Invalid JSON structure - missing timeline key');
+        if (mounted) {
+          setState(() {
+            _isLoadingImages = false;
+            yearGroups = [];
+            galleryImages = [];
+          });
+        }
+        return;
+      }
+
+      final List<dynamic> timelineList = jsonData['timeline'] as List<dynamic>;
+
+      // Parse year groups from JSON with error handling
       yearGroups = timelineList
-          .map((item) => YearGroup.fromJson(item))
+          .map((item) {
+            try {
+              return YearGroup.fromJson(item as Map<String, dynamic>);
+            } catch (e) {
+              debugPrint('Error parsing year group: $e');
+              return null;
+            }
+          })
+          .whereType<YearGroup>() // Remove null values
           .where(
             (group) => group.images.isNotEmpty,
           ) // Only include years with images
@@ -129,7 +158,11 @@ class _GalleryPageState extends State<GalleryPage>
       // Flatten all images for gallery
       galleryImages = [];
       for (var group in yearGroups) {
-        galleryImages.addAll(group.images.map((img) => img.path));
+        try {
+          galleryImages.addAll(group.images.map((img) => img.path));
+        } catch (e) {
+          debugPrint('Error adding images from group ${group.year}: $e');
+        }
       }
 
       if (mounted) {
@@ -137,11 +170,14 @@ class _GalleryPageState extends State<GalleryPage>
           _isLoadingImages = false;
         });
       }
-    } catch (e) {
+    } catch (e, stackTrace) {
       debugPrint('Error loading gallery images: $e');
+      debugPrint('Stack trace: $stackTrace');
       if (mounted) {
         setState(() {
           _isLoadingImages = false;
+          yearGroups = [];
+          galleryImages = [];
         });
       }
     }
@@ -149,7 +185,6 @@ class _GalleryPageState extends State<GalleryPage>
 
   @override
   Widget build(BuildContext context) {
-    super.build(context);
     return Scaffold(
       backgroundColor: const Color(0xFFBFC6B4),
       body: SafeArea(
@@ -412,7 +447,7 @@ class _GalleryPageState extends State<GalleryPage>
   }
 }
 
-class WeddingTimelineModal extends StatelessWidget {
+class WeddingTimelineModal extends StatefulWidget {
   final List<String> images;
   final List<JourneyItem> journeyItems;
   final List<YearGroup> yearGroups;
@@ -424,33 +459,27 @@ class WeddingTimelineModal extends StatelessWidget {
     required this.yearGroups,
   });
 
+  @override
+  State<WeddingTimelineModal> createState() => _WeddingTimelineModalState();
+}
+
+class _WeddingTimelineModalState extends State<WeddingTimelineModal> {
+  @override
+  void dispose() {
+    // Clear image cache when closing modal
+    imageCache.clear();
+    imageCache.clearLiveImages();
+    super.dispose();
+  }
+
   void _precacheJourneyImages(BuildContext context, int index) {
-    if (journeyItems.isEmpty) return;
+    if (widget.journeyItems.isEmpty) return;
 
-    // Precache current image
-    if (index >= 0 && index < journeyItems.length) {
+    // Precache only next 1 image to save memory
+    final nextIndex = index + 1;
+    if (nextIndex < widget.journeyItems.length) {
       precacheImage(
-        AssetImage(journeyItems[index].imagePath),
-        context,
-      ).catchError((_) {});
-    }
-
-    // Precache next 2 images
-    for (int i = 1; i <= 2; i++) {
-      final nextIndex = index + i;
-      if (nextIndex < journeyItems.length) {
-        precacheImage(
-          AssetImage(journeyItems[nextIndex].imagePath),
-          context,
-        ).catchError((_) {});
-      }
-    }
-
-    // Precache previous image
-    final prevIndex = index - 1;
-    if (prevIndex >= 0) {
-      precacheImage(
-        AssetImage(journeyItems[prevIndex].imagePath),
+        AssetImage(widget.journeyItems[nextIndex].imagePath),
         context,
       ).catchError((_) {});
     }
@@ -487,9 +516,9 @@ class WeddingTimelineModal extends StatelessWidget {
                         child: Column(
                           children: [
                             // Timeline by Year
-                            if (yearGroups.isNotEmpty)
+                            if (widget.yearGroups.isNotEmpty)
                               _buildYearTimeline(context, isDesktop)
-                            else if (journeyItems.isNotEmpty)
+                            else if (widget.journeyItems.isNotEmpty)
                               _buildWeddingTimeline(context, isDesktop)
                             else
                               _buildPhotoGrid(context, isDesktop),
@@ -537,9 +566,9 @@ class WeddingTimelineModal extends StatelessWidget {
     return ListView.builder(
       shrinkWrap: true,
       physics: const NeverScrollableScrollPhysics(),
-      itemCount: yearGroups.length,
+      itemCount: widget.yearGroups.length,
       itemBuilder: (context, yearIndex) {
-        final yearGroup = yearGroups[yearIndex];
+        final yearGroup = widget.yearGroups[yearIndex];
         return Column(
           children: [
             // Year Header
@@ -645,7 +674,7 @@ class WeddingTimelineModal extends StatelessWidget {
       itemCount: yearGroup.images.length,
       itemBuilder: (context, index) {
         final imageMetadata = yearGroup.images[index];
-        final globalIndex = images.indexOf(imageMetadata.path);
+        final globalIndex = widget.images.indexOf(imageMetadata.path);
         // Skip if not found
         if (globalIndex < 0) return const SizedBox.shrink();
 
@@ -680,7 +709,8 @@ class WeddingTimelineModal extends StatelessWidget {
                         imageMetadata.path,
                         width: double.infinity,
                         fit: BoxFit.cover,
-                        cacheHeight: 700,
+                        cacheHeight: 300,
+                        gaplessPlayback: false,
                         errorBuilder: (context, error, stackTrace) => Container(
                           width: double.infinity,
                           color: Colors.grey[300],
@@ -735,82 +765,100 @@ class WeddingTimelineModal extends StatelessWidget {
   }
 
   Widget _buildYearImagesCarousel(BuildContext context, YearGroup yearGroup) {
-    return ListView.builder(
-      shrinkWrap: true,
-      physics: const NeverScrollableScrollPhysics(),
-      itemCount: yearGroup.images.length,
-      itemBuilder: (context, index) {
-        final imageMetadata = yearGroup.images[index];
-        final globalIndex = images.indexOf(imageMetadata.path);
-        // Skip if not found
-        if (globalIndex < 0) return const SizedBox.shrink();
+    // Use PageView for true lazy loading - only loads visible images
+    return SizedBox(
+      height: 450,
+      child: PageView.builder(
+        itemCount: yearGroup.images.length,
+        itemBuilder: (context, index) {
+          final imageMetadata = yearGroup.images[index];
+          final globalIndex = widget.images.indexOf(imageMetadata.path);
+          // Skip if not found
+          if (globalIndex < 0) return const SizedBox.shrink();
 
-        return Padding(
-          padding: const EdgeInsets.only(bottom: 16),
-          child: GestureDetector(
-            onTap: () => _showImageViewer(context, globalIndex),
-            child: Hero(
-              tag: 'gallery_image_${imageMetadata.path}',
-              child: Container(
-                width: double.infinity,
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.circular(12),
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.black.withValues(alpha: 0.15),
-                      spreadRadius: 0,
-                      blurRadius: 12,
-                      offset: const Offset(0, 4),
-                    ),
-                  ],
-                ),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    ClipRRect(
-                      borderRadius: const BorderRadius.only(
-                        topLeft: Radius.circular(12),
-                        topRight: Radius.circular(12),
+          return Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 8),
+            child: GestureDetector(
+              onTap: () => _showImageViewer(context, globalIndex),
+              child: Hero(
+                tag: 'gallery_image_${imageMetadata.path}',
+                child: Container(
+                  width: double.infinity,
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(12),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black.withValues(alpha: 0.15),
+                        spreadRadius: 0,
+                        blurRadius: 12,
+                        offset: const Offset(0, 4),
                       ),
-                      child: Image.asset(
-                        imageMetadata.path,
-                        width: double.infinity,
-                        fit: BoxFit.cover,
-                        cacheHeight:
-                            800, // Match container height for landscape images
-                        errorBuilder: (context, error, stackTrace) => Container(
-                          width: double.infinity,
-                          height: 300,
-                          color: Colors.grey[300],
-                          child: Icon(
-                            Icons.image_not_supported,
-                            color: Colors.grey[600],
-                            size: 48,
+                    ],
+                  ),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Expanded(
+                        child: ClipRRect(
+                          borderRadius: const BorderRadius.only(
+                            topLeft: Radius.circular(12),
+                            topRight: Radius.circular(12),
+                          ),
+                          child: Image.asset(
+                            imageMetadata.path,
+                            width: double.infinity,
+                            fit: BoxFit.cover,
+                            cacheHeight: 350,
+                            gaplessPlayback: false,
+                            errorBuilder: (context, error, stackTrace) =>
+                                Container(
+                                  width: double.infinity,
+                                  color: Colors.grey[300],
+                                  child: Icon(
+                                    Icons.image_not_supported,
+                                    color: Colors.grey[600],
+                                    size: 48,
+                                  ),
+                                ),
                           ),
                         ),
                       ),
-                    ),
-                    if (imageMetadata.title.isNotEmpty)
-                      Padding(
-                        padding: const EdgeInsets.all(12),
-                        child: Text(
-                          imageMetadata.title,
-                          style: TextStyle(
-                            fontSize: 13,
-                            fontWeight: FontWeight.bold,
-                            color: kPrimaryColor,
+                      if (imageMetadata.title.isNotEmpty)
+                        Padding(
+                          padding: const EdgeInsets.all(12),
+                          child: Column(
+                            children: [
+                              Text(
+                                imageMetadata.title,
+                                style: TextStyle(
+                                  fontSize: 13,
+                                  fontWeight: FontWeight.bold,
+                                  color: kPrimaryColor,
+                                ),
+                                textAlign: TextAlign.center,
+                                maxLines: 2,
+                                overflow: TextOverflow.ellipsis,
+                              ),
+                              const SizedBox(height: 4),
+                              Text(
+                                '${index + 1} / ${yearGroup.images.length}',
+                                style: TextStyle(
+                                  fontSize: 11,
+                                  color: Colors.grey[600],
+                                ),
+                              ),
+                            ],
                           ),
-                          textAlign: TextAlign.center,
                         ),
-                      ),
-                  ],
+                    ],
+                  ),
                 ),
               ),
             ),
-          ),
-        );
-      },
+          );
+        },
+      ),
     );
   }
 
@@ -823,7 +871,7 @@ class WeddingTimelineModal extends StatelessWidget {
             spacing: 16,
             runSpacing: 16,
             alignment: WrapAlignment.center,
-            children: journeyItems.map((item) {
+            children: widget.journeyItems.map((item) {
               return _buildTimelineCard(context, item, isDesktop);
             }).toList(),
           );
@@ -834,13 +882,13 @@ class WeddingTimelineModal extends StatelessWidget {
       return SizedBox(
         height: MediaQuery.of(context).size.height * 0.75,
         child: PageView.builder(
-          itemCount: journeyItems.length,
+          itemCount: widget.journeyItems.length,
           onPageChanged: (index) {
             // Precache nearby images when swiping
             _precacheJourneyImages(context, index);
           },
           itemBuilder: (context, index) {
-            final item = journeyItems[index];
+            final item = widget.journeyItems[index];
             return GestureDetector(
               onTap: () => _showImageViewer(context, index),
               child: Padding(
@@ -870,8 +918,8 @@ class WeddingTimelineModal extends StatelessWidget {
                               item.imagePath,
                               width: double.infinity,
                               fit: BoxFit.cover,
-                              cacheHeight:
-                                  1000, // Match container height for landscape images
+                              cacheHeight: 450,
+                              gaplessPlayback: false,
                               errorBuilder: (context, error, stackTrace) =>
                                   Container(
                                     decoration: BoxDecoration(
@@ -972,7 +1020,7 @@ class WeddingTimelineModal extends StatelessWidget {
                         borderRadius: BorderRadius.circular(20),
                       ),
                       child: Text(
-                        '${index + 1} / ${journeyItems.length}',
+                        '${index + 1} / ${widget.journeyItems.length}',
                         style: TextStyle(
                           fontSize: 13,
                           color: kAccentColor,
@@ -999,7 +1047,7 @@ class WeddingTimelineModal extends StatelessWidget {
     final imageHeight = isDesktop ? 350.0 : 200.0;
 
     return GestureDetector(
-      onTap: () => _showImageViewer(context, journeyItems.indexOf(item)),
+      onTap: () => _showImageViewer(context, widget.journeyItems.indexOf(item)),
       child: Container(
         width: cardWidth,
         decoration: BoxDecoration(
@@ -1030,8 +1078,8 @@ class WeddingTimelineModal extends StatelessWidget {
                   width: double.infinity,
                   height: imageHeight,
                   fit: BoxFit.cover,
-                  cacheHeight: (imageHeight * 2)
-                      .toInt(), // Match container height
+                  cacheHeight: isDesktop ? 500 : 350,
+                  gaplessPlayback: false,
                   errorBuilder: (context, error, stackTrace) => Container(
                     width: double.infinity,
                     height: imageHeight,
@@ -1108,12 +1156,12 @@ class WeddingTimelineModal extends StatelessWidget {
           mainAxisSpacing: 16,
           childAspectRatio: 0.75,
         ),
-        itemCount: images.length,
+        itemCount: widget.images.length,
         itemBuilder: (context, index) {
           return GestureDetector(
             onTap: () => _showImageViewer(context, index),
             child: Hero(
-              tag: 'gallery_image_${images[index]}',
+              tag: 'gallery_image_${widget.images[index]}',
               child: Container(
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(8),
@@ -1129,10 +1177,10 @@ class WeddingTimelineModal extends StatelessWidget {
                 child: ClipRRect(
                   borderRadius: BorderRadius.circular(8),
                   child: Image.asset(
-                    images[index],
+                    widget.images[index],
                     fit: BoxFit.cover,
-                    cacheHeight:
-                        200, // Match thumbnail height for landscape images
+                    cacheHeight: 250,
+                    gaplessPlayback: false,
                   ),
                 ),
               ),
@@ -1145,7 +1193,7 @@ class WeddingTimelineModal extends StatelessWidget {
       return SizedBox(
         height: 500,
         child: PageView.builder(
-          itemCount: images.length,
+          itemCount: widget.images.length,
           itemBuilder: (context, index) {
             return GestureDetector(
               onTap: () => _showImageViewer(context, index),
@@ -1165,10 +1213,10 @@ class WeddingTimelineModal extends StatelessWidget {
                 child: ClipRRect(
                   borderRadius: BorderRadius.circular(12),
                   child: Image.asset(
-                    images[index],
+                    widget.images[index],
                     fit: BoxFit.cover,
-                    cacheHeight:
-                        300, // Match thumbnail height for landscape images
+                    cacheHeight: 350,
+                    gaplessPlayback: false,
                     errorBuilder: (context, error, stackTrace) => Container(
                       decoration: BoxDecoration(
                         gradient: LinearGradient(
@@ -1207,9 +1255,9 @@ class WeddingTimelineModal extends StatelessWidget {
           return FadeTransition(
             opacity: animation,
             child: ImageViewerModal(
-              images: images,
+              images: widget.images,
               initialIndex: initialIndex,
-              journeyItems: journeyItems,
+              journeyItems: widget.journeyItems,
             ),
           );
         },
@@ -1255,34 +1303,13 @@ class _ImageViewerModalState extends State<ImageViewerModal> {
   void _precacheNearbyImages(int index) {
     if (!mounted) return;
 
-    // Precache current image
-    if (index >= 0 && index < widget.images.length) {
+    // Precache only next 1 image to save memory on mobile
+    final nextIndex = index + 1;
+    if (nextIndex < widget.images.length) {
       precacheImage(
-        AssetImage(widget.images[index]),
+        AssetImage(widget.images[nextIndex]),
         context,
       ).catchError((_) {});
-    }
-
-    // Precache next 2 images
-    for (int i = 1; i <= 2; i++) {
-      final nextIndex = index + i;
-      if (nextIndex < widget.images.length) {
-        precacheImage(
-          AssetImage(widget.images[nextIndex]),
-          context,
-        ).catchError((_) {});
-      }
-    }
-
-    // Precache previous 2 images
-    for (int i = 1; i <= 2; i++) {
-      final prevIndex = index - i;
-      if (prevIndex >= 0) {
-        precacheImage(
-          AssetImage(widget.images[prevIndex]),
-          context,
-        ).catchError((_) {});
-      }
     }
   }
 
@@ -1319,8 +1346,8 @@ class _ImageViewerModalState extends State<ImageViewerModal> {
                     child: Image.asset(
                       widget.images[index],
                       fit: BoxFit.contain,
-                      cacheWidth:
-                          2000, // High-res viewer, maintains aspect ratio
+                      cacheWidth: 900,
+                      gaplessPlayback: false,
                       errorBuilder: (context, error, stackTrace) => Container(
                         width: 200,
                         height: 200,
