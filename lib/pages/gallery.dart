@@ -389,8 +389,12 @@ class _GalleryPageState extends State<GalleryPage>
       PageRouteBuilder(
         opaque: false,
         barrierColor: Colors.transparent,
-        transitionDuration: const Duration(milliseconds: 300), // Reduced from 600ms
-        reverseTransitionDuration: const Duration(milliseconds: 250), // Reduced from 400ms
+        transitionDuration: const Duration(
+          milliseconds: 300,
+        ), // Reduced from 600ms
+        reverseTransitionDuration: const Duration(
+          milliseconds: 250,
+        ), // Reduced from 400ms
         pageBuilder: (context, animation, secondaryAnimation) {
           return FadeTransition(
             opacity: Tween<double>(begin: 0.0, end: 1.0).animate(
@@ -629,66 +633,56 @@ class WeddingTimelineModal extends StatelessWidget {
   }
 
   Widget _buildYearImagesGrid(BuildContext context, YearGroup yearGroup) {
-    // Calculate grid height based on number of items
-    final itemCount = yearGroup.images.length;
-    final crossAxisCount = (MediaQuery.of(context).size.width / 300)
-        .floor()
-        .clamp(1, 4);
-    final rowCount = (itemCount / crossAxisCount).ceil();
-    final gridHeight =
-        (rowCount * 500.0) + ((rowCount - 1) * 16.0); // item height + spacing
+    return GridView.builder(
+      shrinkWrap: true,
+      physics: const NeverScrollableScrollPhysics(),
+      gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
+        maxCrossAxisExtent: 300,
+        childAspectRatio: 0.58, // Adjusted to give more vertical space for text
+        crossAxisSpacing: 16,
+        mainAxisSpacing: 16,
+      ),
+      itemCount: yearGroup.images.length,
+      itemBuilder: (context, index) {
+        final imageMetadata = yearGroup.images[index];
+        final globalIndex = images.indexOf(imageMetadata.path);
+        // Skip if not found
+        if (globalIndex < 0) return const SizedBox.shrink();
 
-    return SizedBox(
-      height: gridHeight,
-      child: GridView.builder(
-        gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
-          maxCrossAxisExtent: 300,
-          childAspectRatio: 0.7,
-          crossAxisSpacing: 16,
-          mainAxisSpacing: 16,
-        ),
-        itemCount: yearGroup.images.length,
-        itemBuilder: (context, index) {
-          final imageMetadata = yearGroup.images[index];
-          final globalIndex = images.indexOf(imageMetadata.path);
-          // Skip if not found
-          if (globalIndex < 0) return const SizedBox.shrink();
-
-          return GestureDetector(
-            onTap: () => _showImageViewer(context, globalIndex),
-            child: Hero(
-              tag: 'gallery_image_${imageMetadata.path}',
-              child: Container(
-                width: 280,
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.circular(8),
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.black.withValues(alpha: 0.15),
-                      spreadRadius: 0,
-                      blurRadius: 12,
-                      offset: const Offset(0, 4),
-                    ),
-                  ],
-                ),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    ClipRRect(
+        return GestureDetector(
+          onTap: () => _showImageViewer(context, globalIndex),
+          child: Hero(
+            tag: 'gallery_image_${imageMetadata.path}',
+            child: Container(
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(8),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withValues(alpha: 0.15),
+                    spreadRadius: 0,
+                    blurRadius: 12,
+                    offset: const Offset(0, 4),
+                  ),
+                ],
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Expanded(
+                    flex: 7,
+                    child: ClipRRect(
                       borderRadius: const BorderRadius.only(
                         topLeft: Radius.circular(8),
                         topRight: Radius.circular(8),
                       ),
                       child: Image.asset(
                         imageMetadata.path,
-                        width: 280,
-                        height: 350,
+                        width: double.infinity,
                         fit: BoxFit.cover,
-                        cacheHeight: 700, // Match container height for landscape images
+                        cacheHeight: 700,
                         errorBuilder: (context, error, stackTrace) => Container(
-                          width: 280,
-                          height: 350,
+                          width: double.infinity,
                           color: Colors.grey[300],
                           child: Icon(
                             Icons.image_not_supported,
@@ -698,10 +692,14 @@ class WeddingTimelineModal extends StatelessWidget {
                         ),
                       ),
                     ),
-                    Padding(
+                  ),
+                  Expanded(
+                    flex: 3,
+                    child: Padding(
                       padding: const EdgeInsets.all(16),
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
+                        mainAxisAlignment: MainAxisAlignment.center,
                         children: [
                           Text(
                             imageMetadata.title,
@@ -710,7 +708,7 @@ class WeddingTimelineModal extends StatelessWidget {
                               fontWeight: FontWeight.bold,
                               color: kPrimaryColor,
                             ),
-                            maxLines: 1,
+                            maxLines: 2,
                             overflow: TextOverflow.ellipsis,
                           ),
                           const SizedBox(height: 4),
@@ -726,100 +724,93 @@ class WeddingTimelineModal extends StatelessWidget {
                         ],
                       ),
                     ),
-                  ],
-                ),
+                  ),
+                ],
               ),
             ),
-          );
-        },
-      ),
+          ),
+        );
+      },
     );
   }
 
   Widget _buildYearImagesCarousel(BuildContext context, YearGroup yearGroup) {
-    // Calculate list height
-    final itemHeight = 400.0; // approximate height per item
-    final listHeight =
-        (yearGroup.images.length * itemHeight) +
-        ((yearGroup.images.length - 1) * 16.0);
+    return ListView.builder(
+      shrinkWrap: true,
+      physics: const NeverScrollableScrollPhysics(),
+      itemCount: yearGroup.images.length,
+      itemBuilder: (context, index) {
+        final imageMetadata = yearGroup.images[index];
+        final globalIndex = images.indexOf(imageMetadata.path);
+        // Skip if not found
+        if (globalIndex < 0) return const SizedBox.shrink();
 
-    return SizedBox(
-      height: listHeight,
-      child: ListView.builder(
-        itemCount: yearGroup.images.length,
-        itemBuilder: (context, index) {
-          final imageMetadata = yearGroup.images[index];
-          final globalIndex = images.indexOf(imageMetadata.path);
-          // Skip if not found
-          if (globalIndex < 0) return const SizedBox.shrink();
-
-          return Padding(
-            padding: const EdgeInsets.only(bottom: 16),
-            child: GestureDetector(
-              onTap: () => _showImageViewer(context, globalIndex),
-              child: Hero(
-                tag: 'gallery_image_${imageMetadata.path}',
-                child: Container(
-                  width: double.infinity,
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.circular(12),
-                    boxShadow: [
-                      BoxShadow(
-                        color: Colors.black.withValues(alpha: 0.15),
-                        spreadRadius: 0,
-                        blurRadius: 12,
-                        offset: const Offset(0, 4),
+        return Padding(
+          padding: const EdgeInsets.only(bottom: 16),
+          child: GestureDetector(
+            onTap: () => _showImageViewer(context, globalIndex),
+            child: Hero(
+              tag: 'gallery_image_${imageMetadata.path}',
+              child: Container(
+                width: double.infinity,
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(12),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withValues(alpha: 0.15),
+                      spreadRadius: 0,
+                      blurRadius: 12,
+                      offset: const Offset(0, 4),
+                    ),
+                  ],
+                ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    ClipRRect(
+                      borderRadius: const BorderRadius.only(
+                        topLeft: Radius.circular(12),
+                        topRight: Radius.circular(12),
                       ),
-                    ],
-                  ),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      ClipRRect(
-                        borderRadius: const BorderRadius.only(
-                          topLeft: Radius.circular(12),
-                          topRight: Radius.circular(12),
-                        ),
-                        child: Image.asset(
-                          imageMetadata.path,
+                      child: Image.asset(
+                        imageMetadata.path,
+                        width: double.infinity,
+                        fit: BoxFit.cover,
+                        cacheHeight:
+                            800, // Match container height for landscape images
+                        errorBuilder: (context, error, stackTrace) => Container(
                           width: double.infinity,
-                          fit: BoxFit.cover,
-                          cacheHeight: 800, // Match container height for landscape images
-                          errorBuilder: (context, error, stackTrace) =>
-                              Container(
-                                width: double.infinity,
-                                height: 300,
-                                color: Colors.grey[300],
-                                child: Icon(
-                                  Icons.image_not_supported,
-                                  color: Colors.grey[600],
-                                  size: 48,
-                                ),
-                              ),
-                        ),
-                      ),
-                      if (imageMetadata.title.isNotEmpty)
-                        Padding(
-                          padding: const EdgeInsets.all(12),
-                          child: Text(
-                            imageMetadata.title,
-                            style: TextStyle(
-                              fontSize: 13,
-                              fontWeight: FontWeight.bold,
-                              color: kPrimaryColor,
-                            ),
-                            textAlign: TextAlign.center,
+                          height: 300,
+                          color: Colors.grey[300],
+                          child: Icon(
+                            Icons.image_not_supported,
+                            color: Colors.grey[600],
+                            size: 48,
                           ),
                         ),
-                    ],
-                  ),
+                      ),
+                    ),
+                    if (imageMetadata.title.isNotEmpty)
+                      Padding(
+                        padding: const EdgeInsets.all(12),
+                        child: Text(
+                          imageMetadata.title,
+                          style: TextStyle(
+                            fontSize: 13,
+                            fontWeight: FontWeight.bold,
+                            color: kPrimaryColor,
+                          ),
+                          textAlign: TextAlign.center,
+                        ),
+                      ),
+                  ],
                 ),
               ),
             ),
-          );
-        },
-      ),
+          ),
+        );
+      },
     );
   }
 
@@ -879,7 +870,8 @@ class WeddingTimelineModal extends StatelessWidget {
                               item.imagePath,
                               width: double.infinity,
                               fit: BoxFit.cover,
-                              cacheHeight: 1000, // Match container height for landscape images
+                              cacheHeight:
+                                  1000, // Match container height for landscape images
                               errorBuilder: (context, error, stackTrace) =>
                                   Container(
                                     decoration: BoxDecoration(
@@ -1038,7 +1030,8 @@ class WeddingTimelineModal extends StatelessWidget {
                   width: double.infinity,
                   height: imageHeight,
                   fit: BoxFit.cover,
-                  cacheHeight: (imageHeight * 2).toInt(), // Match container height
+                  cacheHeight: (imageHeight * 2)
+                      .toInt(), // Match container height
                   errorBuilder: (context, error, stackTrace) => Container(
                     width: double.infinity,
                     height: imageHeight,
@@ -1138,7 +1131,8 @@ class WeddingTimelineModal extends StatelessWidget {
                   child: Image.asset(
                     images[index],
                     fit: BoxFit.cover,
-                    cacheHeight: 200, // Match thumbnail height for landscape images
+                    cacheHeight:
+                        200, // Match thumbnail height for landscape images
                   ),
                 ),
               ),
@@ -1173,7 +1167,8 @@ class WeddingTimelineModal extends StatelessWidget {
                   child: Image.asset(
                     images[index],
                     fit: BoxFit.cover,
-                    cacheHeight: 300, // Match thumbnail height for landscape images
+                    cacheHeight:
+                        300, // Match thumbnail height for landscape images
                     errorBuilder: (context, error, stackTrace) => Container(
                       decoration: BoxDecoration(
                         gradient: LinearGradient(
@@ -1324,7 +1319,8 @@ class _ImageViewerModalState extends State<ImageViewerModal> {
                     child: Image.asset(
                       widget.images[index],
                       fit: BoxFit.contain,
-                      cacheWidth: 2000, // High-res viewer, maintains aspect ratio
+                      cacheWidth:
+                          2000, // High-res viewer, maintains aspect ratio
                       errorBuilder: (context, error, stackTrace) => Container(
                         width: 200,
                         height: 200,
