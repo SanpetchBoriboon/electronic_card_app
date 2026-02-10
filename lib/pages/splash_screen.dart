@@ -22,12 +22,12 @@ class _SplashScreenState extends State<SplashScreen>
     super.initState();
 
     _animationController = AnimationController(
-      duration: const Duration(milliseconds: 2000),
+      duration: const Duration(milliseconds: 1500), // Reduced from 2000ms - SNAPPY!
       vsync: this,
     );
 
     _whiteFadeController = AnimationController(
-      duration: const Duration(milliseconds: 800),
+      duration: const Duration(milliseconds: 500), // Reduced from 800ms
       vsync: this,
     );
 
@@ -52,8 +52,8 @@ class _SplashScreenState extends State<SplashScreen>
     // Start initial animation
     _animationController.forward();
 
-    // Navigate after animation completes
-    Future.delayed(const Duration(milliseconds: 2500), () {
+    // Navigate after animation completes - MUCH FASTER!
+    Future.delayed(const Duration(milliseconds: 1500), () { // Reduced from 2500ms
       if (mounted) {
         _whiteFadeController.forward().then((_) {
           if (mounted) {
@@ -61,7 +61,7 @@ class _SplashScreenState extends State<SplashScreen>
               PageRouteBuilder(
                 pageBuilder: (context, animation, secondaryAnimation) =>
                     const MyHomePage(),
-                transitionDuration: const Duration(milliseconds: 1000),
+                transitionDuration: const Duration(milliseconds: 300), // Reduced from 1000ms
                 transitionsBuilder:
                     (context, animation, secondaryAnimation, child) {
                       return FadeTransition(opacity: animation, child: child);

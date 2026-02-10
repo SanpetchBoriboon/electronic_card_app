@@ -37,7 +37,6 @@ dependencies:
     image_picker: ^1.0.4
     http: ^1.1.0
     shared_preferences: ^2.2.2
-    google_fonts: ^6.1.0
     url_launcher: ^6.3.2
     http_parser: ^4.1.2
     intl: ^0.19.0
@@ -108,6 +107,7 @@ flutter:
     # For details regarding fonts from package dependencies,
     # see https://flutter.dev/to/font-from-package
     fonts:
+        # Crimson Pro - Invitation text & headings (4 variants kept, 12 removed)
         - family: Crimson_Pro
           fonts:
               - asset: assets/fonts/CrimsonPro-Regular.ttf
@@ -122,47 +122,26 @@ flutter:
                 style: italic
               - asset: assets/fonts/CrimsonPro-SemiBold.ttf
                 weight: 600
-              - asset: assets/fonts/CrimsonPro-SemiBoldItalic.ttf
-                weight: 600
-                style: italic
               - asset: assets/fonts/CrimsonPro-Bold.ttf
                 weight: 700
-              - asset: assets/fonts/CrimsonPro-BoldItalic.ttf
-                weight: 700
-                style: italic
-              - asset: assets/fonts/CrimsonPro-ExtraBold.ttf
-                weight: 800
-              - asset: assets/fonts/CrimsonPro-ExtraBoldItalic.ttf
-                weight: 800
-                style: italic
-              - asset: assets/fonts/CrimsonPro-Black.ttf
-                weight: 900
-              - asset: assets/fonts/CrimsonPro-BlackItalic.ttf
-                weight: 900
-                style: italic
+
+        # Glacial Indifference - Body text (2 variants kept)
         - family: Glacial_Indifference
           fonts:
               - asset: assets/fonts/GlacialIndifference-Regular.otf
                 weight: 400
               - asset: assets/fonts/GlacialIndifference-Bold.otf
                 weight: 700
+
+        # Season - Decorative text (2 variants kept, 4 removed)
         - family: Season
           fonts:
               - asset: assets/fonts/fonnts.com-theseasons-reg.otf
                 weight: 400
-              - asset: assets/fonts/fonnts.com-theseasons-it.otf
-                weight: 400
-                style: italic
-              - asset: assets/fonts/fonnts.com-theseasons-lt.otf
-                weight: 300
-              - asset: assets/fonts/fonnts.com-theseasons-ltit.otf
-                weight: 300
-                style: italic
               - asset: assets/fonts/fonnts.com-theseasons-bd.otf
                 weight: 700
-              - asset: assets/fonts/fonnts.com-theseasons-bdit.otf
-                weight: 700
-                style: italic
+
+        # TT Hoves Pro - Titles & buttons (4 variants kept, 10 removed)
         - family: TT_Hoves_Pro
           fonts:
               - asset: assets/fonts/TT Hoves Pro Trial Regular.ttf
@@ -170,80 +149,25 @@ flutter:
               - asset: assets/fonts/TT Hoves Pro Trial Italic.ttf
                 weight: 400
                 style: italic
-              - asset: assets/fonts/TT Hoves Pro Trial Light.ttf
-                weight: 300
-              - asset: assets/fonts/TT Hoves Pro Trial Light Italic.ttf
-                weight: 300
-                style: italic
               - asset: assets/fonts/TT Hoves Pro Trial Medium.ttf
                 weight: 500
-              - asset: assets/fonts/TT Hoves Pro Trial Medium Italic.ttf
-                weight: 500
-                style: italic
               - asset: assets/fonts/TT Hoves Pro Trial DemiBold.ttf
                 weight: 600
-              - asset: assets/fonts/TT Hoves Pro Trial DemiBold Italic.ttf
-                weight: 600
-                style: italic
-              - asset: assets/fonts/TT Hoves Pro Trial Bold.ttf
-                weight: 700
-              - asset: assets/fonts/TT Hoves Pro Trial Bold Italic.ttf
-                weight: 700
-                style: italic
-              - asset: assets/fonts/TT Hoves Pro Trial ExtraBold.ttf
-                weight: 800
-              - asset: assets/fonts/TT Hoves Pro Trial ExtraBold Italic.ttf
-                weight: 800
-                style: italic
-              - asset: assets/fonts/TT Hoves Pro Trial Black.ttf
-                weight: 900
-              - asset: assets/fonts/TT Hoves Pro Trial Black Italic.ttf
-                weight: 900
-                style: italic
+
+        # Kanit - Default font & Thai text (7 variants kept, 13 removed)
         - family: Kanit
           fonts:
               - asset: assets/fonts/Kanit-Thin.ttf
                 weight: 100
-              - asset: assets/fonts/Kanit-ThinItalic.ttf
-                weight: 100
-                style: italic
               - asset: assets/fonts/Kanit-ExtraLight.ttf
                 weight: 200
-              - asset: assets/fonts/Kanit-ExtraLightItalic.ttf
-                weight: 200
-                style: italic
               - asset: assets/fonts/Kanit-Light.ttf
                 weight: 300
-              - asset: assets/fonts/Kanit-LightItalic.ttf
-                weight: 300
-                style: italic
               - asset: assets/fonts/Kanit-Regular.ttf
                 weight: 400
-              - asset: assets/fonts/Kanit-Italic.ttf
-                weight: 400
-                style: italic
               - asset: assets/fonts/Kanit-Medium.ttf
                 weight: 500
-              - asset: assets/fonts/Kanit-MediumItalic.ttf
-                weight: 500
-                style: italic
               - asset: assets/fonts/Kanit-SemiBold.ttf
                 weight: 600
-              - asset: assets/fonts/Kanit-SemiBoldItalic.ttf
-                weight: 600
-                style: italic
               - asset: assets/fonts/Kanit-Bold.ttf
                 weight: 700
-              - asset: assets/fonts/Kanit-BoldItalic.ttf
-                weight: 700
-                style: italic
-              - asset: assets/fonts/Kanit-ExtraBold.ttf
-                weight: 800
-              - asset: assets/fonts/Kanit-ExtraBoldItalic.ttf
-                weight: 800
-                style: italic
-              - asset: assets/fonts/Kanit-Black.ttf
-                weight: 900
-              - asset: assets/fonts/Kanit-BlackItalic.ttf
-                weight: 900
-                style: italic

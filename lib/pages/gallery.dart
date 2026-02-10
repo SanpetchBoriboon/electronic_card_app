@@ -228,6 +228,8 @@ class _GalleryPageState extends State<GalleryPage>
                                         color: kPrimaryColor,
                                         fontWeight: FontWeight.w500,
                                       ),
+                                      maxLines: 1,
+                                      overflow: TextOverflow.ellipsis,
                                     ),
                                   ],
                                 ),
@@ -235,10 +237,12 @@ class _GalleryPageState extends State<GalleryPage>
                             : Image.asset(
                                 'assets/images/perview/gallery-preview.GIF',
                                 fit: BoxFit.cover,
+                                cacheHeight: 600, // Match preview height
                                 errorBuilder: (context, error, stackTrace) {
                                   return Image.asset(
                                     'assets/images/gallery-preview.jpeg',
                                     fit: BoxFit.cover,
+                                    cacheHeight: 600,
                                     errorBuilder: (context, error, stackTrace) {
                                       return Container(
                                         height: 300,
@@ -385,8 +389,8 @@ class _GalleryPageState extends State<GalleryPage>
       PageRouteBuilder(
         opaque: false,
         barrierColor: Colors.transparent,
-        transitionDuration: const Duration(milliseconds: 600),
-        reverseTransitionDuration: const Duration(milliseconds: 400),
+        transitionDuration: const Duration(milliseconds: 300), // Reduced from 600ms
+        reverseTransitionDuration: const Duration(milliseconds: 250), // Reduced from 400ms
         pageBuilder: (context, animation, secondaryAnimation) {
           return FadeTransition(
             opacity: Tween<double>(begin: 0.0, end: 1.0).animate(
@@ -681,6 +685,7 @@ class WeddingTimelineModal extends StatelessWidget {
                         width: 280,
                         height: 350,
                         fit: BoxFit.cover,
+                        cacheHeight: 700, // Match container height for landscape images
                         errorBuilder: (context, error, stackTrace) => Container(
                           width: 280,
                           height: 350,
@@ -780,6 +785,7 @@ class WeddingTimelineModal extends StatelessWidget {
                           imageMetadata.path,
                           width: double.infinity,
                           fit: BoxFit.cover,
+                          cacheHeight: 800, // Match container height for landscape images
                           errorBuilder: (context, error, stackTrace) =>
                               Container(
                                 width: double.infinity,
@@ -873,6 +879,7 @@ class WeddingTimelineModal extends StatelessWidget {
                               item.imagePath,
                               width: double.infinity,
                               fit: BoxFit.cover,
+                              cacheHeight: 1000, // Match container height for landscape images
                               errorBuilder: (context, error, stackTrace) =>
                                   Container(
                                     decoration: BoxDecoration(
@@ -1031,6 +1038,7 @@ class WeddingTimelineModal extends StatelessWidget {
                   width: double.infinity,
                   height: imageHeight,
                   fit: BoxFit.cover,
+                  cacheHeight: (imageHeight * 2).toInt(), // Match container height
                   errorBuilder: (context, error, stackTrace) => Container(
                     width: double.infinity,
                     height: imageHeight,
@@ -1127,7 +1135,11 @@ class WeddingTimelineModal extends StatelessWidget {
                 ),
                 child: ClipRRect(
                   borderRadius: BorderRadius.circular(8),
-                  child: Image.asset(images[index], fit: BoxFit.cover),
+                  child: Image.asset(
+                    images[index],
+                    fit: BoxFit.cover,
+                    cacheHeight: 200, // Match thumbnail height for landscape images
+                  ),
                 ),
               ),
             ),
@@ -1161,6 +1173,7 @@ class WeddingTimelineModal extends StatelessWidget {
                   child: Image.asset(
                     images[index],
                     fit: BoxFit.cover,
+                    cacheHeight: 300, // Match thumbnail height for landscape images
                     errorBuilder: (context, error, stackTrace) => Container(
                       decoration: BoxDecoration(
                         gradient: LinearGradient(
@@ -1311,6 +1324,7 @@ class _ImageViewerModalState extends State<ImageViewerModal> {
                     child: Image.asset(
                       widget.images[index],
                       fit: BoxFit.contain,
+                      cacheWidth: 2000, // High-res viewer, maintains aspect ratio
                       errorBuilder: (context, error, stackTrace) => Container(
                         width: 200,
                         height: 200,
