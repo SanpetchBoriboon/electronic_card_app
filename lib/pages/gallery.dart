@@ -505,8 +505,8 @@ class _WeddingTimelineModalState extends State<WeddingTimelineModal> {
                       parent: AlwaysScrollableScrollPhysics(),
                     ),
                     padding: EdgeInsets.symmetric(
-                      horizontal: isDesktop ? 60 : 20,
-                      vertical: 20,
+                      horizontal: isDesktop ? 60 : 24,
+                      vertical: 24,
                     ),
                     child: Center(
                       child: Container(
@@ -662,112 +662,127 @@ class _WeddingTimelineModalState extends State<WeddingTimelineModal> {
   }
 
   Widget _buildYearImagesGrid(BuildContext context, YearGroup yearGroup) {
-    return GridView.builder(
-      shrinkWrap: true,
-      physics: const NeverScrollableScrollPhysics(),
-      gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
-        maxCrossAxisExtent: 300,
-        childAspectRatio: 0.58, // Adjusted to give more vertical space for text
-        crossAxisSpacing: 16,
-        mainAxisSpacing: 16,
-      ),
-      itemCount: yearGroup.images.length,
-      itemBuilder: (context, index) {
-        final imageMetadata = yearGroup.images[index];
-        final globalIndex = widget.images.indexOf(imageMetadata.path);
-        // Skip if not found
-        if (globalIndex < 0) return const SizedBox.shrink();
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
+      child: GridView.builder(
+        shrinkWrap: true,
+        physics: const NeverScrollableScrollPhysics(),
+        gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
+          maxCrossAxisExtent: 280,
+          childAspectRatio: 0.52, // More space for text content
+          crossAxisSpacing: 20,
+          mainAxisSpacing: 20,
+        ),
+        itemCount: yearGroup.images.length,
+        itemBuilder: (context, index) {
+          final imageMetadata = yearGroup.images[index];
+          final globalIndex = widget.images.indexOf(imageMetadata.path);
+          // Skip if not found
+          if (globalIndex < 0) return const SizedBox.shrink();
 
-        return GestureDetector(
-          onTap: () => _showImageViewer(context, globalIndex),
-          child: Hero(
-            tag: 'gallery_image_${imageMetadata.path}',
-            child: Container(
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(8),
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.black.withValues(alpha: 0.15),
-                    spreadRadius: 0,
-                    blurRadius: 12,
-                    offset: const Offset(0, 4),
-                  ),
-                ],
-              ),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Expanded(
-                    flex: 7,
-                    child: ClipRRect(
-                      borderRadius: const BorderRadius.only(
-                        topLeft: Radius.circular(8),
-                        topRight: Radius.circular(8),
+          return GestureDetector(
+            onTap: () => _showImageViewer(context, globalIndex),
+            child: Padding(
+              padding: const EdgeInsets.all(6),
+              child: Hero(
+                tag: 'gallery_image_${imageMetadata.path}',
+                child: Container(
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(8),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black.withValues(alpha: 0.15),
+                        spreadRadius: 0,
+                        blurRadius: 12,
+                        offset: const Offset(0, 4),
                       ),
-                      child: Image.asset(
-                        imageMetadata.path,
-                        width: double.infinity,
-                        fit: BoxFit.cover,
-                        cacheHeight: 300,
-                        gaplessPlayback: false,
-                        errorBuilder: (context, error, stackTrace) => Container(
-                          width: double.infinity,
-                          color: Colors.grey[300],
-                          child: Icon(
-                            Icons.image_not_supported,
-                            color: Colors.grey[600],
-                            size: 48,
+                    ],
+                  ),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Expanded(
+                        flex: 7,
+                        child: ClipRRect(
+                          borderRadius: const BorderRadius.only(
+                            topLeft: Radius.circular(8),
+                            topRight: Radius.circular(8),
+                          ),
+                          child: Image.asset(
+                            imageMetadata.path,
+                            width: double.infinity,
+                            fit: BoxFit.cover,
+                            cacheHeight: 500,
+                            filterQuality: FilterQuality.high,
+                            gaplessPlayback: false,
+                            errorBuilder: (context, error, stackTrace) =>
+                                Container(
+                                  width: double.infinity,
+                                  color: Colors.grey[300],
+                                  child: Icon(
+                                    Icons.image_not_supported,
+                                    color: Colors.grey[600],
+                                    size: 48,
+                                  ),
+                                ),
                           ),
                         ),
                       ),
-                    ),
-                  ),
-                  Expanded(
-                    flex: 3,
-                    child: Padding(
-                      padding: const EdgeInsets.all(16),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Text(
-                            imageMetadata.title,
-                            style: TextStyle(
-                              fontSize: 14,
-                              fontWeight: FontWeight.bold,
-                              color: kPrimaryColor,
-                            ),
-                            maxLines: 2,
-                            overflow: TextOverflow.ellipsis,
+                      Expanded(
+                        flex: 4,
+                        child: Padding(
+                          padding: const EdgeInsets.all(14),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            mainAxisAlignment: MainAxisAlignment.start,
+                            children: [
+                              if (imageMetadata.title.isNotEmpty) ...[
+                                Text(
+                                  imageMetadata.title,
+                                  style: TextStyle(
+                                    fontSize: 13,
+                                    fontWeight: FontWeight.bold,
+                                    color: kPrimaryColor,
+                                    height: 1.3,
+                                  ),
+                                  maxLines: 2,
+                                  overflow: TextOverflow.ellipsis,
+                                ),
+                                const SizedBox(height: 6),
+                              ],
+                              if (imageMetadata.description.isNotEmpty)
+                                Expanded(
+                                  child: Text(
+                                    imageMetadata.description,
+                                    style: TextStyle(
+                                      fontSize: 11,
+                                      color: Colors.grey[700],
+                                      height: 1.4,
+                                    ),
+                                    maxLines: 3,
+                                    overflow: TextOverflow.ellipsis,
+                                  ),
+                                ),
+                            ],
                           ),
-                          const SizedBox(height: 4),
-                          Text(
-                            imageMetadata.description,
-                            style: TextStyle(
-                              fontSize: 12,
-                              color: Colors.grey[600],
-                            ),
-                            maxLines: 2,
-                            overflow: TextOverflow.ellipsis,
-                          ),
-                        ],
+                        ),
                       ),
-                    ),
+                    ],
                   ),
-                ],
+                ),
               ),
             ),
-          ),
-        );
-      },
+          );
+        },
+      ),
     );
   }
 
   Widget _buildYearImagesCarousel(BuildContext context, YearGroup yearGroup) {
     // Use PageView for true lazy loading - only loads visible images
     return SizedBox(
-      height: 450,
+      height: 520,
       child: PageView.builder(
         itemCount: yearGroup.images.length,
         itemBuilder: (context, index) {
@@ -777,7 +792,7 @@ class _WeddingTimelineModalState extends State<WeddingTimelineModal> {
           if (globalIndex < 0) return const SizedBox.shrink();
 
           return Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 8),
+            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
             child: GestureDetector(
               onTap: () => _showImageViewer(context, globalIndex),
               child: Hero(
@@ -824,33 +839,51 @@ class _WeddingTimelineModalState extends State<WeddingTimelineModal> {
                           ),
                         ),
                       ),
-                      if (imageMetadata.title.isNotEmpty)
-                        Padding(
-                          padding: const EdgeInsets.all(12),
-                          child: Column(
-                            children: [
+                      Padding(
+                        padding: const EdgeInsets.all(14),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            if (imageMetadata.title.isNotEmpty) ...[
                               Text(
                                 imageMetadata.title,
                                 style: TextStyle(
-                                  fontSize: 13,
+                                  fontSize: 14,
                                   fontWeight: FontWeight.bold,
                                   color: kPrimaryColor,
+                                  height: 1.3,
                                 ),
-                                textAlign: TextAlign.center,
                                 maxLines: 2,
                                 overflow: TextOverflow.ellipsis,
                               ),
-                              const SizedBox(height: 4),
+                              const SizedBox(height: 6),
+                            ],
+                            if (imageMetadata.description.isNotEmpty) ...[
                               Text(
+                                imageMetadata.description,
+                                style: TextStyle(
+                                  fontSize: 12,
+                                  color: Colors.grey[700],
+                                  height: 1.4,
+                                ),
+                                maxLines: 3,
+                                overflow: TextOverflow.ellipsis,
+                              ),
+                              const SizedBox(height: 8),
+                            ],
+                            Center(
+                              child: Text(
                                 '${index + 1} / ${yearGroup.images.length}',
                                 style: TextStyle(
                                   fontSize: 11,
                                   color: Colors.grey[600],
+                                  fontWeight: FontWeight.w500,
                                 ),
                               ),
-                            ],
-                          ),
+                            ),
+                          ],
                         ),
+                      ),
                     ],
                   ),
                 ),
@@ -1046,99 +1079,103 @@ class _WeddingTimelineModalState extends State<WeddingTimelineModal> {
     final cardWidth = isDesktop ? 280.0 : 160.0;
     final imageHeight = isDesktop ? 350.0 : 200.0;
 
-    return GestureDetector(
-      onTap: () => _showImageViewer(context, widget.journeyItems.indexOf(item)),
-      child: Container(
-        width: cardWidth,
-        decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.circular(0),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withValues(alpha: 0.08),
-              spreadRadius: 0,
-              blurRadius: 12,
-              offset: const Offset(0, 4),
-            ),
-          ],
-        ),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            // Image
-            ClipRRect(
-              borderRadius: const BorderRadius.only(
-                topLeft: Radius.circular(0),
-                topRight: Radius.circular(0),
+    return Padding(
+      padding: const EdgeInsets.all(6),
+      child: GestureDetector(
+        onTap: () =>
+            _showImageViewer(context, widget.journeyItems.indexOf(item)),
+        child: Container(
+          width: cardWidth,
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(0),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withValues(alpha: 0.08),
+                spreadRadius: 0,
+                blurRadius: 12,
+                offset: const Offset(0, 4),
               ),
-              child: Hero(
-                tag: 'gallery_image_${item.id}',
-                child: Image.asset(
-                  item.imagePath,
-                  width: double.infinity,
-                  height: imageHeight,
-                  fit: BoxFit.cover,
-                  cacheHeight: isDesktop ? 500 : 350,
-                  gaplessPlayback: false,
-                  errorBuilder: (context, error, stackTrace) => Container(
+            ],
+          ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              // Image
+              ClipRRect(
+                borderRadius: const BorderRadius.only(
+                  topLeft: Radius.circular(0),
+                  topRight: Radius.circular(0),
+                ),
+                child: Hero(
+                  tag: 'gallery_image_${item.id}',
+                  child: Image.asset(
+                    item.imagePath,
                     width: double.infinity,
                     height: imageHeight,
-                    decoration: BoxDecoration(
-                      gradient: LinearGradient(
-                        begin: Alignment.topLeft,
-                        end: Alignment.bottomRight,
-                        colors: [
-                          kAccentColor.withValues(alpha: 0.3),
-                          kAccentColor.withValues(alpha: 0.1),
-                        ],
+                    fit: BoxFit.cover,
+                    cacheHeight: isDesktop ? 500 : 350,
+                    gaplessPlayback: false,
+                    errorBuilder: (context, error, stackTrace) => Container(
+                      width: double.infinity,
+                      height: imageHeight,
+                      decoration: BoxDecoration(
+                        gradient: LinearGradient(
+                          begin: Alignment.topLeft,
+                          end: Alignment.bottomRight,
+                          colors: [
+                            kAccentColor.withValues(alpha: 0.3),
+                            kAccentColor.withValues(alpha: 0.1),
+                          ],
+                        ),
                       ),
-                    ),
-                    child: Icon(
-                      Icons.photo_camera_outlined,
-                      color: kAccentColor.withValues(alpha: 0.6),
-                      size: 48,
+                      child: Icon(
+                        Icons.photo_camera_outlined,
+                        color: kAccentColor.withValues(alpha: 0.6),
+                        size: 48,
+                      ),
                     ),
                   ),
                 ),
               ),
-            ),
 
-            // Content
-            Padding(
-              padding: EdgeInsets.all(isDesktop ? 20.0 : 12.0),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  // Title
-                  Text(
-                    item.title.toUpperCase(),
-                    style: TextStyle(
-                      fontSize: isDesktop ? 14 : 12,
-                      fontWeight: FontWeight.bold,
-                      color: const Color(0xFF2C2C2C),
-                      letterSpacing: 0.5,
-                      height: 1.3,
-                    ),
-                  ),
-                  if (isDesktop) ...[
-                    const SizedBox(height: 8),
-
-                    // Description
+              // Content
+              Padding(
+                padding: EdgeInsets.all(isDesktop ? 20.0 : 12.0),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    // Title
                     Text(
-                      item.description,
+                      item.title.toUpperCase(),
                       style: TextStyle(
-                        fontSize: 12,
-                        color: Colors.grey[600],
-                        height: 1.4,
+                        fontSize: isDesktop ? 14 : 12,
+                        fontWeight: FontWeight.bold,
+                        color: const Color(0xFF2C2C2C),
+                        letterSpacing: 0.5,
+                        height: 1.3,
                       ),
-                      maxLines: 2,
-                      overflow: TextOverflow.ellipsis,
                     ),
+                    if (isDesktop) ...[
+                      const SizedBox(height: 8),
+
+                      // Description
+                      Text(
+                        item.description,
+                        style: TextStyle(
+                          fontSize: 12,
+                          color: Colors.grey[600],
+                          height: 1.4,
+                        ),
+                        maxLines: 2,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ],
                   ],
-                ],
+                ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );
@@ -1152,35 +1189,38 @@ class _WeddingTimelineModalState extends State<WeddingTimelineModal> {
         physics: const NeverScrollableScrollPhysics(),
         gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
           crossAxisCount: 4,
-          crossAxisSpacing: 16,
-          mainAxisSpacing: 16,
+          crossAxisSpacing: 20,
+          mainAxisSpacing: 20,
           childAspectRatio: 0.75,
         ),
         itemCount: widget.images.length,
         itemBuilder: (context, index) {
           return GestureDetector(
             onTap: () => _showImageViewer(context, index),
-            child: Hero(
-              tag: 'gallery_image_${widget.images[index]}',
-              child: Container(
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(8),
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.black.withValues(alpha: 0.1),
-                      spreadRadius: 0,
-                      blurRadius: 8,
-                      offset: const Offset(0, 4),
+            child: Padding(
+              padding: const EdgeInsets.all(4),
+              child: Hero(
+                tag: 'gallery_image_${widget.images[index]}',
+                child: Container(
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(8),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black.withValues(alpha: 0.1),
+                        spreadRadius: 0,
+                        blurRadius: 8,
+                        offset: const Offset(0, 4),
+                      ),
+                    ],
+                  ),
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(8),
+                    child: Image.asset(
+                      widget.images[index],
+                      fit: BoxFit.cover,
+                      cacheHeight: 250,
+                      gaplessPlayback: false,
                     ),
-                  ],
-                ),
-                child: ClipRRect(
-                  borderRadius: BorderRadius.circular(8),
-                  child: Image.asset(
-                    widget.images[index],
-                    fit: BoxFit.cover,
-                    cacheHeight: 250,
-                    gaplessPlayback: false,
                   ),
                 ),
               ),
@@ -1198,7 +1238,10 @@ class _WeddingTimelineModalState extends State<WeddingTimelineModal> {
             return GestureDetector(
               onTap: () => _showImageViewer(context, index),
               child: Container(
-                margin: const EdgeInsets.symmetric(horizontal: 16),
+                margin: const EdgeInsets.symmetric(
+                  horizontal: 20,
+                  vertical: 12,
+                ),
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(12),
                   boxShadow: [
