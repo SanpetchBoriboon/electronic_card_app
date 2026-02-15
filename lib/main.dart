@@ -82,12 +82,12 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
   int _currentIndex = 0;
   late PageController _pageController;
   bool _hasShownWelcomePopup = false;
+  bool _isWeddingTime = false; // Track if wedding time has arrived
 
   @override
   void initState() {
     super.initState();
-    // _weddingDate = DateTime(2026, 2, 26); // Wedding date: February 26, 2026
-    _weddingDate = DateTime(2026, 2, 15);
+    _weddingDate = DateTime(2026, 2, 26); // Wedding date: February 26, 2026
     _startTimer();
     _currentIndex = widget.initialIndex; // Set initial index
 
@@ -112,18 +112,28 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
 
   void _startTimer() {
     _timer = Timer.periodic(const Duration(seconds: 1), (timer) {
-      setState(() {
-        _timeRemaining = _weddingDate.difference(DateTime.now());
+      final now = DateTime.now();
+      final difference = _weddingDate.difference(now);
 
-        // Check if countdown reached zero
-        if (_timeRemaining.inSeconds <= 0 && !_hasShownWelcomePopup) {
-          _hasShownWelcomePopup = true;
-          // Show welcome popup after a short delay to ensure UI is ready
-          Future.delayed(const Duration(milliseconds: 500), () {
-            if (mounted) {
-              _showWelcomePopup();
-            }
-          });
+      setState(() {
+        if (difference.inSeconds <= 0) {
+          // Wedding time has arrived!
+          _isWeddingTime = true;
+          _timeRemaining = Duration.zero;
+          _timer.cancel(); // Stop the timer
+
+          // Show welcome popup once
+          if (!_hasShownWelcomePopup) {
+            _hasShownWelcomePopup = true;
+            Future.delayed(const Duration(milliseconds: 500), () {
+              if (mounted) {
+                _showWelcomePopup();
+              }
+            });
+          }
+        } else {
+          // Still counting down
+          _timeRemaining = difference;
         }
       });
     });
@@ -216,6 +226,14 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
                 ElevatedButton(
                   onPressed: () {
                     Navigator.of(context).pop();
+                    // Flip to back card after closing popup
+                    if (!_isFlipped) {
+                      Future.delayed(const Duration(milliseconds: 300), () {
+                        if (mounted) {
+                          _flipCard();
+                        }
+                      });
+                    }
                   },
                   style: ElevatedButton.styleFrom(
                     backgroundColor: kPrimaryColor,
@@ -245,8 +263,11 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
   }
 
   @override
+  @override
   void dispose() {
-    _timer.cancel();
+    if (_timer.isActive) {
+      _timer.cancel();
+    }
     _flipController.dispose();
     _pageController.dispose();
     super.dispose();
@@ -591,25 +612,26 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
 
               const SizedBox(height: 20),
 
-              // Countdown timer
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                children: [
-                  _buildCountdownItem(days.toString().padLeft(2, '0'), 'Day'),
-                  _buildCountdownItem(
-                    hours.toString().padLeft(2, '0'),
-                    'Hours',
-                  ),
-                  _buildCountdownItem(
-                    minutes.toString().padLeft(2, '0'),
-                    'Minutes',
-                  ),
-                  _buildCountdownItem(
-                    seconds.toString().padLeft(2, '0'),
-                    'Second',
-                  ),
-                ],
-              ),
+              // Countdown timer - Hide when wedding time arrives
+              if (!_isWeddingTime)
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  children: [
+                    _buildCountdownItem(days.toString().padLeft(2, '0'), 'Day'),
+                    _buildCountdownItem(
+                      hours.toString().padLeft(2, '0'),
+                      'Hours',
+                    ),
+                    _buildCountdownItem(
+                      minutes.toString().padLeft(2, '0'),
+                      'Minutes',
+                    ),
+                    _buildCountdownItem(
+                      seconds.toString().padLeft(2, '0'),
+                      'Second',
+                    ),
+                  ],
+                ),
             ],
           ),
         ),
