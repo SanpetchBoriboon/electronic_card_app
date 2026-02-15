@@ -17,8 +17,10 @@ void main() {
   WidgetsFlutterBinding.ensureInitialized();
 
   // Set image cache limits (30MB cache, 200 images max) - Optimized for mobile!
-  PaintingBinding.instance.imageCache.maximumSizeBytes = 30 * 1024 * 1024; // 30MB (reduced from 100MB)
-  PaintingBinding.instance.imageCache.maximumSize = 200; // 200 images (reduced from 1000)
+  PaintingBinding.instance.imageCache.maximumSizeBytes =
+      30 * 1024 * 1024; // 30MB (reduced from 100MB)
+  PaintingBinding.instance.imageCache.maximumSize =
+      200; // 200 images (reduced from 1000)
 
   runApp(const MyApp());
 }
@@ -79,6 +81,8 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
   bool _isFlipped = false;
   int _currentIndex = 0;
   late PageController _pageController;
+  bool _hasShownWelcomePopup = false;
+  bool _isWeddingTime = false; // Track if wedding time has arrived
 
   @override
   void initState() {
@@ -108,8 +112,29 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
 
   void _startTimer() {
     _timer = Timer.periodic(const Duration(seconds: 1), (timer) {
+      final now = DateTime.now();
+      final difference = _weddingDate.difference(now);
+
       setState(() {
-        _timeRemaining = _weddingDate.difference(DateTime.now());
+        if (difference.inSeconds <= 0) {
+          // Wedding time has arrived!
+          _isWeddingTime = true;
+          _timeRemaining = Duration.zero;
+          _timer.cancel(); // Stop the timer
+
+          // Show welcome popup once
+          if (!_hasShownWelcomePopup) {
+            _hasShownWelcomePopup = true;
+            Future.delayed(const Duration(milliseconds: 500), () {
+              if (mounted) {
+                _showWelcomePopup();
+              }
+            });
+          }
+        } else {
+          // Still counting down
+          _timeRemaining = difference;
+        }
       });
     });
   }
@@ -125,9 +150,124 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
     });
   }
 
+  void _showWelcomePopup() {
+    showDialog(
+      context: context,
+      barrierDismissible: true,
+      builder: (BuildContext context) {
+        return Dialog(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(20),
+          ),
+          child: Container(
+            padding: const EdgeInsets.all(30),
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(20),
+            ),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                // Project Logo
+                Image.asset(
+                  'assets/images/main-logo.png',
+                  height: 150,
+                  width: 150,
+                  fit: BoxFit.contain,
+                  errorBuilder: (context, error, stackTrace) {
+                    return Container(
+                      height: 150,
+                      width: 150,
+                      decoration: BoxDecoration(
+                        border: Border.all(color: kPrimaryColor),
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                      child: Icon(
+                        Icons.favorite,
+                        size: 60,
+                        color: kPrimaryColor,
+                      ),
+                    );
+                  },
+                ),
+                const SizedBox(height: 25),
+                // Welcome text
+                Text(
+                  'ยินดีต้อนรับ!',
+                  style: AppFonts.kanit(
+                    fontSize: 32,
+                    fontWeight: AppFonts.bold,
+                    color: kPrimaryColor,
+                  ),
+                  textAlign: TextAlign.center,
+                ),
+                const SizedBox(height: 15),
+                Text(
+                  'วันพิเศษของเราถึงแล้ว!',
+                  style: AppFonts.kanit(
+                    fontSize: 20,
+                    fontWeight: AppFonts.regular,
+                    color: kPrimaryColor,
+                  ),
+                  textAlign: TextAlign.center,
+                ),
+                const SizedBox(height: 10),
+                Text(
+                  'ขอบคุณที่มาร่วมแบ่งปันความสุขกับเรา',
+                  style: AppFonts.kanit(
+                    fontSize: 16,
+                    fontWeight: AppFonts.light,
+                    color: Colors.grey[700],
+                  ),
+                  textAlign: TextAlign.center,
+                ),
+                const SizedBox(height: 25),
+                // Close button
+                ElevatedButton(
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                    // Flip to back card after closing popup
+                    if (!_isFlipped) {
+                      Future.delayed(const Duration(milliseconds: 300), () {
+                        if (mounted) {
+                          _flipCard();
+                        }
+                      });
+                    }
+                  },
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: kPrimaryColor,
+                    foregroundColor: Colors.white,
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 40,
+                      vertical: 15,
+                    ),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(25),
+                    ),
+                  ),
+                  child: Text(
+                    'เข้าสู่งานแต่งงาน',
+                    style: AppFonts.kanit(
+                      fontSize: 16,
+                      fontWeight: AppFonts.regular,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        );
+      },
+    );
+  }
+
+  @override
   @override
   void dispose() {
-    _timer.cancel();
+    if (_timer.isActive) {
+      _timer.cancel();
+    }
     _flipController.dispose();
     _pageController.dispose();
     super.dispose();
@@ -214,7 +354,9 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
         onTap: (index) {
           _pageController.animateToPage(
             index,
-            duration: const Duration(milliseconds: 250), // Faster page transitions
+            duration: const Duration(
+              milliseconds: 250,
+            ), // Faster page transitions
             curve: Curves.easeOut, // Snappier curve
           );
         },
@@ -338,7 +480,8 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
                     height: logoSize,
                     width: logoSize,
                     fit: BoxFit.contain,
-                    cacheWidth: (logoSize * 2).toInt(), // 2x for Retina, maintains aspect
+                    cacheWidth: (logoSize * 2)
+                        .toInt(), // 2x for Retina, maintains aspect
                     errorBuilder: (context, error, stackTrace) {
                       return Container(
                         height: logoSize,
@@ -469,25 +612,26 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
 
               const SizedBox(height: 20),
 
-              // Countdown timer
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                children: [
-                  _buildCountdownItem(days.toString().padLeft(2, '0'), 'Day'),
-                  _buildCountdownItem(
-                    hours.toString().padLeft(2, '0'),
-                    'Hours',
-                  ),
-                  _buildCountdownItem(
-                    minutes.toString().padLeft(2, '0'),
-                    'Minutes',
-                  ),
-                  _buildCountdownItem(
-                    seconds.toString().padLeft(2, '0'),
-                    'Second',
-                  ),
-                ],
-              ),
+              // Countdown timer - Hide when wedding time arrives
+              if (!_isWeddingTime)
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  children: [
+                    _buildCountdownItem(days.toString().padLeft(2, '0'), 'Day'),
+                    _buildCountdownItem(
+                      hours.toString().padLeft(2, '0'),
+                      'Hours',
+                    ),
+                    _buildCountdownItem(
+                      minutes.toString().padLeft(2, '0'),
+                      'Minutes',
+                    ),
+                    _buildCountdownItem(
+                      seconds.toString().padLeft(2, '0'),
+                      'Second',
+                    ),
+                  ],
+                ),
             ],
           ),
         ),
@@ -683,7 +827,8 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
                     height: screenWidth * 0.1,
                     width: screenWidth * 0.1,
                     fit: BoxFit.contain,
-                    cacheWidth: (screenWidth * 0.2).toInt(), // 2x for Retina, maintains aspect
+                    cacheWidth: (screenWidth * 0.2)
+                        .toInt(), // 2x for Retina, maintains aspect
                     errorBuilder: (context, error, stackTrace) {
                       return Container(
                         height: screenWidth * 0.09,
