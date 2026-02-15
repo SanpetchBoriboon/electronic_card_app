@@ -2,8 +2,8 @@
     "timeline": [
         {
             "year": "2017",
-            "title": "จุดเริ่มต้นของเรา",
-            "description": "ปีแห่งการพบกันครั้งแรก ความทรงจำแรกที่เริ่มต้นทุกสิ่ง",
+            "title": "วันที่หัวใจเราพบกัน",
+            "description": "ปีแห่งการพบกันครั้งแรก จุดเริ่มต้นของเรื่องราวรักที่สวยงาม วันที่ชีวิตเราเปลี่ยนไปตลอดกาล",
             "images": [
                 { "path": "assets/images/journey-of-us/2017/1.jpg", "title": "My Story", "description": "#เบญจเมแต่งแล้วครับ" },
                 { "path": "assets/images/journey-of-us/2017/2.jpg", "title": "My Story", "description": "#เบญจเมแต่งแล้วครับ" },
@@ -13,8 +13,8 @@
         },
         {
             "year": "2018",
-            "title": "เติบโตไปด้วยกัน",
-            "description": "ปีที่เราเริ่มเข้าใจกันมากขึ้น",
+            "title": "เรียนรู้ที่จะรักกัน",
+            "description": "ปีที่เราเริ่มเข้าใจกันมากขึ้น เรียนรู้วิธีดูแลซึ่งกันและกัน แบ่งปันทั้งความสุขและน้ำตา",
             "images": [
                 { "path": "assets/images/journey-of-us/2018/1.jpg", "title": "My Story", "description": "#เบญจเมแต่งแล้วครับ" },
                 { "path": "assets/images/journey-of-us/2018/2.jpg", "title": "My Story", "description": "#เบญจเมแต่งแล้วครับ" },
@@ -26,17 +26,34 @@
         },
         {
             "year": "2019",
-            "title": "ความผูกพัน",
-            "description": "ปีแห่งความผูกพันที่แน่นแฟ้น",
+            "title": "ความรักที่เติบโต",
+            "description": "ปีแห่งการก้าวผ่านอุปสรรค ความรักของเราแข็งแกร่งขึ้นทุกวัน มั่นใจมากขึ้นว่าเราเป็นคนที่ใช่",
             "images": [
                 { "path": "assets/images/journey-of-us/2019/1.jpg", "title": "My Story", "description": "#เบญจเมแต่งแล้วครับ" },
                 { "path": "assets/images/journey-of-us/2019/2.jpg", "title": "My Story", "description": "#เบญจเมแต่งแล้วครับ" }
             ]
         },
         {
+            "year": "2020",
+            "title": "ผ่านพายุมาด้วยกัน",
+            "description": "ปีที่ท้าทายของโลก แต่เราผ่านมันมาได้ด้วยกัน ความรักของเราแข็งแกร่งพอที่จะฝ่าฟันทุกอุปสรรค",
+            "images": [
+                { "path": "assets/images/journey-of-us/2020/1.jpg", "title": "My Story", "description": "#เบญจเมแต่งแล้วครับ" },
+                { "path": "assets/images/journey-of-us/2020/2.jpg", "title": "My Story", "description": "#เบญจเมแต่งแล้วครับ" },
+                { "path": "assets/images/journey-of-us/2020/3.jpg", "title": "My Story", "description": "#เบญจเมแต่งแล้วครับ" },
+                { "path": "assets/images/journey-of-us/2020/4.jpg", "title": "My Story", "description": "#เบญจเมแต่งแล้วครับ" },
+                { "path": "assets/images/journey-of-us/2020/5.jpg", "title": "My Story", "description": "#เบญจเมแต่งแล้วครับ" },
+                { "path": "assets/images/journey-of-us/2020/6.jpg", "title": "My Story", "description": "#เบญจเมแต่งแล้วครับ" },
+                { "path": "assets/images/journey-of-us/2020/7.jpg", "title": "My Story", "description": "#เบญจเมแต่งแล้วครับ" },
+                { "path": "assets/images/journey-of-us/2020/8.jpg", "title": "My Story", "description": "#เบญจเมแต่งแล้วครับ" },
+                { "path": "assets/images/journey-of-us/2020/9.jpg", "title": "My Story", "description": "#เบญจเมแต่งแล้วครับ" },
+                { "path": "assets/images/journey-of-us/2020/10.jpg", "title": "My Story", "description": "#เบญจเมแต่งแล้วครับ" }
+            ]
+        },
+        {
             "year": "2022",
-            "title": "การเดินทางต่อ",
-            "description": "เส้นทางที่เราเดินด้วยกัน",
+            "title": "ความสุขเล็กๆ ที่ยิ่งใหญ่",
+            "description": "ปีแห่งช่วงเวลาพิเศษมากมาย ทุกวันที่ได้อยู่ข้างกันคือความสุขที่แท้จริง สร้างความทรงจำดีๆ ไปด้วยกัน",
             "images": [
                 { "path": "assets/images/journey-of-us/2022/1.jpg", "title": "My Story", "description": "#เบญจเมแต่งแล้วครับ" },
                 { "path": "assets/images/journey-of-us/2022/2.jpg", "title": "My Story", "description": "#เบญจเมแต่งแล้วครับ" },
@@ -47,8 +64,8 @@
         },
         {
             "year": "2023",
-            "title": "ความทรงจำใหม่",
-            "description": "สร้างความทรงจำใหม่ๆ ไปด้วยกัน",
+            "title": "ปีแห่งการผจญภัย",
+            "description": "เราได้ไปหลายที่ด้วยกัน สร้างความทรงจำที่สวยงาม ทุกก้าวที่เดินไปพร้อมกัน ทำให้ใจเราผูกพันมากขึ้น",
             "images": [
                 { "path": "assets/images/journey-of-us/2023/1.jpg", "title": "My Story", "description": "#เบญจเมแต่งแล้วครับ" },
                 { "path": "assets/images/journey-of-us/2023/3.jpg", "title": "My Story", "description": "#เบญจเมแต่งแล้วครับ" },
@@ -73,8 +90,8 @@
         },
         {
             "year": "2024",
-            "title": "ปีแห่งความสุข",
-            "description": "ช่วงเวลาพิเศษที่มีต่อกัน",
+            "title": "ใกล้ชิดมากขึ้นทุกวัน",
+            "description": "ปีที่เราวางแผนอนาคตด้วยกัน มั่นใจที่จะก้าวไปข้างหน้าด้วยกัน ทุกช่วงเวลาล้วนมีความหมาย",
             "images": [
                 { "path": "assets/images/journey-of-us/2024/1.jpg", "title": "My Story", "description": "#เบญจเมแต่งแล้วครับ" },
                 { "path": "assets/images/journey-of-us/2024/2.jpg", "title": "My Story", "description": "#เบญจเมแต่งแล้วครับ" },
@@ -91,8 +108,8 @@
         },
         {
             "year": "2025",
-            "title": "ก้าวสู่อนาคต",
-            "description": "เริ่มต้นบทใหม่ของชีวิตคู่",
+            "title": "เตรียมพร้อมเป็นหนึ่งเดียว",
+            "description": "ปีแห่งการเตรียมตัว วางแผนงานแต่งงาน ตื่นเต้นกับวันสำคัญที่กำลังจะมาถึง พร้อมเริ่มต้นชีวิตใหม่ด้วยกัน",
             "images": [
                 { "path": "assets/images/journey-of-us/2025/1.jpg", "title": "My Story", "description": "#เบญจเมแต่งแล้วครับ" },
                 { "path": "assets/images/journey-of-us/2025/2.jpg", "title": "My Story", "description": "#เบญจเมแต่งแล้วครับ" },
@@ -107,9 +124,11 @@
         },
         {
             "year": "2026",
-            "title": "วันสำคัญที่สุด",
-            "description": "ปีที่เราเป็นหนึ่งเดียวกัน - งานแต่งงานและชีวิตคู่ใหม่",
+            "title": "วันที่เราเป็นหนึ่งเดียว",
+            "description": "ปีที่ฝันกลายเป็นจริง วันแต่งงานที่รอคอยมานาน เราสัญญาว่าจะดูแลกันไปตลอดชีวิต เริ่มต้นบทใหม่ในฐานะสามีและภรรยา",
             "images": [
+                { "path": "assets/images/journey-of-us/2026/1.jpg", "title": "My Story", "description": "#เบญจเมแต่งแล้วครับ" },
+                { "path": "assets/images/journey-of-us/2026/2.jpg", "title": "My Story", "description": "#เบญจเมแต่งแล้วครับ" },
                 { "path": "assets/images/journey-of-us/2026/3.jpg", "title": "My Story", "description": "#เบญจเมแต่งแล้วครับ" },
                 { "path": "assets/images/journey-of-us/2026/4.jpg", "title": "My Story", "description": "#เบญจเมแต่งแล้วครับ" },
                 { "path": "assets/images/journey-of-us/2026/5.jpg", "title": "My Story", "description": "#เบญจเมแต่งแล้วครับ" },
