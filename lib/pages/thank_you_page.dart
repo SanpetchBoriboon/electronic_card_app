@@ -14,6 +14,12 @@ const Color kBackgroundColor = Color(0xFFE8F4F0);
 const Color kSunflowerYellow = Color(0xFFFFD700);
 const Color kSunflowerOrange = Color(0xFFFF8C00);
 
+// Custom exception for time not reached error
+class TimeNotReachedException implements Exception {
+  final String message;
+  TimeNotReachedException(this.message);
+}
+
 class ThankYouPage extends StatefulWidget {
   const ThankYouPage({super.key});
 
@@ -98,7 +104,7 @@ class _ThankYouPageState extends State<ThankYouPage>
 
       if (response.statusCode == 200) {
         final data = json.decode(response.body);
-        final allowedDateString = data['allowedDate'] as String?;
+        final allowedDateString = data['user']['allowedDate'] as String?;
         if (allowedDateString != null) {
           _allowedDate = DateTime.parse(allowedDateString);
           return _allowedDate;
@@ -108,6 +114,20 @@ class _ThankYouPageState extends State<ThankYouPage>
         final allowedDateString = errorData['allowedDate'] as String?;
         if (allowedDateString != null) {
           _allowedDate = DateTime.parse(allowedDateString);
+
+          // Check if it's a forbidden error and show dialog
+          // Only show popup if current date is BEFORE the allowed date
+          if (errorData['error'] == 'Token Request Forbidden' &&
+              errorData['allowedDate'] != null) {
+            final now = DateTime.now();
+            // Only show dialog if we haven't reached the wedding date yet
+            if (now.isBefore(_allowedDate!)) {
+              if (mounted) {
+                _showTimeNotReachedDialog(errorData);
+              }
+            }
+          }
+
           return _allowedDate;
         }
       }
@@ -447,7 +467,9 @@ class _ThankYouPageState extends State<ThankYouPage>
     final bool isLargeScreen = screenWidth > 1000;
 
     return AnimatedContainer(
-      duration: const Duration(milliseconds: 200), // Fixed duration - no cascading delay!
+      duration: const Duration(
+        milliseconds: 200,
+      ), // Fixed duration - no cascading delay!
       curve: Curves.easeOut,
       margin: isLargeScreen
           ? EdgeInsets
@@ -870,7 +892,9 @@ class _ThankYouPageState extends State<ThankYouPage>
     Widget imageWidget = Image.network(
       proxyUrl,
       fit: BoxFit.cover,
-      cacheWidth: isInDetail ? 1500 : 800, // Optimize width, maintains aspect ratio
+      cacheWidth: isInDetail
+          ? 1500
+          : 800, // Optimize width, maintains aspect ratio
       loadingBuilder: (context, child, loadingProgress) {
         if (loadingProgress == null) return child;
         return Center(
@@ -1065,6 +1089,164 @@ class _ThankYouPageState extends State<ThankYouPage>
       }
     } catch (e) {
       return '';
+    }
+  }
+
+  void _showTimeNotReachedDialog(Map<String, dynamic> errorData) {
+    // Check if the current date is after the allowed date
+    final now = DateTime.now();
+
+    // Parse the allowed date from the error data
+    DateTime allowedDate;
+    try {
+      final allowedDateString = errorData['allowedDate'] as String?;
+      if (allowedDateString != null) {
+        allowedDate = DateTime.parse(allowedDateString);
+      } else {
+        allowedDate = DateTime(2026, 2, 26); // Fallback
+      }
+    } catch (e) {
+      allowedDate = DateTime(2026, 2, 26); // Fallback
+    }
+
+    final isAfterWeddingDate = now.isAfter(allowedDate);
+
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(15),
+          ),
+          title: Row(
+            children: [
+              Icon(
+                isAfterWeddingDate ? Icons.event_busy : Icons.access_time,
+                color: kPrimaryColor,
+                size: 24,
+              ),
+              const SizedBox(width: 8),
+              Text(
+                isAfterWeddingDate ? 'งานจบแล้ว' : 'ยังไม่ถึงเวลา',
+                style: TextStyle(
+                  color: kPrimaryColor,
+                  fontSize: 20,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+            ],
+          ),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                isAfterWeddingDate
+                    ? 'การแสดงคำอวยพรได้ปิดให้บริการแล้ว เนื่องจากงานแต่งงานได้จบสิ้นลงแล้ว'
+                    : 'การแสดงคำอวยพรจะเปิดให้ดูในวันงานเท่านั้น',
+                style: TextStyle(
+                  fontSize: 16,
+                  color: Colors.grey[700],
+                  height: 1.4,
+                ),
+              ),
+              const SizedBox(height: 16),
+              Container(
+                padding: const EdgeInsets.all(12),
+                decoration: BoxDecoration(
+                  color: kPrimaryColor.withValues(alpha: 0.1),
+                  borderRadius: BorderRadius.circular(8),
+                  border: Border.all(
+                    color: kPrimaryColor.withValues(alpha: 0.3),
+                    width: 1,
+                  ),
+                ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      '📅 วันที่งานแต่งงาน: ${_formatDateToThai(errorData['allowedDate'])}',
+                      style: TextStyle(
+                        fontSize: 14,
+                        color: kPrimaryColor,
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
+                    const SizedBox(height: 4),
+                    Text(
+                      '📅 วันที่ปัจจุบัน: ${_formatDateToThai(errorData['currentDate'])}',
+                      style: TextStyle(fontSize: 14, color: Colors.grey[600]),
+                    ),
+                  ],
+                ),
+              ),
+              const SizedBox(height: 16),
+              Text(
+                isAfterWeddingDate
+                    ? 'ขอบคุณสำหรับความรักและกำลังใจที่มีให้บ่าวสาว! 💕'
+                    : 'กรุณากลับมาใหม่ในวันงานเพื่อดูคำอวยพร! 💕',
+                style: TextStyle(
+                  fontSize: 14,
+                  color: Colors.grey[600],
+                  fontStyle: FontStyle.italic,
+                ),
+              ),
+            ],
+          ),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+              style: TextButton.styleFrom(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 24,
+                  vertical: 12,
+                ),
+                backgroundColor: kPrimaryColor,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(8),
+                ),
+              ),
+              child: Text(
+                'เข้าใจแล้ว',
+                style: TextStyle(
+                  color: Colors.white,
+                  fontSize: 16,
+                  fontWeight: FontWeight.w500,
+                ),
+              ),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  String _formatDateToThai(String? dateString) {
+    if (dateString == null) return '';
+
+    try {
+      final date = DateTime.parse(dateString);
+      final thaiMonths = [
+        'มกราคม',
+        'กุมภาพันธ์',
+        'มีนาคม',
+        'เมษายน',
+        'พฤษภาคม',
+        'มิถุนายน',
+        'กรกฎาคม',
+        'สิงหาคม',
+        'กันยายน',
+        'ตุลาคม',
+        'พฤศจิกายน',
+        'ธันวาคม',
+      ];
+
+      return '${date.day} ${thaiMonths[date.month - 1]} ${date.year + 543}';
+    } catch (e) {
+      return dateString;
     }
   }
 }
