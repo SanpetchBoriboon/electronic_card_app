@@ -1,7 +1,10 @@
 import 'dart:async';
+import 'dart:convert';
 
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
 
+import 'config/api_config.dart';
 import 'font_styles.dart';
 import 'pages/gallery.dart';
 import 'pages/schedule.dart';
@@ -74,7 +77,7 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
   late Timer _timer;
-  late DateTime _weddingDate;
+  DateTime? _weddingDate;
   Duration _timeRemaining = Duration.zero;
   late AnimationController _flipController;
   late Animation<double> _flipAnimation;
@@ -87,12 +90,19 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
   @override
   void initState() {
     super.initState();
-    _weddingDate = DateTime(2026, 2, 26); // Wedding date: February 26, 2026
+    _fetchAllowedDate(); // Fetch wedding date from API
     _startTimer();
-    _currentIndex = widget.initialIndex; // Set initial index
+
+    // Adjust initial index if trying to access hidden pages
+    int adjustedIndex = widget.initialIndex;
+    if (!_isWeddingDateReached() && widget.initialIndex > 2) {
+      adjustedIndex =
+          0; // Redirect to home if trying to access wishes/thank you
+    }
+    _currentIndex = adjustedIndex;
 
     // Initialize PageController
-    _pageController = PageController(initialPage: widget.initialIndex);
+    _pageController = PageController(initialPage: adjustedIndex);
 
     // Initialize flip animation - FASTER!
     _flipController = AnimationController(
@@ -110,10 +120,46 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
     // Images will be loaded lazily when needed
   }
 
+  Future<void> _fetchAllowedDate() async {
+    try {
+      final response = await http.post(
+        Uri.parse(ApiConfig.guestTokens),
+        headers: {'Content-Type': 'application/json'},
+      );
+
+      if (response.statusCode == 200) {
+        final data = json.decode(response.body);
+        final allowedDateString = data['user']['allowedDate'] as String?;
+        if (allowedDateString != null && mounted) {
+          setState(() {
+            _weddingDate = DateTime.parse(allowedDateString);
+          });
+        }
+      } else if (response.statusCode == 403) {
+        final errorData = json.decode(response.body);
+        final allowedDateString = errorData['allowedDate'] as String?;
+        if (allowedDateString != null && mounted) {
+          setState(() {
+            _weddingDate = DateTime.parse(allowedDateString);
+          });
+        }
+      }
+    } catch (e) {
+      // Fallback to hardcoded date if API fails
+      if (mounted) {
+        setState(() {
+          _weddingDate = DateTime(2026, 2, 26);
+        });
+      }
+    }
+  }
+
   void _startTimer() {
     _timer = Timer.periodic(const Duration(seconds: 1), (timer) {
+      if (_weddingDate == null) return; // Wait for wedding date to be fetched
+
       final now = DateTime.now();
-      final difference = _weddingDate.difference(now);
+      final difference = _weddingDate!.difference(now);
 
       setState(() {
         if (difference.inSeconds <= 0) {
@@ -148,6 +194,143 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
     setState(() {
       _isFlipped = !_isFlipped;
     });
+  }
+
+  bool _isWeddingDateReached() {
+    if (_weddingDate == null) return false; // Not reached if not fetched yet
+    final now = DateTime.now();
+    return now.isAfter(_weddingDate!) || now.isAtSameMomentAs(_weddingDate!);
+  }
+
+  List<Widget> _getPages(
+    double screenWidth,
+    double logoSize,
+    int days,
+    int hours,
+    int minutes,
+    int seconds,
+  ) {
+    List<Widget> pages = [
+      // Wedding Invitation Page
+      GestureDetector(
+        onTap: _flipCard,
+        child: Container(
+          color: screenWidth > 768 ? Colors.grey[100] : Colors.white,
+          child: SafeArea(
+            child: AnimatedBuilder(
+              animation: _flipAnimation,
+              builder: (context, child) {
+                final isShowingFront = _flipAnimation.value < 0.5;
+                return Transform(
+                  alignment: Alignment.center,
+                  transform: Matrix4.identity()
+                    ..setEntry(3, 2, 0.001)
+                    ..rotateY(_flipAnimation.value * 3.14159),
+                  child: isShowingFront
+                      ? _buildFrontPage(
+                          screenWidth,
+                          logoSize,
+                          days,
+                          hours,
+                          minutes,
+                          seconds,
+                        )
+                      : Transform(
+                          alignment: Alignment.center,
+                          transform: Matrix4.identity()..rotateY(3.14159),
+                          child: _buildBackPage(screenWidth),
+                        ),
+                );
+              },
+            ),
+          ),
+        ),
+      ),
+      // Schedule Page
+      const SchedulePage(),
+      // Gallery Page
+      const GalleryPage(),
+    ];
+
+    // Only add Wishes and Thank You pages if wedding date has been reached
+    if (_isWeddingDateReached()) {
+      pages.add(const WishesPage());
+      pages.add(const ThankYouPage());
+    }
+
+    return pages;
+  }
+
+  List<BottomNavigationBarItem> _getNavigationItems() {
+    List<BottomNavigationBarItem> items = [
+      BottomNavigationBarItem(
+        icon: Builder(
+          builder: (context) {
+            try {
+              return Image.asset(
+                'assets/icons/wedding-invitation.png',
+                width: 24,
+                height: 24,
+                color: _currentIndex == 0 ? kPrimaryColor : Colors.grey,
+                colorBlendMode: BlendMode.srcIn,
+                errorBuilder: (context, error, stackTrace) {
+                  return Icon(
+                    Icons.card_giftcard,
+                    size: 24,
+                    color: _currentIndex == 0 ? kPrimaryColor : Colors.grey,
+                  );
+                },
+              );
+            } catch (e) {
+              return Icon(
+                Icons.card_giftcard,
+                size: 24,
+                color: _currentIndex == 0 ? kPrimaryColor : Colors.grey,
+              );
+            }
+          },
+        ),
+        label: 'การ์ดเชิญ',
+      ),
+      BottomNavigationBarItem(
+        icon: Icon(
+          Icons.event,
+          color: _currentIndex == 1 ? kPrimaryColor : Colors.grey,
+        ),
+        label: 'กำหนดการ',
+      ),
+      BottomNavigationBarItem(
+        icon: Icon(
+          Icons.photo_library,
+          color: _currentIndex == 2 ? kPrimaryColor : Colors.grey,
+        ),
+        label: 'แกลเลอรี่',
+      ),
+    ];
+
+    // Only add Wishes and Thank You navigation items if wedding date has been reached
+    if (_isWeddingDateReached()) {
+      items.add(
+        BottomNavigationBarItem(
+          icon: Icon(
+            Icons.edit_note,
+            color: _currentIndex == 3 ? kPrimaryColor : Colors.grey,
+          ),
+          label: 'เขียนคำอวยพร',
+        ),
+      );
+      items.add(
+        BottomNavigationBarItem(
+          icon: Icon(
+            Icons.auto_awesome,
+            color: _currentIndex == 4 ? kPrimaryColor : Colors.grey,
+          ),
+          label: 'ดูคำอวยพร',
+        ),
+      );
+    }
+
+    return items;
   }
 
   void _showWelcomePopup() {
@@ -301,51 +484,14 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
               _currentIndex = index;
             });
           },
-          children: [
-            // Wedding Invitation Page
-            GestureDetector(
-              onTap: _flipCard,
-              child: Container(
-                color: screenWidth > 768 ? Colors.grey[100] : Colors.white,
-                child: SafeArea(
-                  child: AnimatedBuilder(
-                    animation: _flipAnimation,
-                    builder: (context, child) {
-                      final isShowingFront = _flipAnimation.value < 0.5;
-                      return Transform(
-                        alignment: Alignment.center,
-                        transform: Matrix4.identity()
-                          ..setEntry(3, 2, 0.001)
-                          ..rotateY(_flipAnimation.value * 3.14159),
-                        child: isShowingFront
-                            ? _buildFrontPage(
-                                screenWidth,
-                                logoSize,
-                                days,
-                                hours,
-                                minutes,
-                                seconds,
-                              )
-                            : Transform(
-                                alignment: Alignment.center,
-                                transform: Matrix4.identity()..rotateY(3.14159),
-                                child: _buildBackPage(screenWidth),
-                              ),
-                      );
-                    },
-                  ),
-                ),
-              ),
-            ),
-            // Schedule Page
-            const SchedulePage(),
-            // Gallery Page
-            const GalleryPage(),
-            // Wishes Page
-            const WishesPage(),
-            // Thank You Page
-            const ThankYouPage(),
-          ],
+          children: _getPages(
+            screenWidth,
+            logoSize,
+            days,
+            hours,
+            minutes,
+            seconds,
+          ),
         ),
       ),
       bottomNavigationBar: BottomNavigationBar(
@@ -363,65 +509,7 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
         backgroundColor: Colors.white,
         selectedItemColor: kPrimaryColor,
         unselectedItemColor: Colors.grey,
-        items: [
-          BottomNavigationBarItem(
-            icon: Builder(
-              builder: (context) {
-                try {
-                  return Image.asset(
-                    'assets/icons/wedding-invitation.png',
-                    width: 24,
-                    height: 24,
-                    color: _currentIndex == 0 ? kPrimaryColor : Colors.grey,
-                    colorBlendMode: BlendMode.srcIn,
-                    errorBuilder: (context, error, stackTrace) {
-                      return Icon(
-                        Icons.card_giftcard,
-                        size: 24,
-                        color: _currentIndex == 0 ? kPrimaryColor : Colors.grey,
-                      );
-                    },
-                  );
-                } catch (e) {
-                  return Icon(
-                    Icons.card_giftcard,
-                    size: 24,
-                    color: _currentIndex == 0 ? kPrimaryColor : Colors.grey,
-                  );
-                }
-              },
-            ),
-            label: 'การ์ดเชิญ',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(
-              Icons.event,
-              color: _currentIndex == 1 ? kPrimaryColor : Colors.grey,
-            ),
-            label: 'กำหนดการ',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(
-              Icons.photo_library,
-              color: _currentIndex == 2 ? kPrimaryColor : Colors.grey,
-            ),
-            label: 'แกลเลอรี่',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(
-              Icons.edit_note,
-              color: _currentIndex == 3 ? kPrimaryColor : Colors.grey,
-            ),
-            label: 'เขียนคำอวยพร',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(
-              Icons.auto_awesome,
-              color: _currentIndex == 4 ? kPrimaryColor : Colors.grey,
-            ),
-            label: 'ดูคำอวยพร',
-          ),
-        ],
+        items: _getNavigationItems(),
       ),
     );
   }

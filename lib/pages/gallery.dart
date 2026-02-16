@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:convert';
 
 import 'package:electronic_card_app/font_styles.dart';
@@ -98,9 +99,12 @@ class _GalleryPageState extends State<GalleryPage> {
   List<JourneyItem> journeyItems = [];
   List<YearGroup> yearGroups = [];
   bool _isLoadingImages = true;
+  bool _showFirstImage = true;
+  Timer? _imageToggleTimer;
 
   @override
   void dispose() {
+    _imageToggleTimer?.cancel();
     // Clear image cache to free memory
     imageCache.clear();
     imageCache.clearLiveImages();
@@ -111,6 +115,17 @@ class _GalleryPageState extends State<GalleryPage> {
   void initState() {
     super.initState();
     _loadGalleryImages();
+    _startImageToggleTimer();
+  }
+
+  void _startImageToggleTimer() {
+    _imageToggleTimer = Timer.periodic(const Duration(seconds: 5), (timer) {
+      if (mounted) {
+        setState(() {
+          _showFirstImage = !_showFirstImage;
+        });
+      }
+    });
   }
 
   Future<void> _loadGalleryImages() async {
@@ -270,69 +285,63 @@ class _GalleryPageState extends State<GalleryPage> {
                                 ),
                               )
                             : Image.asset(
-                                'assets/images/perview/gallery-preview.GIF',
+                                _showFirstImage
+                                    ? 'assets/images/perview/gallery-preview.GIF'
+                                    : 'assets/images/perview/gallery-preview2.gif',
+                                key: ValueKey(_showFirstImage),
                                 fit: BoxFit.cover,
                                 filterQuality: FilterQuality.high,
-                                errorBuilder: (context, error, stackTrace) {
-                                  return Image.asset(
-                                    'assets/images/gallery-preview.jpeg',
-                                    fit: BoxFit.cover,
-                                    filterQuality: FilterQuality.high,
-                                    errorBuilder: (context, error, stackTrace) {
-                                      return Container(
-                                        height: 300,
-                                        decoration: BoxDecoration(
-                                          borderRadius: BorderRadius.circular(
-                                            15,
-                                          ),
-                                          gradient: LinearGradient(
-                                            begin: Alignment.topLeft,
-                                            end: Alignment.bottomRight,
-                                            colors: [
-                                              const Color(
-                                                0xFFBFC6B4,
-                                              ).withValues(alpha: 0.3),
-                                              const Color(
-                                                0xFF7E8B78,
-                                              ).withValues(alpha: 0.1),
-                                            ],
-                                          ),
+                                frameBuilder:
+                                    (
+                                      context,
+                                      child,
+                                      frame,
+                                      wasSynchronouslyLoaded,
+                                    ) {
+                                      if (wasSynchronouslyLoaded) {
+                                        return child;
+                                      }
+                                      // Show skeleton while loading
+                                      if (frame == null) {
+                                        return _buildSkeletonLoader();
+                                      }
+                                      // Fade in when loaded
+                                      return AnimatedOpacity(
+                                        opacity: 1.0,
+                                        duration: const Duration(
+                                          milliseconds: 300,
                                         ),
-                                        child: Center(
-                                          child: Column(
-                                            mainAxisAlignment:
-                                                MainAxisAlignment.center,
-                                            children: [
-                                              Icon(
-                                                Icons.photo_camera_outlined,
-                                                size: 80,
-                                                color: kPrimaryColor.withValues(
-                                                  alpha: 0.6,
-                                                ),
-                                              ),
-                                              const SizedBox(height: 15),
-                                              Text(
-                                                'Wedding Photos',
-                                                style: TextStyle(
-                                                  fontSize: 18,
-                                                  color: kPrimaryColor,
-                                                  fontWeight: FontWeight.w500,
-                                                ),
-                                              ),
-                                              const SizedBox(height: 8),
-                                              Text(
-                                                'Coming Soon',
-                                                style: TextStyle(
-                                                  fontSize: 14,
-                                                  color: kPrimaryColor
-                                                      .withValues(alpha: 0.7),
-                                                ),
-                                              ),
-                                            ],
-                                          ),
-                                        ),
+                                        child: child,
                                       );
                                     },
+                                errorBuilder: (context, error, stackTrace) {
+                                  debugPrint('Error loading image: $error');
+                                  return Container(
+                                    decoration: BoxDecoration(
+                                      borderRadius: BorderRadius.circular(15),
+                                      color: Colors.grey[300],
+                                    ),
+                                    child: Center(
+                                      child: Column(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.center,
+                                        children: [
+                                          Icon(
+                                            Icons.broken_image,
+                                            size: 60,
+                                            color: Colors.grey[600],
+                                          ),
+                                          const SizedBox(height: 8),
+                                          Text(
+                                            'ไม่สามารถโหลดรูปภาพได้',
+                                            style: TextStyle(
+                                              color: Colors.grey[600],
+                                              fontSize: 14,
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
                                   );
                                 },
                               ),
@@ -442,6 +451,59 @@ class _GalleryPageState extends State<GalleryPage> {
             ),
           );
         },
+      ),
+    );
+  }
+
+  Widget _buildSkeletonLoader() {
+    return Container(
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(15),
+        color: Colors.grey[200],
+      ),
+      child: Stack(
+        children: [
+          // Animated shimmer effect
+          TweenAnimationBuilder<double>(
+            tween: Tween(begin: -1.0, end: 2.0),
+            duration: const Duration(milliseconds: 1500),
+            builder: (context, value, child) {
+              return Container(
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(15),
+                  gradient: LinearGradient(
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
+                    stops: [
+                      (value - 0.3).clamp(0.0, 1.0),
+                      value.clamp(0.0, 1.0),
+                      (value + 0.3).clamp(0.0, 1.0),
+                    ],
+                    colors: [
+                      Colors.grey[200]!,
+                      Colors.grey[100]!,
+                      Colors.grey[200]!,
+                    ],
+                  ),
+                ),
+              );
+            },
+            onEnd: () {
+              // Loop animation
+              if (mounted) {
+                setState(() {});
+              }
+            },
+          ),
+          // Center icon
+          Center(
+            child: Icon(
+              Icons.photo_outlined,
+              size: 60,
+              color: Colors.grey[400],
+            ),
+          ),
+        ],
       ),
     );
   }
