@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 
 import '../config/api_config.dart';
+import '../services/auth_service.dart';
 import '../utils/utils.dart';
 
 // Global color constants
@@ -39,6 +40,9 @@ class _ThankYouPageState extends State<ThankYouPage>
   Timer? _refreshTimer;
   String? _lastDataHash; // For checking data changes
   DateTime? _allowedDate;
+
+  // AuthService instance
+  final AuthService _authService = AuthService();
 
   @override
   void initState() {
@@ -97,39 +101,30 @@ class _ThankYouPageState extends State<ThankYouPage>
     }
 
     try {
-      final response = await http.post(
-        Uri.parse(ApiConfig.guestTokens),
-        headers: {'Content-Type': 'application/json'},
-      );
+      // Use AuthService to get token info
+      final result = await _authService.generateGuestToken();
 
-      if (response.statusCode == 200) {
-        final data = json.decode(response.body);
-        final allowedDateString = data['user']['allowedDate'] as String?;
-        if (allowedDateString != null) {
-          _allowedDate = DateTime.parse(allowedDateString);
-          return _allowedDate;
-        }
-      } else if (response.statusCode == 403) {
-        final errorData = json.decode(response.body);
-        final allowedDateString = errorData['allowedDate'] as String?;
-        if (allowedDateString != null) {
-          _allowedDate = DateTime.parse(allowedDateString);
+      final allowedDateString = result['user']?['allowedDate'] as String?;
+      if (allowedDateString != null) {
+        _allowedDate = DateTime.parse(allowedDateString);
+        return _allowedDate;
+      }
+    } on TokenForbiddenException catch (e) {
+      // Handle forbidden error (time not reached)
+      final errorData = e.errorData;
+      final allowedDateString = errorData['allowedDate'] as String?;
+      if (allowedDateString != null) {
+        _allowedDate = DateTime.parse(allowedDateString);
 
-          // Check if it's a forbidden error and show dialog
-          // Only show popup if current date is BEFORE the allowed date
-          if (errorData['error'] == 'Token Request Forbidden' &&
-              errorData['allowedDate'] != null) {
-            final now = DateTime.now();
-            // Only show dialog if we haven't reached the wedding date yet
-            if (now.isBefore(_allowedDate!)) {
-              if (mounted) {
-                _showTimeNotReachedDialog(errorData);
-              }
-            }
+        // Only show popup if current date is BEFORE the allowed date
+        final now = DateTime.now();
+        if (now.isBefore(_allowedDate!)) {
+          if (mounted) {
+            _showTimeNotReachedDialog(errorData);
           }
-
-          return _allowedDate;
         }
+
+        return _allowedDate;
       }
     } catch (e) {
       if (kDebugMode) {

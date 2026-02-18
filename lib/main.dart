@@ -1,16 +1,14 @@
 import 'dart:async';
-import 'dart:convert';
 
 import 'package:flutter/material.dart';
-import 'package:http/http.dart' as http;
 
-import 'config/api_config.dart';
 import 'font_styles.dart';
 import 'pages/gallery.dart';
 import 'pages/schedule.dart';
 import 'pages/splash_screen.dart';
 import 'pages/thank_you_page.dart';
 import 'pages/wishes.dart';
+import 'services/auth_service.dart';
 
 // Global color constant
 const Color kPrimaryColor = Color(0xFF7E8B78);
@@ -122,41 +120,46 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
 
   Future<void> _fetchAllowedDate() async {
     try {
-      final response = await http.post(
-        Uri.parse(ApiConfig.guestTokens),
-        headers: {'Content-Type': 'application/json'},
-      );
+      // Use AuthService to get token (already fetched in splash screen)
+      final authService = AuthService();
+      final token = await authService.getToken();
 
-      if (response.statusCode == 200) {
-        final data = json.decode(response.body);
-        final allowedDateString = data['user']['allowedDate'] as String?;
+      if (token != null) {
+        // Token exists, try to get allowed date from user data
+        final result = await authService.generateGuestToken();
+        final allowedDateString = result['user']?['allowedDate'] as String?;
         if (allowedDateString != null && mounted) {
           setState(() {
             _weddingDate = DateTime.parse(allowedDateString);
           });
+          return;
         }
-      } else if (response.statusCode == 403) {
-        final errorData = json.decode(response.body);
-        final allowedDateString = errorData['allowedDate'] as String?;
-        if (allowedDateString != null && mounted) {
-          setState(() {
-            _weddingDate = DateTime.parse(allowedDateString);
-          });
-        }
+      }
+    } on TokenForbiddenException catch (e) {
+      // Handle forbidden error
+      final allowedDateString = e.errorData['allowedDate'] as String?;
+      if (allowedDateString != null && mounted) {
+        setState(() {
+          _weddingDate = DateTime.parse(allowedDateString);
+        });
+        return;
       }
     } catch (e) {
-      // Fallback to hardcoded date if API fails
-      if (mounted) {
-        setState(() {
-          _weddingDate = DateTime(2026, 2, 26);
-        });
-      }
+      // Do nothing, will use fallback below
+    }
+
+    // Fallback to hardcoded date if API fails or no date found
+    if (mounted && _weddingDate == null) {
+      setState(() {
+        _weddingDate = DateTime(2026, 2, 26);
+      });
     }
   }
 
   void _startTimer() {
     _timer = Timer.periodic(const Duration(seconds: 1), (timer) {
-      if (_weddingDate == null) return; // Wait for wedding date to be fetched
+      // Skip calculation if wedding date hasn't been fetched yet
+      if (_weddingDate == null) return;
 
       final now = DateTime.now();
       final difference = _weddingDate!.difference(now);
@@ -166,7 +169,6 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
           // Wedding time has arrived!
           _isWeddingTime = true;
           _timeRemaining = Duration.zero;
-          _timer.cancel(); // Stop the timer
 
           // Show welcome popup once
           if (!_hasShownWelcomePopup) {

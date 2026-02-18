@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../main.dart';
+import '../services/auth_service.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
@@ -17,12 +18,16 @@ class _SplashScreenState extends State<SplashScreen>
   late Animation<double> _scaleAnimation;
   late Animation<double> _whiteFadeAnimation;
 
+  final AuthService _authService = AuthService();
+
   @override
   void initState() {
     super.initState();
 
     _animationController = AnimationController(
-      duration: const Duration(milliseconds: 1500), // Reduced from 2000ms - SNAPPY!
+      duration: const Duration(
+        milliseconds: 1500,
+      ), // Reduced from 2000ms - SNAPPY!
       vsync: this,
     );
 
@@ -52,28 +57,42 @@ class _SplashScreenState extends State<SplashScreen>
     // Start initial animation
     _animationController.forward();
 
-    // Navigate after animation completes - MUCH FASTER!
-    Future.delayed(const Duration(milliseconds: 1500), () { // Reduced from 2500ms
-      if (mounted) {
-        _whiteFadeController.forward().then((_) {
-          if (mounted) {
-            Navigator.of(context).pushReplacement(
-              PageRouteBuilder(
-                pageBuilder: (context, animation, secondaryAnimation) =>
-                    const MyHomePage(),
-                transitionDuration: const Duration(milliseconds: 300), // Reduced from 1000ms
-                transitionsBuilder:
-                    (context, animation, secondaryAnimation, child) {
-                      return FadeTransition(opacity: animation, child: child);
-                    },
-              ),
-            );
-          }
-        });
-      }
-    });
+    // Initialize token and then navigate
+    _initializeApp();
   }
 
+  /// เรียก API เพื่อ get token แล้วค่อย navigate
+  Future<void> _initializeApp() async {
+    try {
+      // Get or create guest token (ignore errors)
+      await _authService.getOrCreateToken();
+    } catch (e) {
+      // Ignore any errors, just continue to app
+    }
+
+    // Wait for minimum animation time
+    await Future.delayed(const Duration(milliseconds: 1500));
+
+    if (mounted) {
+      _whiteFadeController.forward().then((_) {
+        if (mounted) {
+          Navigator.of(context).pushReplacement(
+            PageRouteBuilder(
+              pageBuilder: (context, animation, secondaryAnimation) =>
+                  const MyHomePage(),
+              transitionDuration: const Duration(milliseconds: 300),
+              transitionsBuilder:
+                  (context, animation, secondaryAnimation, child) {
+                    return FadeTransition(opacity: animation, child: child);
+                  },
+            ),
+          );
+        }
+      });
+    }
+  }
+
+  /// แสดง dialog เมื่อยังไม่ถึงเวลา
   @override
   void dispose() {
     _animationController.dispose();
