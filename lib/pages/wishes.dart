@@ -960,10 +960,10 @@ class _WishesPageState extends State<WishesPage> {
                       _showSuccess = false;
                     });
 
-                    // Simply navigate to the thank you tab
+                    // Navigate to thank you page (use -1 to indicate last page)
                     Navigator.of(context).pushAndRemoveUntil(
                       MaterialPageRoute(
-                        builder: (context) => MyHomePage(initialIndex: 4),
+                        builder: (context) => MyHomePage(initialIndex: -1),
                       ),
                       (Route<dynamic> route) => false,
                     );

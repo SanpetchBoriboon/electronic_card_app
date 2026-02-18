@@ -85,6 +85,8 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
   bool _hasShownWelcomePopup = false;
   bool _isWeddingTime = false; // Track if wedding time has arrived
   bool _isTokenExpired = false; // Track if token request period has expired
+  bool _shouldNavigateToThankYou =
+      false; // Track if should jump to thank you page
 
   @override
   void initState() {
@@ -92,9 +94,18 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
     _fetchAllowedDate(); // Fetch wedding date from API
     _startTimer();
 
+    // Check if we should navigate to thank you page (initialIndex: -1)
+    if (widget.initialIndex == -1) {
+      _shouldNavigateToThankYou = true;
+      _hasShownWelcomePopup =
+          true; // Skip welcome popup when coming from wishes
+    }
+
     // Adjust initial index if trying to access hidden pages
     int adjustedIndex = widget.initialIndex;
-    if (!_isWeddingDateReached() && widget.initialIndex > 2) {
+    if (adjustedIndex == -1) {
+      adjustedIndex = 0; // Start at home, will jump to thank you later
+    } else if (!_isWeddingDateReached() && widget.initialIndex > 2) {
       adjustedIndex =
           0; // Redirect to home if trying to access wishes/thank you
     }
@@ -526,6 +537,30 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
               3 // Desktop: 1/3 of 600px card = 200px
         : screenWidth * 0.5; // Mobile: 50% of screen
 
+    // Get pages list
+    final pages = _getPages(
+      screenWidth,
+      logoSize,
+      days,
+      hours,
+      minutes,
+      seconds,
+    );
+
+    // Navigate to Thank You page if needed (after first build)
+    if (_shouldNavigateToThankYou && pages.length > 3) {
+      _shouldNavigateToThankYou = false;
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (mounted) {
+          final thankYouIndex = pages.length - 1;
+          setState(() {
+            _currentIndex = thankYouIndex;
+          });
+          _pageController.jumpToPage(thankYouIndex);
+        }
+      });
+    }
+
     return Scaffold(
       body: Container(
         color: screenWidth > 768 ? Colors.grey[100] : Colors.white,
@@ -544,14 +579,7 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
               }
             });
           },
-          children: _getPages(
-            screenWidth,
-            logoSize,
-            days,
-            hours,
-            minutes,
-            seconds,
-          ),
+          children: pages,
         ),
       ),
       bottomNavigationBar: BottomNavigationBar(
