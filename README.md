@@ -61,6 +61,7 @@ scripts/                # Build and optimization scripts
 - Flutter SDK (3.9.2 or later)
 - Dart SDK
 - Git
+- (Optional) Make (สำหรับใช้งาน Makefile)
 - (Optional) ImageMagick for image optimization
 
 ### Installation
@@ -77,11 +78,38 @@ flutter pub get
 flutter run -d chrome
 ```
 
+### 🎯 Using Makefile (Recommended)
+
+สำหรับความสะดวกในการรันแอพกับ API configuration:
+
+```bash
+# 1. Copy Makefile example
+cp Makefile.example Makefile
+
+# 2. (Optional) Edit Makefile to change API_BASE_URL
+# แก้ไข API_BASE_URL ใน Makefile ตามต้องการ
+
+# 3. Run the app
+make run
+
+# Other useful commands:
+make help        # แสดงคำสั่งที่ใช้ได้ทั้งหมด
+make install     # ติดตั้ง dependencies
+make build       # Build web app
+make clean       # Clean build artifacts
+make analyze     # Analyze code
+make format      # Format code
+make test        # Run tests
+```
+
 ### Development
 
 ```bash
-# Run with hot reload
-flutter run -d chrome
+# Run with hot reload (using Makefile)
+make run
+
+# Or run directly with Flutter
+flutter run -d chrome --dart-define=API_BASE_URL="https://wedding-card-online-service.fly.dev/api"
 
 # Analyze code
 flutter analyze

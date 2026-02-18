@@ -1,0 +1,52 @@
+# Example Makefile for Electronic Wedding Card App
+# Copy this file to Makefile and customize the API_BASE_URL
+
+.PHONY: run clean build help install
+
+# Default API URL (change this to your backend URL)
+API_BASE_URL := "https://wedding-card-online-service.fly.dev/api"
+
+# Run the app in Chrome with API configuration
+run:
+	flutter run -d chrome --dart-define=API_BASE_URL=$(API_BASE_URL)
+
+# Run on specific device
+run-edge:
+	flutter run -d edge --dart-define=API_BASE_URL=$(API_BASE_URL)
+
+# Clean build artifacts
+clean:
+	flutter clean
+
+# Build web app for production
+build:
+	flutter build web --dart-define=API_BASE_URL=$(API_BASE_URL)
+
+# Install dependencies
+install:
+	flutter pub get
+
+# Analyze code
+analyze:
+	flutter analyze
+
+# Format code
+format:
+	dart format lib/
+
+# Run tests
+test:
+	flutter test
+
+# Show available commands
+help:
+	@echo "Available commands:"
+	@echo "  make run        - Run app in Chrome"
+	@echo "  make run-edge   - Run app in Edge"
+	@echo "  make build      - Build web app for production"
+	@echo "  make clean      - Clean build artifacts"
+	@echo "  make install    - Install dependencies"
+	@echo "  make analyze    - Analyze code"
+	@echo "  make format     - Format code"
+	@echo "  make test       - Run tests"
+	@echo "  make help       - Show this help message"

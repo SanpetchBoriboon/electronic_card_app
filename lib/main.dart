@@ -1,16 +1,14 @@
 import 'dart:async';
-import 'dart:convert';
 
 import 'package:flutter/material.dart';
-import 'package:http/http.dart' as http;
 
-import 'config/api_config.dart';
 import 'font_styles.dart';
 import 'pages/gallery.dart';
 import 'pages/schedule.dart';
 import 'pages/splash_screen.dart';
 import 'pages/thank_you_page.dart';
 import 'pages/wishes.dart';
+import 'services/auth_service.dart';
 
 // Global color constant
 const Color kPrimaryColor = Color(0xFF7E8B78);
@@ -86,6 +84,9 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
   late PageController _pageController;
   bool _hasShownWelcomePopup = false;
   bool _isWeddingTime = false; // Track if wedding time has arrived
+  bool _isTokenExpired = false; // Track if token request period has expired
+  bool _shouldNavigateToThankYou =
+      false; // Track if should jump to thank you page
 
   @override
   void initState() {
@@ -93,9 +94,18 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
     _fetchAllowedDate(); // Fetch wedding date from API
     _startTimer();
 
+    // Check if we should navigate to thank you page (initialIndex: -1)
+    if (widget.initialIndex == -1) {
+      _shouldNavigateToThankYou = true;
+      _hasShownWelcomePopup =
+          true; // Skip welcome popup when coming from wishes
+    }
+
     // Adjust initial index if trying to access hidden pages
     int adjustedIndex = widget.initialIndex;
-    if (!_isWeddingDateReached() && widget.initialIndex > 2) {
+    if (adjustedIndex == -1) {
+      adjustedIndex = 0; // Start at home, will jump to thank you later
+    } else if (!_isWeddingDateReached() && widget.initialIndex > 2) {
       adjustedIndex =
           0; // Redirect to home if trying to access wishes/thank you
     }
@@ -122,41 +132,49 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
 
   Future<void> _fetchAllowedDate() async {
     try {
-      final response = await http.post(
-        Uri.parse(ApiConfig.guestTokens),
-        headers: {'Content-Type': 'application/json'},
-      );
+      // Use AuthService to get or create token
+      final authService = AuthService();
+      final result = await authService.generateGuestToken();
 
-      if (response.statusCode == 200) {
-        final data = json.decode(response.body);
-        final allowedDateString = data['user']['allowedDate'] as String?;
-        if (allowedDateString != null && mounted) {
-          setState(() {
-            _weddingDate = DateTime.parse(allowedDateString);
-          });
-        }
-      } else if (response.statusCode == 403) {
-        final errorData = json.decode(response.body);
-        final allowedDateString = errorData['allowedDate'] as String?;
-        if (allowedDateString != null && mounted) {
-          setState(() {
-            _weddingDate = DateTime.parse(allowedDateString);
-          });
-        }
+      // Success - got token and allowed date
+      final allowedDateString = result['user']?['allowedDate'] as String?;
+      if (allowedDateString != null && mounted) {
+        setState(() {
+          _weddingDate = DateTime.parse(allowedDateString);
+        });
+        return;
+      }
+    } on TokenForbiddenException catch (e) {
+      // Handle forbidden error (before or after wedding date)
+      final allowedDateString = e.errorData['allowedDate'] as String?;
+
+      if (allowedDateString != null && mounted) {
+        setState(() {
+          _weddingDate = DateTime.parse(allowedDateString);
+
+          // Set expired flag if token request period has expired (after wedding date)
+          if (e.isExpired) {
+            _isTokenExpired = true;
+          }
+        });
+        return;
       }
     } catch (e) {
-      // Fallback to hardcoded date if API fails
-      if (mounted) {
-        setState(() {
-          _weddingDate = DateTime(2026, 2, 26);
-        });
-      }
+      // Do nothing, will use fallback below
     }
+
+    // Fallback to hardcoded date if API fails or no date found
+    // if (mounted && _weddingDate == null) {
+    //   setState(() {
+    //     _weddingDate = DateTime(2026, 2, 26);
+    //   });
+    // }
   }
 
   void _startTimer() {
     _timer = Timer.periodic(const Duration(seconds: 1), (timer) {
-      if (_weddingDate == null) return; // Wait for wedding date to be fetched
+      // Skip calculation if wedding date hasn't been fetched yet
+      if (_weddingDate == null) return;
 
       final now = DateTime.now();
       final difference = _weddingDate!.difference(now);
@@ -166,16 +184,25 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
           // Wedding time has arrived!
           _isWeddingTime = true;
           _timeRemaining = Duration.zero;
-          _timer.cancel(); // Stop the timer
 
-          // Show welcome popup once
-          if (!_hasShownWelcomePopup) {
-            _hasShownWelcomePopup = true;
-            Future.delayed(const Duration(milliseconds: 500), () {
-              if (mounted) {
-                _showWelcomePopup();
-              }
-            });
+          // Show welcome popup once - only on wedding day (not after)
+          if (!_hasShownWelcomePopup && !_isTokenExpired) {
+            // Check if today is exactly the wedding day
+            final nowDate = DateTime(now.year, now.month, now.day);
+            final weddingDateOnly = DateTime(
+              _weddingDate!.year,
+              _weddingDate!.month,
+              _weddingDate!.day,
+            );
+
+            if (nowDate.isAtSameMomentAs(weddingDateOnly)) {
+              _hasShownWelcomePopup = true;
+              Future.delayed(const Duration(milliseconds: 500), () {
+                if (mounted) {
+                  _showWelcomePopup();
+                }
+              });
+            }
           }
         } else {
           // Still counting down
@@ -198,8 +225,36 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
 
   bool _isWeddingDateReached() {
     if (_weddingDate == null) return false; // Not reached if not fetched yet
+    if (_isTokenExpired) return false; // Hide navigation if token expired
+
+    // Compare date only (ignore time)
     final now = DateTime.now();
-    return now.isAfter(_weddingDate!) || now.isAtSameMomentAs(_weddingDate!);
+    final nowDate = DateTime(now.year, now.month, now.day);
+    final weddingDateOnly = DateTime(
+      _weddingDate!.year,
+      _weddingDate!.month,
+      _weddingDate!.day,
+    );
+
+    return nowDate.isAfter(weddingDateOnly) ||
+        nowDate.isAtSameMomentAs(weddingDateOnly);
+  }
+
+  // Check if wedding date has arrived or passed (ignore token status)
+  bool _isWeddingDateOrLater() {
+    if (_weddingDate == null) return false;
+
+    // Compare date only (ignore time)
+    final now = DateTime.now();
+    final nowDate = DateTime(now.year, now.month, now.day);
+    final weddingDateOnly = DateTime(
+      _weddingDate!.year,
+      _weddingDate!.month,
+      _weddingDate!.day,
+    );
+
+    return nowDate.isAfter(weddingDateOnly) ||
+        nowDate.isAtSameMomentAs(weddingDateOnly);
   }
 
   List<Widget> _getPages(
@@ -252,9 +307,13 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
       const GalleryPage(),
     ];
 
-    // Only add Wishes and Thank You pages if wedding date has been reached
+    // Only add Wishes page if wedding date has been reached and token not expired
     if (_isWeddingDateReached()) {
       pages.add(const WishesPage());
+    }
+
+    // Show Thank You page when wedding date arrives or passed (ignore token status)
+    if (_isWeddingDateOrLater()) {
       pages.add(const ThankYouPage());
     }
 
@@ -308,7 +367,7 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
       ),
     ];
 
-    // Only add Wishes and Thank You navigation items if wedding date has been reached
+    // Add Wishes navigation only on wedding day (not after)
     if (_isWeddingDateReached()) {
       items.add(
         BottomNavigationBarItem(
@@ -319,11 +378,17 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
           label: 'เขียนคำอวยพร',
         ),
       );
+    }
+
+    // Add Thank You navigation on wedding day or after
+    if (_isWeddingDateOrLater()) {
+      // Calculate the correct index based on whether Wishes is shown
+      final thankYouIndex = _isWeddingDateReached() ? 4 : 3;
       items.add(
         BottomNavigationBarItem(
           icon: Icon(
             Icons.auto_awesome,
-            color: _currentIndex == 4 ? kPrimaryColor : Colors.grey,
+            color: _currentIndex == thankYouIndex ? kPrimaryColor : Colors.grey,
           ),
           label: 'ดูคำอวยพร',
         ),
@@ -472,6 +537,30 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
               3 // Desktop: 1/3 of 600px card = 200px
         : screenWidth * 0.5; // Mobile: 50% of screen
 
+    // Get pages list
+    final pages = _getPages(
+      screenWidth,
+      logoSize,
+      days,
+      hours,
+      minutes,
+      seconds,
+    );
+
+    // Navigate to Thank You page if needed (after first build)
+    if (_shouldNavigateToThankYou && pages.length > 3) {
+      _shouldNavigateToThankYou = false;
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (mounted) {
+          final thankYouIndex = pages.length - 1;
+          setState(() {
+            _currentIndex = thankYouIndex;
+          });
+          _pageController.jumpToPage(thankYouIndex);
+        }
+      });
+    }
+
     return Scaffold(
       body: Container(
         color: screenWidth > 768 ? Colors.grey[100] : Colors.white,
@@ -482,22 +571,29 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
           onPageChanged: (index) {
             setState(() {
               _currentIndex = index;
+
+              // Reset card to front side when returning to main page
+              if (index == 0 && _isFlipped) {
+                _isFlipped = false;
+                _flipController.reverse();
+              }
             });
           },
-          children: _getPages(
-            screenWidth,
-            logoSize,
-            days,
-            hours,
-            minutes,
-            seconds,
-          ),
+          children: pages,
         ),
       ),
       bottomNavigationBar: BottomNavigationBar(
         type: BottomNavigationBarType.fixed,
         currentIndex: _currentIndex,
         onTap: (index) {
+          // Reset card to front side when navigating to main page
+          if (index == 0 && _isFlipped) {
+            setState(() {
+              _isFlipped = false;
+            });
+            _flipController.reverse();
+          }
+
           _pageController.animateToPage(
             index,
             duration: const Duration(

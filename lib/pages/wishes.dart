@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'dart:convert';
 import 'dart:io';
 
 import 'package:electronic_card_app/font_styles.dart';
@@ -8,10 +7,10 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:http_parser/http_parser.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 import '../config/api_config.dart';
 import '../main.dart';
+import '../services/auth_service.dart';
 
 // Global color constant
 const Color kPrimaryColor = Color(0xFF7E8B78);
@@ -45,6 +44,9 @@ class _WishesPageState extends State<WishesPage> {
   final List<Uint8List> _selectedImagesData = [];
   final List<String> _selectedImageNames =
       []; // Store original filenames for web
+
+  // AuthService instance
+  final AuthService _authService = AuthService();
 
   @override
   void initState() {
@@ -476,19 +478,8 @@ class _WishesPageState extends State<WishesPage> {
     try {
       // print('Starting API submission...');
 
-      String? token;
-
-      // Check if we have a stored token for this username
-      final storedToken = await _getStoredToken();
-
-      if (storedToken != null) {
-        // แจ้งผู้ใช้ว่ากำลังใช้ token ที่เก็บไว้
-        token = storedToken;
-      } else {
-        // Generate new token for this username
-        token = await _generateGuestToken();
-        await _saveToken(token);
-      }
+      // Get token from AuthService (uses existing token or generates new one)
+      final token = await _authService.getOrCreateToken();
 
       // Step 2: Prepare form data
       // print('Preparing form data...');
@@ -550,7 +541,7 @@ class _WishesPageState extends State<WishesPage> {
       } else if (response.statusCode == 401) {
         // Token expired or invalid, clear and try again
         // print('Token invalid, clearing and retrying...');
-        await _clearStoredToken();
+        await _authService.clearToken();
         throw Exception('Token หมดอายุ กรุณาลองใหม่อีกครั้ง');
       } else {
         throw Exception(
@@ -573,50 +564,7 @@ class _WishesPageState extends State<WishesPage> {
     }
   }
 
-  Future<String> _generateGuestToken() async {
-    try {
-      // print('Generating guest token...');
-      final response = await http
-          .post(
-            Uri.parse(ApiConfig.guestTokens),
-            headers: {'Content-Type': 'application/json'},
-          )
-          .timeout(Duration(seconds: 10));
-
-      // print('Token generation response status: ${response.statusCode}');
-
-      if (response.statusCode == 200) {
-        final data = json.decode(response.body);
-        final token = data['token'];
-        // print('Token generated successfully for user: ${data['user']['username']}');
-        return token;
-      } else {
-        // print('Token generation failed: ${response.body}');
-
-        // Check if it's the specific "not time yet" error
-        if (response.statusCode == 403) {
-          try {
-            final errorData = json.decode(response.body);
-            if (errorData['error'] == 'Token Request Forbidden' &&
-                errorData['message']?.contains('February 26, 2026') == true) {
-              _showTimeNotReachedDialog(errorData);
-              throw TimeNotReachedException('Time not reached');
-            }
-          } catch (parseError) {
-            if (parseError is TimeNotReachedException) {
-              rethrow;
-            }
-            // print('Error parsing error response: $parseError');
-          }
-        }
-
-        throw Exception('ไม่สามารถสร้าง token ได้: ${response.statusCode}');
-      }
-    } catch (e) {
-      // print('Error generating token: $e');
-      rethrow;
-    }
-  }
+  // Token generation now handled by AuthService
 
   void _showPreviewDialog() {
     showDialog(
@@ -823,139 +771,6 @@ class _WishesPageState extends State<WishesPage> {
     );
   }
 
-  void _showTimeNotReachedDialog(Map<String, dynamic> errorData) {
-    // Check if the current date is after the allowed date
-    final now = DateTime.now();
-
-    // Parse the allowed date from the error data
-    DateTime allowedDate;
-    try {
-      final allowedDateString = errorData['allowedDate'] as String?;
-      if (allowedDateString != null) {
-        allowedDate = DateTime.parse(allowedDateString);
-      } else {
-        allowedDate = DateTime(2026, 2, 26); // Fallback
-      }
-    } catch (e) {
-      allowedDate = DateTime(2026, 2, 26); // Fallback
-    }
-
-    final isAfterWeddingDate = now.isAfter(allowedDate);
-
-    showDialog(
-      context: context,
-      barrierDismissible: false,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(15),
-          ),
-          title: Row(
-            children: [
-              Icon(
-                isAfterWeddingDate ? Icons.event_busy : Icons.access_time,
-                color: kPrimaryColor,
-                size: 24,
-              ),
-              const SizedBox(width: 8),
-              Text(
-                isAfterWeddingDate ? 'งานจบแล้ว' : 'ยังไม่ถึงเวลา',
-                style: TextStyle(
-                  color: kPrimaryColor,
-                  fontSize: 20,
-                  fontWeight: FontWeight.w600,
-                ),
-              ),
-            ],
-          ),
-          content: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                isAfterWeddingDate
-                    ? 'การเขียนคำอวยพรได้ปิดให้บริการแล้ว เนื่องจากงานแต่งงานได้จบสิ้นลงแล้ว'
-                    : 'การเขียนคำอวยพรจะเปิดให้ใช้งานในวันงานเท่านั้น',
-                style: TextStyle(
-                  fontSize: 16,
-                  color: Colors.grey[700],
-                  height: 1.4,
-                ),
-              ),
-              const SizedBox(height: 16),
-              Container(
-                padding: const EdgeInsets.all(12),
-                decoration: BoxDecoration(
-                  color: kPrimaryColor.withValues(alpha: 0.1),
-                  borderRadius: BorderRadius.circular(8),
-                  border: Border.all(
-                    color: kPrimaryColor.withValues(alpha: 0.3),
-                    width: 1,
-                  ),
-                ),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      '📅 วันที่งานแต่งงาน: ${_formatDateToThai(errorData['allowedDate'])}',
-                      style: TextStyle(
-                        fontSize: 14,
-                        color: kPrimaryColor,
-                        fontWeight: FontWeight.w500,
-                      ),
-                    ),
-                    const SizedBox(height: 4),
-                    Text(
-                      '📅 วันที่ปัจจุบัน: ${_formatDateToThai(errorData['currentDate'])}',
-                      style: TextStyle(fontSize: 14, color: Colors.grey[600]),
-                    ),
-                  ],
-                ),
-              ),
-              const SizedBox(height: 16),
-              Text(
-                isAfterWeddingDate
-                    ? 'ขอบคุณสำหรับความรักและกำลังใจที่มีให้บ่าวสาว! 💕'
-                    : 'กรุณากลับมาใหม่ในวันงานเพื่อส่งคำอวยพรให้บ่าวสาว! 💕',
-                style: TextStyle(
-                  fontSize: 14,
-                  color: Colors.grey[600],
-                  fontStyle: FontStyle.italic,
-                ),
-              ),
-            ],
-          ),
-          actions: [
-            TextButton(
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
-              style: TextButton.styleFrom(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 24,
-                  vertical: 12,
-                ),
-                backgroundColor: kPrimaryColor,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(8),
-                ),
-              ),
-              child: Text(
-                'เข้าใจแล้ว',
-                style: TextStyle(
-                  color: Colors.white,
-                  fontSize: 16,
-                  fontWeight: FontWeight.w500,
-                ),
-              ),
-            ),
-          ],
-          actionsPadding: const EdgeInsets.fromLTRB(24, 0, 24, 24),
-        );
-      },
-    );
-  }
-
   void _clearForm() {
     _nameController.clear();
     _wishController.clear();
@@ -967,76 +782,7 @@ class _WishesPageState extends State<WishesPage> {
     });
   }
 
-  // Helper method to format date to Thai format
-  String _formatDateToThai(String? dateString) {
-    if (dateString == null) return '26 กุมภาพันธ์ 2026';
-
-    try {
-      // Parse the date string (assuming format: 2026-02-26)
-      final dateParts = dateString.split('-');
-      if (dateParts.length == 3) {
-        final year = dateParts[0];
-        final month = dateParts[1];
-        final day = int.parse(dateParts[2]).toString(); // Remove leading zero
-
-        final monthNames = [
-          '',
-          'มกราคม',
-          'กุมภาพันธ์',
-          'มีนาคม',
-          'เมษายน',
-          'พฤษภาคม',
-          'มิถุนายน',
-          'กรกฎาคม',
-          'สิงหาคม',
-          'กันยายน',
-          'ตุลาคม',
-          'พฤศจิกายน',
-          'ธันวาคม',
-        ];
-
-        final monthIndex = int.parse(month);
-        if (monthIndex >= 1 && monthIndex <= 12) {
-          return '$day ${monthNames[monthIndex]} $year';
-        }
-      }
-    } catch (e) {
-      // print('Error formatting date: $e');
-    }
-
-    return '26 กุมภาพันธ์ 2026'; // Default fallback
-  }
-
-  // Token management methods
-  Future<String?> _getStoredToken() async {
-    try {
-      final prefs = await SharedPreferences.getInstance();
-      return prefs.getString(tokenKey);
-    } catch (e) {
-      // print('Error getting stored token: $e');
-      return null;
-    }
-  }
-
-  Future<void> _saveToken(String token) async {
-    try {
-      final prefs = await SharedPreferences.getInstance();
-      await prefs.setString(tokenKey, token);
-    } catch (e) {
-      // print('Error saving token: $e');
-    }
-  }
-
-  Future<void> _clearStoredToken() async {
-    try {
-      final prefs = await SharedPreferences.getInstance();
-      await prefs.remove(tokenKey);
-      await prefs.remove(usernameKey);
-      // print('Token cleared from storage');
-    } catch (e) {
-      // print('Error clearing token: $e');
-    }
-  }
+  // Token management is now handled by AuthService
 
   // Helper method to get content type and extension
   Map<String, String> _getImageTypeInfo(String? imagePath) {
@@ -1214,10 +960,10 @@ class _WishesPageState extends State<WishesPage> {
                       _showSuccess = false;
                     });
 
-                    // Simply navigate to the thank you tab
+                    // Navigate to thank you page (use -1 to indicate last page)
                     Navigator.of(context).pushAndRemoveUntil(
                       MaterialPageRoute(
-                        builder: (context) => MyHomePage(initialIndex: 4),
+                        builder: (context) => MyHomePage(initialIndex: -1),
                       ),
                       (Route<dynamic> route) => false,
                     );
