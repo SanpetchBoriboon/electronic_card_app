@@ -110,18 +110,16 @@ class _ThankYouPageState extends State<ThankYouPage>
         return _allowedDate;
       }
     } on TokenForbiddenException catch (e) {
-      // Handle forbidden error (time not reached)
+      // Handle forbidden error (time not reached or expired)
       final errorData = e.errorData;
       final allowedDateString = errorData['allowedDate'] as String?;
       if (allowedDateString != null) {
         _allowedDate = DateTime.parse(allowedDateString);
 
-        // Only show popup if current date is BEFORE the allowed date
-        final now = DateTime.now();
-        if (now.isBefore(_allowedDate!)) {
-          if (mounted) {
-            _showTimeNotReachedDialog(errorData);
-          }
+        // Only show popup if NOT YET AVAILABLE (before wedding date)
+        // Don't show popup if it's wedding day or after
+        if (e.isNotYetAvailable && mounted) {
+          _showTimeNotReachedDialog(errorData);
         }
 
         return _allowedDate;
@@ -150,7 +148,7 @@ class _ThankYouPageState extends State<ThankYouPage>
       allowedDate.day,
     );
 
-    // Return true only if today is exactly the wedding day
+    // Return true only if today is exactly the wedding day (for polling)
     return nowDate.isAtSameMomentAs(allowedDateOnly);
   }
 
@@ -1104,7 +1102,14 @@ class _ThankYouPageState extends State<ThankYouPage>
       allowedDate = DateTime(2026, 2, 26); // Fallback
     }
 
-    final isAfterWeddingDate = now.isAfter(allowedDate);
+    // Compare date only (ignore time)
+    final nowDate = DateTime(now.year, now.month, now.day);
+    final allowedDateOnly = DateTime(
+      allowedDate.year,
+      allowedDate.month,
+      allowedDate.day,
+    );
+    final isAfterWeddingDate = nowDate.isAfter(allowedDateOnly);
 
     showDialog(
       context: context,

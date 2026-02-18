@@ -70,15 +70,25 @@ class AuthService {
 
       if (response.statusCode == 200) {
         final data = json.decode(response.body);
+
+        // Check if response contains error field (not yet available or expired)
+        // or doesn't have token field
+        if (data['error'] != null || data['token'] == null) {
+          throw TokenForbiddenException(
+            data['message'] ?? 'Token request forbidden',
+            data,
+          );
+        }
+
+        // Success - has token
         final token = data['token'] as String;
         final username = data['user']?['username'] as String?;
 
         // Save token with expiry (default 24 hours)
         await _saveToken(token, username);
-
         return {'token': token, 'username': username, 'user': data['user']};
       } else if (response.statusCode == 403) {
-        // Time not reached error
+        // Legacy fallback for old API behavior
         final errorData = json.decode(response.body);
         throw TokenForbiddenException(
           errorData['message'] ?? 'Token request forbidden',
@@ -168,6 +178,68 @@ class TokenForbiddenException implements Exception {
   final Map<String, dynamic> errorData;
 
   TokenForbiddenException(this.message, this.errorData);
+
+  /// ตรวจสอบว่าเป็นกรณียังไม่ถึงเวลาหรือไม่
+  /// เช็คจาก currentDate < allowedDate (เปรียบเทียบแค่วันที่)
+  bool get isNotYetAvailable {
+    try {
+      final currentDateStr = errorData['currentDate'] as String?;
+      final allowedDateStr = errorData['allowedDate'] as String?;
+
+      if (currentDateStr != null && allowedDateStr != null) {
+        final currentDate = DateTime.parse(currentDateStr);
+        final allowedDate = DateTime.parse(allowedDateStr);
+
+        // Compare date only (ignore time)
+        final currentDateOnly = DateTime(
+          currentDate.year,
+          currentDate.month,
+          currentDate.day,
+        );
+        final allowedDateOnly = DateTime(
+          allowedDate.year,
+          allowedDate.month,
+          allowedDate.day,
+        );
+
+        return currentDateOnly.isBefore(allowedDateOnly);
+      }
+    } catch (e) {
+      // Fallback to error message check
+    }
+    return errorData['error'] == 'Token Request Not Yet Available';
+  }
+
+  /// ตรวจสอบว่าเป็นกรณีหมดเวลาแล้วหรือไม่
+  /// เช็คจาก currentDate > allowedDate (เปรียบเทียบแค่วันที่)
+  bool get isExpired {
+    try {
+      final currentDateStr = errorData['currentDate'] as String?;
+      final allowedDateStr = errorData['allowedDate'] as String?;
+
+      if (currentDateStr != null && allowedDateStr != null) {
+        final currentDate = DateTime.parse(currentDateStr);
+        final allowedDate = DateTime.parse(allowedDateStr);
+
+        // Compare date only (ignore time)
+        final currentDateOnly = DateTime(
+          currentDate.year,
+          currentDate.month,
+          currentDate.day,
+        );
+        final allowedDateOnly = DateTime(
+          allowedDate.year,
+          allowedDate.month,
+          allowedDate.day,
+        );
+
+        return currentDateOnly.isAfter(allowedDateOnly);
+      }
+    } catch (e) {
+      // Fallback to error message check
+    }
+    return errorData['error'] == 'Token Request Expired';
+  }
 
   @override
   String toString() => 'TokenForbiddenException: $message';
