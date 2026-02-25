@@ -140,7 +140,13 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
       final allowedDateString = result['user']?['allowedDate'] as String?;
       if (allowedDateString != null && mounted) {
         setState(() {
-          _weddingDate = DateTime.parse(allowedDateString);
+          // Parse as local date-only (midnight local time) to avoid UTC offset issues
+          final parsed = DateTime.parse(allowedDateString);
+          _weddingDate = DateTime(parsed.year, parsed.month, parsed.day);
+          // Immediately check if wedding date has already arrived
+          if (_weddingDate!.difference(DateTime.now()).inSeconds <= 0) {
+            _isWeddingTime = true;
+          }
         });
         return;
       }
@@ -150,11 +156,18 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
 
       if (allowedDateString != null && mounted) {
         setState(() {
-          _weddingDate = DateTime.parse(allowedDateString);
+          // Parse as local date-only (midnight local time) to avoid UTC offset issues
+          final parsed = DateTime.parse(allowedDateString);
+          _weddingDate = DateTime(parsed.year, parsed.month, parsed.day);
 
           // Set expired flag if token request period has expired (after wedding date)
           if (e.isExpired) {
             _isTokenExpired = true;
+          }
+
+          // Immediately check if wedding date has already arrived
+          if (_weddingDate!.difference(DateTime.now()).inSeconds <= 0) {
+            _isWeddingTime = true;
           }
         });
         return;
@@ -796,8 +809,8 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
 
               const SizedBox(height: 20),
 
-              // Countdown timer - Hide when wedding time arrives
-              if (!_isWeddingTime)
+              // Countdown timer - Hide when wedding time arrives or date not yet loaded
+              if (_weddingDate != null && !_isWeddingTime)
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                   children: [
